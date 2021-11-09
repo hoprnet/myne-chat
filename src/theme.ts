@@ -3,22 +3,31 @@
  * You should priorize Grommet theme > styled-components > inline styles.
  */
 import type { ThemeType } from "grommet";
+import { useContext } from "react";
+import { ThemeContext } from "grommet";
+
+// create our theme by extending grommet's ThemeType
+const makeTheme = <T extends ThemeType>(t: T) => t;
+
+// react hook to access our theme
+export const useTheme = () => useContext<Theme>(ThemeContext as any);
 
 // unopinioned theme data
 const raw = {
   colors: {
-    darkestBackground: "#282828", // Window-BG
-    darkBackground: "#3d3d3d", // Sidebar
-    background: "#5c5c5c", // Mainwindow
-    lightBackground: "#c3c3c3", // Chatbox-user
-    highlight: "#7af5e7", // myne-turquoise
-    muted: "#2b5651",
-    gray: "#dddddf",
+    "dark-1": "black",
+    "dark-2": "#282828", // PDF: Window-BG
+    "dark-3": "#3d3d3d", // PDF: Sidebar
+    "dark-4": "#5c5c5c", // PDF: Mainwindow
+    "light-1": "white",
+    "light-2": "#c3c3c3", // PDF: Chatbox-user
+    brand: "#7af5e7", // PDF: myne-turquoise
+    "brand-disabled": "#2b5651", // PDF: inactive button
   },
 
   // specify font properties
   fonts: {
-    default: "system-ui, sans-serif",
+    default: "GerstnerProgrammFSL",
     heading: "inherit", // TODO: update to PDF's values
     monospace: "inherit", // TODO: update to PDF's values
   },
@@ -50,34 +59,35 @@ const raw = {
   },
 };
 
-const makeTheme = <T extends ThemeType>(t: T) => t;
-
 // transform theme data to Grommet compatible theme
-// TODO: improve colors
 const theme = makeTheme({
   global: {
     raw,
     colors: {
-      "accent-1": "white",
-      "accent-2": raw.colors.highlight,
-      "background-back": raw.colors.darkestBackground,
-      "dark-1": "black",
-      "dark-2": raw.colors.background,
-      "dark-3": raw.colors.darkBackground,
-      "dark-4": raw.colors.darkestBackground,
-      "light-1": "white",
-      "light-2": raw.colors.lightBackground,
-      "status-unknown": raw.colors.muted,
-      "status-disabled": raw.colors.muted,
-      "status-inactive": raw.colors.muted,
+      ...raw.colors,
+      "accent-1": raw.colors["light-1"],
+      "accent-2": raw.colors.brand,
+      "accent-3": raw.colors["brand-disabled"],
+      "accent-4": "#E04E0B", // PDF: weblinks
+      "background-back": raw.colors["dark-2"],
+      "status-disabled": raw.colors["brand-disabled"],
     },
     font: {
-      face: raw.fonts.default,
+      family: raw.fonts.default,
       size: raw.fontSizes.default,
       height: raw.lineHeights.default,
       weight: raw.fontWeights.default,
     },
     spacing: raw.space.medium,
+  },
+
+  text: {
+    medium: {
+      size: raw.fontSizes.heading,
+    },
+    small: {
+      size: raw.fontSizes.default,
+    },
   },
 
   button: {
@@ -93,13 +103,13 @@ const theme = makeTheme({
     },
     extend: `box-shadow: ${raw.shadows.default};`,
     default: {
-      background: "status-inactive",
+      background: "brand-disabled",
       color: "light-1",
     },
     active: {
       default: {
         background: "accent-2",
-        color: "status-inactive",
+        color: "brand-disabled",
       },
     },
   },
@@ -109,9 +119,8 @@ const theme = makeTheme({
   },
 });
 
-export default theme;
-
 export type Theme = typeof theme;
+export default theme;
 
 // overwrite DefaultTheme with our theme
 // ThemeProvider will now know what our theme looks like

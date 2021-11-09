@@ -1,20 +1,21 @@
 import type { FunctionComponent } from "react";
-import type { Theme } from "../theme";
-import { useContext } from "react";
-import { ThemeContext, Box as GrommetBox, BoxProps } from "grommet";
+import { useTheme } from "../theme";
+import { Box as GrommetBox, BoxProps } from "grommet";
 
-const Box: FunctionComponent<BoxProps> = (props) => {
-  const theme = useContext<Theme>(ThemeContext as any);
+const Box: FunctionComponent<BoxProps & { useShadow?: boolean }> = (props) => {
+  const theme = useTheme();
 
   return (
     <GrommetBox
       round={theme.global.raw.radii.default}
       pad={{
         vertical: theme.global.raw.space.small,
-        horizontal: theme.global.raw.space.medium,
+        horizontal: theme.global.raw.space.small,
       }}
       style={{
-        boxShadow: theme.global.raw.shadows.default,
+        boxShadow: props.useShadow
+          ? theme.global.raw.shadows.default
+          : undefined,
       }}
       {...props}
     >
