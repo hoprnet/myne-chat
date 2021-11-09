@@ -2,7 +2,7 @@ import type { FunctionComponent } from "react";
 import { useTheme } from "../theme";
 import { Box as GrommetBox, BoxProps } from "grommet";
 
-const Box: FunctionComponent<BoxProps & { useShadow?: boolean }> = (props) => {
+const Box: FunctionComponent<BoxProps & { noShadow?: boolean }> = (props) => {
   const theme = useTheme();
 
   return (
@@ -13,9 +13,9 @@ const Box: FunctionComponent<BoxProps & { useShadow?: boolean }> = (props) => {
         horizontal: theme.global.raw.space.small,
       }}
       style={{
-        boxShadow: props.useShadow
-          ? theme.global.raw.shadows.default
-          : undefined,
+        boxShadow: props.noShadow
+          ? undefined
+          : theme.global.raw.shadows.default,
       }}
       {...props}
     >

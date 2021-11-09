@@ -22,7 +22,7 @@ const ChatView: FunctionComponent<{ messages: Message[] }> = ({ messages }) => {
 
         return (
           <Box alignSelf={isIncoming ? "start" : "end"}>
-            <ChatBubble key={message.id} message={message} />
+            <ChatBubble message={message} />
           </Box>
         );
       }}
