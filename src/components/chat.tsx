@@ -15,7 +15,7 @@ const Chat: FunctionComponent = () => {
         min: "100%",
       }}
       background="dark-4"
-      pad="medium"
+      pad="small"
       round
       shadow
     >
