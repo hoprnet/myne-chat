@@ -1,20 +1,19 @@
 import type { FunctionComponent } from "react";
 import { Box, List, Text, Sidebar, Nav } from "grommet";
 import { conversations, Conversation } from "../mocks";
-import { useTheme } from "../theme";
 import Logo from "./logo";
 
 const Statistics: FunctionComponent = () => {
-  const theme = useTheme();
-
   return (
     <Sidebar
       header={<Box>+</Box>}
       footer={<Logo />}
-      background="dark-3"
       round
-      pad={"small"}
-      gap={"small"}
+      pad="small"
+      gap="small"
+      background="dark-3"
+      // @ts-ignore
+      shadow
     >
       <Nav>
         <List

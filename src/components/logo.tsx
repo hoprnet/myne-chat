@@ -1,11 +1,8 @@
 import type { FunctionComponent } from "react";
 import Image from "next/image";
 import { Box, Text } from "grommet";
-import { useTheme } from "../theme";
 
 const Logo: FunctionComponent = () => {
-  const theme = useTheme();
-
   return (
     <Box>
       <Box>

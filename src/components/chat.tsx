@@ -8,7 +8,6 @@ const Chat: FunctionComponent = () => {
   return (
     <Box
       justify="between"
-      background="dark-4"
       width={{
         min: "100%",
       }}
@@ -17,6 +16,7 @@ const Chat: FunctionComponent = () => {
       }}
       round
       pad="medium"
+      background="dark-4"
       // @ts-ignore
       shadow
     >

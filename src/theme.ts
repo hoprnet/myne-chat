@@ -21,8 +21,8 @@ const custom = {
     mainWindow: "#5c5c5c",
     chatbox: "#c3c3c3",
   },
-  radiusSize: "9px",
-  shadowStyle: "0px 2px 3px #00000091;",
+  radius: "9px",
+  shadow: "0px 2px 3px #00000091",
 };
 
 // create our theme by extending grommet's ThemeType
@@ -47,11 +47,6 @@ const theme = makeTheme({
       "status-disabled": custom.colors["myne-darkgreen"],
     },
 
-    size: {
-      small: "14px",
-      medium: "21px",
-    },
-
     // this setting affects various areas, see https://v2.grommet.io/box at `global.edgeSize`
     // we have an issue here since it affects both padding and border radius (totally weird behaviour)
     // in this webapp, we use this setting for everything but border radius, border radius is overwritten
@@ -72,20 +67,18 @@ const theme = makeTheme({
     extend: (props) => {
       return css({
         // see `theme.global.edgeSize`, here we overwrite `border-radius`
-        "border-radius": props.round ? custom.radiusSize : undefined,
-        "box-shadow": props.shadow
-          ? `box-shadow: ${custom.shadowStyle}`
-          : undefined,
+        "border-radius": props.round ? custom.radius : undefined,
+        "box-shadow": props.shadow ? custom.shadow : undefined,
       });
     },
   },
 
   text: {
     small: {
-      size: "small",
+      size: "14px",
     },
     medium: {
-      size: "medium",
+      size: "21px",
     },
   },
 
@@ -97,13 +90,11 @@ const theme = makeTheme({
       vertical: "small",
     },
     border: {
-      radius: custom.radiusSize,
+      radius: custom.radius,
     },
     extend: (props) => {
       return css({
-        "box-shadow": props.shadow
-          ? `box-shadow: ${custom.shadowStyle}`
-          : undefined,
+        "box-shadow": props.shadow ? custom.shadow : undefined,
       });
     },
     default: {
@@ -129,7 +120,7 @@ const theme = makeTheme({
 });
 
 // react hook to access our theme
-type Theme = typeof theme;
+export type Theme = typeof theme;
 export const useTheme = () => useContext<Theme>(ThemeContext as any);
 
 export default theme;
