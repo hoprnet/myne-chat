@@ -3,7 +3,6 @@ import type { Message } from "../mocks";
 import { Box, Text } from "grommet";
 import { normalizeColor } from "grommet/utils";
 import { useTheme } from "../theme";
-import StyledBox from "./styled-box";
 
 const ChatBubble: FunctionComponent<{ message: Message }> = ({ message }) => {
   const isIncoming = message.direction === "received";
@@ -19,11 +18,17 @@ const ChatBubble: FunctionComponent<{ message: Message }> = ({ message }) => {
       <Text color="brand" textAlign="end" size="small">
         {new Date(message.time).toLocaleString()}
       </Text>
-      <StyledBox background={backgroundColor}>
+      <Box
+        background={backgroundColor}
+        round
+        pad="small"
+        // @ts-ignore
+        shadow
+      >
         <Text color={textColor} size="medium">
           {message.content}
         </Text>
-      </StyledBox>
+      </Box>
     </Box>
   );
 };

@@ -14,7 +14,7 @@ const ChatView: FunctionComponent<{ messages: Message[] }> = ({ messages }) => {
       border={false}
       pad={{
         horizontal: "none",
-        bottom: theme.global.raw.space.large,
+        bottom: "large",
       }}
     >
       {(message: Message) => {

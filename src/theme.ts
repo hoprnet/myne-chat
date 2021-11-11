@@ -1,92 +1,91 @@
 /**
- * Initialize there to be used throughout the codebase.
+ * Initialize theme to be used throughout the codebase.
  * You should priorize Grommet theme > styled-components > inline styles.
  */
 import type { ThemeType } from "grommet";
+import { css } from "styled-components";
 import { useContext } from "react";
 import { ThemeContext } from "grommet";
+
+// various styling preferences, taken from PDF
+const custom = {
+  colors: {
+    // custom named colors
+    "myne-turquoise": "#7af5e7",
+    "myne-darkgreen": "#2b5651",
+    "myne-darkorange": "#E04E0B",
+
+    // specific to components
+    windowBG: "#282828",
+    sidebar: "#3d3d3d",
+    mainWindow: "#5c5c5c",
+    chatbox: "#c3c3c3",
+  },
+  radiusSize: "9px",
+  shadowStyle: "0px 2px 3px #00000091;",
+};
 
 // create our theme by extending grommet's ThemeType
 const makeTheme = <T extends ThemeType>(t: T) => t;
 
-// react hook to access our theme
-export const useTheme = () => useContext<Theme>(ThemeContext as any);
-
-// unopinioned theme data
-const raw = {
-  colors: {
-    "dark-1": "black",
-    "dark-2": "#282828", // PDF: Window-BG
-    "dark-3": "#3d3d3d", // PDF: Sidebar
-    "dark-4": "#5c5c5c", // PDF: Mainwindow
-    "light-1": "white",
-    "light-2": "#c3c3c3", // PDF: Chatbox-user
-    brand: "#7af5e7", // PDF: myne-turquoise
-    "brand-disabled": "#2b5651", // PDF: inactive button
-  },
-
-  // specify font properties
-  fonts: {
-    default: "GerstnerProgrammFSL",
-    heading: "inherit", // TODO: update to PDF's values
-    monospace: "inherit", // TODO: update to PDF's values
-  },
-  fontWeights: {
-    default: "400",
-    heading: "700",
-    bold: "700",
-  },
-  lineHeights: {
-    default: "1.5",
-    heading: "1.25",
-  },
-  fontSizes: {
-    default: "14px",
-    heading: "21px",
-  },
-
-  // specify various properties
-  space: {
-    small: "9px",
-    medium: "18px",
-    large: "36px",
-  },
-  radii: {
-    default: "9px",
-  },
-  shadows: {
-    default: "0px 2px 3px #00000091",
-  },
-};
-
 // transform theme data to Grommet compatible theme
 const theme = makeTheme({
   global: {
-    raw,
     colors: {
-      ...raw.colors,
-      "accent-1": raw.colors["light-1"],
-      "accent-2": raw.colors.brand,
-      "accent-3": raw.colors["brand-disabled"],
-      "accent-4": "#E04E0B", // PDF: weblinks
-      "background-back": raw.colors["dark-2"],
-      "status-disabled": raw.colors["brand-disabled"],
+      brand: custom.colors["myne-turquoise"],
+      "dark-1": "black",
+      "dark-2": custom.colors.windowBG,
+      "dark-3": custom.colors.sidebar,
+      "dark-4": custom.colors.mainWindow,
+      "light-1": "white",
+      "light-2": custom.colors.chatbox,
+      "accent-1": "white",
+      "accent-2": custom.colors["myne-turquoise"],
+      "accent-3": custom.colors["myne-darkgreen"],
+      "accent-4": custom.colors["myne-darkorange"],
+      "background-back": custom.colors.windowBG,
+      "status-disabled": custom.colors["myne-darkgreen"],
     },
+
+    size: {
+      small: "14px",
+      medium: "21px",
+    },
+
+    // this setting affects various areas, see https://v2.grommet.io/box at `global.edgeSize`
+    // we have an issue here since it affects both padding and border radius (totally weird behaviour)
+    // in this webapp, we use this setting for everything but border radius, border radius is overwritten
+    // by extending the box component
+    edgeSize: {
+      small: "9px",
+      medium: "18px",
+      large: "36px",
+    },
+
     font: {
-      family: raw.fonts.default,
-      size: raw.fontSizes.default,
-      height: raw.lineHeights.default,
-      weight: raw.fontWeights.default,
+      family: "GerstnerProgrammFSL",
+      size: "medium",
     },
-    spacing: raw.space.medium,
+  },
+
+  box: {
+    extend: (props) => {
+      return css({
+        // see `theme.global.edgeSize`, here we overwrite `border-radius`
+        "border-radius": props.round ? custom.radiusSize : undefined,
+        "box-shadow": props.shadow
+          ? `box-shadow: ${custom.shadowStyle}`
+          : undefined,
+      });
+    },
   },
 
   text: {
-    medium: {
-      size: raw.fontSizes.heading,
-    },
     small: {
-      size: raw.fontSizes.default,
+      size: "small",
+    },
+    medium: {
+      size: "medium",
     },
   },
 
@@ -94,36 +93,43 @@ const theme = makeTheme({
     minWidth: "96px",
     maxWidth: "384px",
     padding: {
-      horizontal: raw.space.medium,
-      vertical: raw.space.small,
+      horizontal: "medium",
+      vertical: "small",
     },
     border: {
-      radius: raw.radii.default,
-      width: "0px",
+      radius: custom.radiusSize,
     },
-    extend: `box-shadow: ${raw.shadows.default};`,
+    extend: (props) => {
+      return css({
+        "box-shadow": props.shadow
+          ? `box-shadow: ${custom.shadowStyle}`
+          : undefined,
+      });
+    },
     default: {
-      background: "brand-disabled",
+      background: "status-disabled",
       color: "light-1",
     },
     active: {
       default: {
         background: "accent-2",
-        color: "brand-disabled",
+        color: "status-disabled",
       },
     },
   },
 
   textArea: {
-    extend: `border: none;`,
+    extend: () => {
+      return css({
+        border: "none",
+        caretColor: custom.colors["myne-turquoise"],
+      });
+    },
   },
 });
 
-export type Theme = typeof theme;
-export default theme;
+// react hook to access our theme
+type Theme = typeof theme;
+export const useTheme = () => useContext<Theme>(ThemeContext as any);
 
-// overwrite DefaultTheme with our theme
-// ThemeProvider will now know what our theme looks like
-declare module "styled-components" {
-  export interface DefaultTheme extends Theme {}
-}
+export default theme;

@@ -12,9 +12,9 @@ const Statistics: FunctionComponent = () => {
       header={<Box>+</Box>}
       footer={<Logo />}
       background="dark-3"
-      pad={theme.global.raw.space.small}
-      round={theme.global.raw.radii.default}
-      gap={theme.global.raw.space.small}
+      round
+      pad={"small"}
+      gap={"small"}
     >
       <Nav>
         <List
@@ -23,7 +23,7 @@ const Statistics: FunctionComponent = () => {
           border={false}
           pad={{
             horizontal: "none",
-            bottom: theme.global.raw.space.small,
+            bottom: "small",
           }}
         >
           {(conv: Conversation) => {

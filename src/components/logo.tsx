@@ -19,7 +19,7 @@ const Logo: FunctionComponent = () => {
       </Box>
       <Box
         pad={{
-          horizontal: theme.global.raw.space.medium,
+          horizontal: "medium",
         }}
       >
         <Text textAlign="end">Privacy powered by HOPR</Text>
