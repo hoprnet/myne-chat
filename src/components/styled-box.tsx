@@ -1,12 +1,14 @@
 import type { FunctionComponent } from "react";
 import { useTheme } from "../theme";
-import { Box as GrommetBox, BoxProps } from "grommet";
+import { Box, BoxProps } from "grommet";
 
-const Box: FunctionComponent<BoxProps & { noShadow?: boolean }> = (props) => {
+const StyledBox: FunctionComponent<BoxProps & { noShadow?: boolean }> = (
+  props
+) => {
   const theme = useTheme();
 
   return (
-    <GrommetBox
+    <Box
       round={theme.global.raw.radii.default}
       pad={{
         vertical: theme.global.raw.space.small,
@@ -20,8 +22,8 @@ const Box: FunctionComponent<BoxProps & { noShadow?: boolean }> = (props) => {
       {...props}
     >
       {props.children}
-    </GrommetBox>
+    </Box>
   );
 };
 
-export default Box;
+export default StyledBox;

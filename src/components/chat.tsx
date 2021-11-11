@@ -7,11 +7,20 @@ import ChatInput from "./chat-input";
 
 const Chat: FunctionComponent = () => {
   return (
-    <StyledBox justify="around" background="dark-4">
-      <Box gridArea="chat-view">
+    <StyledBox
+      justify="between"
+      background="dark-4"
+      width={{
+        min: "100%",
+      }}
+      height={{
+        min: "100%",
+      }}
+    >
+      <Box>
         <ChatView messages={messages} />
       </Box>
-      <Box gridArea="chat-view">
+      <Box>
         <ChatInput onSend={async (e) => console.log(e)} />
       </Box>
     </StyledBox>

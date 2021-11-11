@@ -1,9 +1,9 @@
 type PeerId = string;
 
-const self: PeerId = "16Uiu2HAm5ayHUYnv1tAQCrzceJgNnYzvWCZYiRthk4rF1rbY-self";
-const counterpartyA: PeerId =
+const SELF: PeerId = "16Uiu2HAm5ayHUYnv1tAQCrzceJgNnYzvWCZYiRthk4rF1rbY-self";
+const COUNTERPARTY_A: PeerId =
   "16Uiu2HAm5ayHUYnv1tAQCrzceJgNnYzvWCZYiRt-counterpartyA";
-const counterpartyB: PeerId =
+const COUNTERPARTY_B: PeerId =
   "16Uiu2HAm5ayHUYnv1tAQCrzceJgNnYzvWCZYiRt-counterpartyB";
 
 export type Message = {
@@ -17,14 +17,14 @@ export type Message = {
 export const messages: Message[] = [
   {
     id: "1",
-    from: counterpartyA,
+    from: COUNTERPARTY_A,
     time: +new Date("01/01/2021"),
     content: "hello world",
     direction: "received",
   },
   {
     id: "2",
-    from: self,
+    from: SELF,
     time: +new Date("01/02/2021"),
     content: "hello back",
     direction: "sent",
@@ -36,13 +36,14 @@ export type Conversation = {
   messages: Message[];
 };
 
+// cloning object as it breaks react? jesus..
 export const conversations: Conversation[] = [
   {
-    with: counterpartyA,
-    messages,
+    with: COUNTERPARTY_A,
+    messages: Object.assign({}, messages),
   },
   {
-    with: counterpartyB,
-    messages,
+    with: COUNTERPARTY_B,
+    messages: Object.assign({}, messages),
   },
 ];
