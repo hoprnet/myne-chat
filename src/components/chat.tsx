@@ -14,10 +14,9 @@ const Chat: FunctionComponent = () => {
       height={{
         min: "100%",
       }}
-      round
-      pad="medium"
       background="dark-4"
-      // @ts-ignore
+      pad="medium"
+      round
       shadow
     >
       <Box>

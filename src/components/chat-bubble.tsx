@@ -12,13 +12,7 @@ const ChatBubble: FunctionComponent<{ message: Message }> = ({ message }) => {
       <Text textAlign="end" size="small" color="brand">
         {new Date(message.time).toLocaleString()}
       </Text>
-      <Box
-        background={backgroundColor}
-        round
-        pad="small"
-        // @ts-ignore
-        shadow
-      >
+      <Box background={backgroundColor} pad="small" round shadow>
         <Text color={textColor} size="medium">
           {message.content}
         </Text>

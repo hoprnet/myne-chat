@@ -8,11 +8,10 @@ const Statistics: FunctionComponent = () => {
     <Sidebar
       header={<Box>+</Box>}
       footer={<Logo />}
-      round
       pad="small"
       gap="small"
       background="dark-3"
-      // @ts-ignore
+      round
       shadow
     >
       <Nav>

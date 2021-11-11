@@ -124,3 +124,23 @@ export type Theme = typeof theme;
 export const useTheme = () => useContext<Theme>(ThemeContext as any);
 
 export default theme;
+
+declare module "grommet" {
+  // overwrite DefaultTheme with our theme
+  // ThemeProvider will now know what our theme looks like
+  export interface DefaultTheme extends Theme {}
+
+  // insert our custom shadow type
+  export interface BoxExtendedProps {
+    shadow?: boolean;
+  }
+  export interface TextAreaExtendedProps {
+    shadow?: boolean;
+  }
+  export interface ButtonExtendedProps {
+    shadow?: boolean;
+  }
+  export interface SidebarExtendedProps {
+    shadow?: boolean;
+  }
+}

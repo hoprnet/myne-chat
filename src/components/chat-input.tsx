@@ -19,7 +19,6 @@ const ChatInput: FunctionComponent<{
             round
             background="light-2"
             pad="none"
-            // @ts-ignore
             shadow
           >
             <Box
@@ -42,11 +41,7 @@ const ChatInput: FunctionComponent<{
                 vertical: "medium",
               }}
             >
-              <Button
-                // @ts-ignore
-                shadow
-                label="send"
-              />
+              <Button label="send" shadow />
             </Box>
           </Box>
         );
