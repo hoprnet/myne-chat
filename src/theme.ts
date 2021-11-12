@@ -101,7 +101,7 @@ const theme = makeTheme({
       background: "status-disabled",
       color: "light-1",
     },
-    active: {
+    hover: {
       default: {
         background: "accent-2",
         color: "status-disabled",
