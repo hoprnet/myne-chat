@@ -1,5 +1,5 @@
 import type { FunctionComponent } from "react";
-import type { Message } from "../mocks";
+import type { Message } from "../state";
 import { Box, Text } from "grommet";
 
 const ChatBubble: FunctionComponent<{ message: Message }> = ({ message }) => {

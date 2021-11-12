@@ -1,9 +1,13 @@
 import type { FunctionComponent } from "react";
+import type { Conversation } from "../state";
 import { Box, List, Text, Sidebar, Nav } from "grommet";
-import { conversations, Conversation } from "../mocks";
 import Logo from "./logo";
 
-const Statistics: FunctionComponent = () => {
+const Statistics: FunctionComponent<{
+  conversations: Conversation[];
+  selected?: Conversation;
+  onSelect: (p: string) => void;
+}> = ({ conversations, selected, onSelect }) => {
   return (
     <Sidebar
       header={<Box>+</Box>}
@@ -23,10 +27,13 @@ const Statistics: FunctionComponent = () => {
             horizontal: "none",
             bottom: "small",
           }}
+          onClickItem={(props: any) => onSelect(props.item.with)}
         >
-          {(conv: Conversation) => {
+          {(conv: Conversation, index: number, isActive: string) => {
+            const isSelected = conv.with === selected?.with;
+
             return (
-              <Box>
+              <Box background={isSelected ? "white" : undefined}>
                 <Text
                   style={{
                     overflow: "hidden",
@@ -43,49 +50,5 @@ const Statistics: FunctionComponent = () => {
     </Sidebar>
   );
 };
-
-// const Statistics: FunctionComponent = () => {
-//   const theme = useTheme();
-
-//   return (
-//     <StyledBox
-//       direction="column"
-//       justify="between"
-//       background="dark-3"
-//       gap={theme.global.raw.space.small}
-//     >
-//       <Box>+</Box>
-//       <Box height="100%">
-//         <List
-//           primaryKey="with"
-//           data={conversations}
-//           border={false}
-//           pad={{
-//             horizontal: "none",
-//             bottom: theme.global.raw.space.small,
-//           }}
-//         >
-//           {(conv: Conversation) => {
-//             return (
-//               <Box>
-//                 <Text
-//                   style={{
-//                     overflow: "hidden",
-//                     textOverflow: "ellipsis",
-//                   }}
-//                 >
-//                   {conv.with}
-//                 </Text>
-//               </Box>
-//             );
-//           }}
-//         </List>
-//       </Box>
-//       <Box>
-//         <Logo />
-//       </Box>
-//     </StyledBox>
-//   );
-// };
 
 export default Statistics;
