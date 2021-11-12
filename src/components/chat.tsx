@@ -15,12 +15,8 @@ const Chat: FunctionComponent<{
   return (
     <Box
       justify="between"
-      width={{
-        min: "100%",
-      }}
-      height={{
-        min: "100%",
-      }}
+      width="100%"
+      height="100%"
       background="dark-4"
       pad="small"
       round

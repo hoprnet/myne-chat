@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import { useState, useContext, useCallback } from "react";
-import { Box, ResponsiveContext } from "grommet";
+import { Box, Button, ResponsiveContext } from "grommet";
 import produce from "immer";
 import { State, updateToMockState } from "../src/state";
 import Statistics from "../src/components/statistics";
@@ -12,8 +12,11 @@ const HomePage: NextPage = () => {
   const conversation = state.selectedConversation
     ? state.conversations.get(state.selectedConversation)
     : undefined;
-  const size = useContext(ResponsiveContext);
-  const direction = size === "small" ? "column" : "row";
+
+  const [focus, setFocus] = useState<"statistics" | "chat">("statistics");
+  const isSmall = useContext(ResponsiveContext) === "small";
+  const showStatsOnly = isSmall && focus === "statistics";
+  const showChatOnly = isSmall && focus === "chat";
 
   const handleSelect = useCallback((selected) => {
     setState(
@@ -22,6 +25,7 @@ const HomePage: NextPage = () => {
         return draft;
       })
     );
+    setFocus("chat");
   }, []);
 
   const handleSend = useCallback(async (content) => {
@@ -49,15 +53,32 @@ const HomePage: NextPage = () => {
   }, []);
 
   return (
-    <Box fill direction={direction} justify="between" pad="small">
-      <Box width="250px" pad={{ right: "small" }}>
+    <Box fill direction="row" justify="between" pad="small">
+      <Box
+        width={isSmall ? "100%" : "250px"}
+        pad={{ right: isSmall ? undefined : "small" }}
+        style={{
+          display: showChatOnly ? "none" : undefined,
+        }}
+      >
         <Statistics
           conversations={conversations}
           selected={conversation}
           onSelect={handleSelect}
         />
       </Box>
-      <Box width="100%" height="100%">
+      <Box
+        width="100%"
+        height="100%"
+        direction="column"
+        justify="between"
+        style={{
+          display: showStatsOnly ? "none" : undefined,
+        }}
+      >
+        {isSmall ? (
+          <Button label="<-" onClick={() => setFocus("statistics")} />
+        ) : null}
         <Chat conversation={conversation} onSend={handleSend} />
       </Box>
     </Box>
