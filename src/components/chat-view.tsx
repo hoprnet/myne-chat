@@ -5,13 +5,21 @@ import ChatBubble from "./chat-bubble";
 
 const ChatView: FunctionComponent<{ messages: Message[] }> = ({ messages }) => {
   return (
-    <List primaryKey="id" data={messages} border={false}>
+    <List
+      primaryKey="id"
+      data={messages}
+      border={false}
+      pad={{
+        horizontal: "none",
+        bottom: "large",
+      }}
+    >
       {(message: Message) => {
         const isIncoming = message.direction === "received";
 
         return (
           <Box alignSelf={isIncoming ? "start" : "end"}>
-            <ChatBubble key={message.id} message={message} />
+            <ChatBubble message={message} />
           </Box>
         );
       }}

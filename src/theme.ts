@@ -1,120 +1,146 @@
 /**
- * Initialize there to be used throughout the codebase.
+ * Initialize theme to be used throughout the codebase.
  * You should priorize Grommet theme > styled-components > inline styles.
  */
 import type { ThemeType } from "grommet";
+import { css } from "styled-components";
+import { useContext } from "react";
+import { ThemeContext } from "grommet";
 
-// unopinioned theme data
-const raw = {
+// various styling preferences, taken from PDF
+const custom = {
   colors: {
-    darkestBackground: "#282828", // Window-BG
-    darkBackground: "#3d3d3d", // Sidebar
-    background: "#5c5c5c", // Mainwindow
-    lightBackground: "#c3c3c3", // Chatbox-user
-    highlight: "#7af5e7", // myne-turquoise
-    muted: "#2b5651",
-    gray: "#dddddf",
-  },
+    // custom named colors
+    "myne-turquoise": "#7af5e7",
+    "myne-darkgreen": "#2b5651",
+    "myne-darkorange": "#E04E0B",
 
-  // specify font properties
-  fonts: {
-    default: "system-ui, sans-serif",
-    heading: "inherit", // TODO: update to PDF's values
-    monospace: "inherit", // TODO: update to PDF's values
+    // specific to components
+    windowBG: "#282828",
+    sidebar: "#3d3d3d",
+    mainWindow: "#5c5c5c",
+    chatbox: "#c3c3c3",
   },
-  fontWeights: {
-    default: "400",
-    heading: "700",
-    bold: "700",
-  },
-  lineHeights: {
-    default: "1.5",
-    heading: "1.25",
-  },
-  fontSizes: {
-    default: "14px",
-    heading: "21px",
-  },
-
-  // specify various properties
-  space: {
-    small: "9px",
-    medium: "18px",
-    large: "36px",
-  },
-  radii: {
-    default: "9px",
-  },
-  shadows: {
-    default: "0px 2px 3px #00000091",
-  },
+  radius: "9px",
+  shadow: "0px 2px 3px #00000091",
 };
 
+// create our theme by extending grommet's ThemeType
 const makeTheme = <T extends ThemeType>(t: T) => t;
 
 // transform theme data to Grommet compatible theme
-// TODO: improve colors
 const theme = makeTheme({
   global: {
-    raw,
     colors: {
-      "accent-1": "white",
-      "accent-2": raw.colors.highlight,
-      "background-back": raw.colors.darkestBackground,
+      brand: custom.colors["myne-turquoise"],
       "dark-1": "black",
-      "dark-2": raw.colors.background,
-      "dark-3": raw.colors.darkBackground,
-      "dark-4": raw.colors.darkestBackground,
+      "dark-2": custom.colors.windowBG,
+      "dark-3": custom.colors.sidebar,
+      "dark-4": custom.colors.mainWindow,
       "light-1": "white",
-      "light-2": raw.colors.lightBackground,
-      "status-unknown": raw.colors.muted,
-      "status-disabled": raw.colors.muted,
-      "status-inactive": raw.colors.muted,
+      "light-2": custom.colors.chatbox,
+      "accent-1": "white",
+      "accent-2": custom.colors["myne-turquoise"],
+      "accent-3": custom.colors["myne-darkgreen"],
+      "accent-4": custom.colors["myne-darkorange"],
+      "background-back": custom.colors.windowBG,
+      "status-disabled": custom.colors["myne-darkgreen"],
     },
+
+    // this setting affects various areas, see https://v2.grommet.io/box at `global.edgeSize`
+    // we have an issue here since it affects both padding and border radius (totally weird behaviour)
+    // in this webapp, we use this setting for everything but border radius, border radius is overwritten
+    // by extending the box component
+    edgeSize: {
+      small: "9px",
+      medium: "18px",
+      large: "36px",
+    },
+
     font: {
-      face: raw.fonts.default,
-      size: raw.fontSizes.default,
-      height: raw.lineHeights.default,
-      weight: raw.fontWeights.default,
+      family: "GerstnerProgrammFSL",
+      size: "medium",
     },
-    spacing: raw.space.medium,
+  },
+
+  box: {
+    extend: (props) => {
+      return css({
+        // see `theme.global.edgeSize`, here we overwrite `border-radius`
+        "border-radius": props.round ? custom.radius : undefined,
+        "box-shadow": props.shadow ? custom.shadow : undefined,
+      });
+    },
+  },
+
+  text: {
+    small: {
+      size: "14px",
+    },
+    medium: {
+      size: "21px",
+    },
   },
 
   button: {
     minWidth: "96px",
     maxWidth: "384px",
     padding: {
-      horizontal: raw.space.medium,
-      vertical: raw.space.small,
+      horizontal: "medium",
+      vertical: "small",
     },
     border: {
-      radius: raw.radii.default,
-      width: "0px",
+      radius: custom.radius,
     },
-    extend: `box-shadow: ${raw.shadows.default};`,
+    extend: (props) => {
+      return css({
+        "box-shadow": props.shadow ? custom.shadow : undefined,
+      });
+    },
     default: {
-      background: "status-inactive",
+      background: "status-disabled",
       color: "light-1",
     },
     active: {
       default: {
         background: "accent-2",
-        color: "status-inactive",
+        color: "status-disabled",
       },
     },
   },
 
   textArea: {
-    extend: `border: none;`,
+    extend: () => {
+      return css({
+        border: "none",
+        caretColor: custom.colors["myne-turquoise"],
+      });
+    },
   },
 });
 
+// react hook to access our theme
+export type Theme = typeof theme;
+export const useTheme = () => useContext<Theme>(ThemeContext as any);
+
 export default theme;
 
-export type Theme = typeof theme;
-
-// overwrite DefaultTheme with our theme
-// ThemeProvider will now know what our theme looks like
-declare module "styled-components" {
+declare module "grommet" {
+  // overwrite DefaultTheme with our theme
+  // ThemeProvider will now know what our theme looks like
   export interface DefaultTheme extends Theme {}
+
+  // insert our custom shadow type
+  export interface BoxExtendedProps {
+    shadow?: boolean;
+  }
+  export interface TextAreaExtendedProps {
+    shadow?: boolean;
+  }
+  export interface ButtonExtendedProps {
+    shadow?: boolean;
+  }
+  export interface SidebarExtendedProps {
+    shadow?: boolean;
+  }
 }
