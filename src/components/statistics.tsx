@@ -10,9 +10,13 @@ const Statistics: FunctionComponent<{
 }> = ({ conversations, selected, onSelect }) => {
   return (
     <Sidebar
-      header={<Box>+</Box>}
-      footer={<Logo />}
-      pad="small"
+      header={<Box pad="small">+</Box>}
+      footer={
+        <Box pad="small">
+          <Logo />
+        </Box>
+      }
+      pad="none"
       gap="small"
       background="dark-3"
       round
