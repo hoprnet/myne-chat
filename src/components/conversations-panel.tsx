@@ -1,16 +1,33 @@
 import type { FunctionComponent } from "react";
 import type { Conversation } from "../state";
-import { Box, List, Text, Sidebar, Nav } from "grommet";
+import { useState } from "react";
+import { Box, List, Text, Sidebar, Nav, Layer } from "grommet";
+import IconButton from "./icon-button";
+import NewConversation from "./new-conversation";
 import Logo from "./logo";
 
-const Statistics: FunctionComponent<{
+const ConversationsPanel: FunctionComponent<{
   conversations: Conversation[];
   selected?: Conversation;
   onSelect: (p: string) => void;
-}> = ({ conversations, selected, onSelect }) => {
+  onNewConversation: (p: string) => void;
+}> = ({ conversations, selected, onSelect, onNewConversation }) => {
+  const [show, setShow] = useState<boolean>(false);
+
   return (
     <Sidebar
-      header={<Box pad="small">+</Box>}
+      header={
+        <Box pad="small">
+          <IconButton
+            pad="small"
+            alignSelf="end"
+            round
+            onClick={() => setShow(true)}
+          >
+            <Text>+</Text>
+          </IconButton>
+        </Box>
+      }
       footer={
         <Box pad="small">
           <Logo />
@@ -22,6 +39,21 @@ const Statistics: FunctionComponent<{
       round
       shadow
     >
+      {show && (
+        <Layer
+          onEsc={() => setShow(false)}
+          onClickOutside={() => setShow(false)}
+          background="none"
+        >
+          <NewConversation
+            currentPeerIds={conversations.map((c) => c.with)}
+            onSend={(p) => {
+              onNewConversation(p);
+              setShow(false);
+            }}
+          />
+        </Layer>
+      )}
       <Nav>
         <List
           primaryKey="with"
@@ -55,4 +87,4 @@ const Statistics: FunctionComponent<{
   );
 };
 
-export default Statistics;
+export default ConversationsPanel;
