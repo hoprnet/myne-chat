@@ -3,8 +3,8 @@
  * You should priorize Grommet theme > styled-components > inline styles.
  */
 import type { ThemeType } from "grommet";
-import { css } from "styled-components";
 import { useContext } from "react";
+import { css } from "styled-components";
 import { ThemeContext } from "grommet";
 
 // various styling preferences, taken from PDF
@@ -101,7 +101,7 @@ const theme = makeTheme({
       background: "status-disabled",
       color: "light-1",
     },
-    active: {
+    hover: {
       default: {
         background: "accent-2",
         color: "status-disabled",

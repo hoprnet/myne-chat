@@ -5,13 +5,20 @@ import { Box, Text } from "grommet";
 const Logo: FunctionComponent = () => {
   return (
     <Box>
-      <Box>
+      <Box
+        width={{
+          max: "250px",
+        }}
+        height={{
+          max: "125px",
+        }}
+      >
         <Image
           src="/myne-chat-logo.svg"
           alt="Myne Chat Logo"
-          width="500"
-          height="250"
           layout="responsive"
+          width="250px"
+          height="125px"
         />
       </Box>
       <Box
@@ -19,7 +26,7 @@ const Logo: FunctionComponent = () => {
           horizontal: "medium",
         }}
       >
-        <Text textAlign="end">Privacy powered by HOPR</Text>
+        <Text>Privacy powered by HOPR</Text>
       </Box>
     </Box>
   );

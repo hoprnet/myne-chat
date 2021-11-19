@@ -1,19 +1,22 @@
 import type { FunctionComponent } from "react";
+import type { Conversation } from "../state";
 import { Box } from "grommet";
-import { messages } from "../mocks";
 import ChatView from "./chat-view";
 import ChatInput from "./chat-input";
 
-const Chat: FunctionComponent = () => {
+const Chat: FunctionComponent<{
+  conversation?: Conversation;
+  onSend: (message: string) => Promise<string | void>;
+}> = ({ conversation, onSend }) => {
+  const messages = conversation?.messages
+    ? Array.from(conversation.messages.values())
+    : [];
+
   return (
     <Box
       justify="between"
-      width={{
-        min: "100%",
-      }}
-      height={{
-        min: "100%",
-      }}
+      width="100%"
+      height="100%"
       background="dark-4"
       pad="small"
       round
@@ -23,7 +26,7 @@ const Chat: FunctionComponent = () => {
         <ChatView messages={messages} />
       </Box>
       <Box>
-        <ChatInput onSend={async (e) => console.log(e)} />
+        <ChatInput onSend={onSend} />
       </Box>
     </Box>
   );
