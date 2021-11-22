@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "grommet": "^2.18.0",
+    "grommet-icons": "^4.7.0",
     "immer": "^9.0.6",
     "next": "12.0.1",
     "react": "17.0.2",
@@ -20,6 +21,7 @@
     "@types/node": "16.11.6",
     "@types/react": "17.0.33",
     "@types/styled-components": "^5.1.15",
+    "babel-plugin-styled-components": "^2.0.1",
     "eslint": "7.32.0",
     "eslint-config-next": "12.0.1",
     "eslint-config-prettier": "^8.3.0",

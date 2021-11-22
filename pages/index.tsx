@@ -1,9 +1,11 @@
 import type { NextPage } from "next";
 import { useState, useContext, useCallback } from "react";
 import { Box, Button, ResponsiveContext } from "grommet";
+import { LinkPrevious } from "grommet-icons";
 import produce from "immer";
 import { State, updateToMockState } from "../src/state";
-import Statistics from "../src/components/statistics";
+import ConversationsPanel from "../src/components/conversations-panel";
+import PersonalPanel from "../src/components/personal-panel";
 import Chat from "../src/components/chat";
 
 const HomePage: NextPage = () => {
@@ -13,15 +15,17 @@ const HomePage: NextPage = () => {
     ? state.conversations.get(state.selectedConversation)
     : undefined;
 
-  const [focus, setFocus] = useState<"statistics" | "chat">("statistics");
+  const [focus, setFocus] = useState<"conversations-panel" | "chat">(
+    "conversations-panel"
+  );
   const isSmall = useContext(ResponsiveContext) === "small";
-  const showStatsOnly = isSmall && focus === "statistics";
+  const showConvsOnly = isSmall && focus === "conversations-panel";
   const showChatOnly = isSmall && focus === "chat";
 
-  const handleSelect = useCallback((selected) => {
+  const handleSelect = useCallback((selectedPeerId) => {
     setState(
       produce((draft) => {
-        draft.selectedConversation = selected;
+        draft.selectedConversation = selectedPeerId;
         return draft;
       })
     );
@@ -52,6 +56,20 @@ const HomePage: NextPage = () => {
     });
   }, []);
 
+  const handleNewConversation = useCallback((peerId) => {
+    setState(
+      produce((draft) => {
+        draft.selectedConversation = peerId;
+        draft.conversations.set(peerId, {
+          with: peerId,
+          messages: new Set(),
+        });
+        return draft;
+      })
+    );
+    setFocus("chat");
+  }, []);
+
   return (
     <Box fill direction="row" justify="between" pad="small">
       <Box
@@ -61,10 +79,11 @@ const HomePage: NextPage = () => {
           display: showChatOnly ? "none" : undefined,
         }}
       >
-        <Statistics
+        <ConversationsPanel
           conversations={conversations}
           selected={conversation}
           onSelect={handleSelect}
+          onNewConversation={handleNewConversation}
         />
       </Box>
       <Box
@@ -73,12 +92,17 @@ const HomePage: NextPage = () => {
         direction="column"
         justify="between"
         style={{
-          display: showStatsOnly ? "none" : undefined,
+          display: showConvsOnly ? "none" : undefined,
         }}
+        gap="small"
       >
         {isSmall ? (
-          <Button label="<-" onClick={() => setFocus("statistics")} />
+          <Button
+            icon={<LinkPrevious />}
+            onClick={() => setFocus("conversations-panel")}
+          />
         ) : null}
+        <PersonalPanel peerId={state.peerId ?? "unknown"} />
         <Chat conversation={conversation} onSend={handleSend} />
       </Box>
     </Box>
