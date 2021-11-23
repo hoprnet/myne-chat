@@ -1,17 +1,13 @@
 import type { FunctionComponent } from "react";
-import type { Conversation } from "../state";
+import type { Message } from "../state";
 import { Box } from "grommet";
 import ChatView from "./chat-view";
 import ChatInput from "./chat-input";
 
 const Chat: FunctionComponent<{
-  conversation?: Conversation;
+  messages?: Message[];
   onSend: (message: string) => Promise<string | void>;
-}> = ({ conversation, onSend }) => {
-  const messages = conversation?.messages
-    ? Array.from(conversation.messages.values())
-    : [];
-
+}> = ({ messages = [], onSend }) => {
   return (
     <Box
       justify="between"

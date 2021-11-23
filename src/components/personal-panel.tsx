@@ -4,19 +4,19 @@ import { Copy } from "grommet-icons";
 import IconButton from "./icon-button";
 
 const PersonalPanel: FunctionComponent<{
-  peerId: string;
-}> = ({ peerId }) => {
+  myPeerId: string;
+}> = ({ myPeerId }) => {
   return (
     <Box shadow round pad="medium" background="dark-3">
       <Text>
-        Your Peer ID: {peerId}
+        Your Peer ID: {myPeerId}
         <IconButton
           pad="small"
           alignSelf="end"
           round
           flex
           margin={{ left: "small" }}
-          onClick={() => navigator.clipboard.writeText(peerId)}
+          onClick={() => navigator.clipboard.writeText(myPeerId)}
         >
           <Copy />
         </IconButton>

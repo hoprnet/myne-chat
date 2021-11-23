@@ -1,20 +1,21 @@
 import type { NextPage } from "next";
-import { useState, useContext, useCallback } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Box, Button, ResponsiveContext } from "grommet";
 import { LinkPrevious } from "grommet-icons";
-import produce from "immer";
-import { State, updateToMockState } from "../src/state";
+import useGlobalState from "../src/state";
 import ConversationsPanel from "../src/components/conversations-panel";
 import PersonalPanel from "../src/components/personal-panel";
 import Chat from "../src/components/chat";
 
 const HomePage: NextPage = () => {
-  const [state, setState] = useState<State>(updateToMockState());
-  const conversations = Array.from(state.conversations.values());
-  const conversation = state.selectedConversation
-    ? state.conversations.get(state.selectedConversation)
-    : undefined;
+  const { state, setSelectedCounterparty, addMessage, startNewConversation } =
+    useGlobalState({
+      conversations: new Map(),
+    });
 
+  const conversation = state.selectedCounterparty
+    ? state.conversations.get(state.selectedCounterparty)
+    : undefined;
   const [focus, setFocus] = useState<"conversations-panel" | "chat">(
     "conversations-panel"
   );
@@ -22,53 +23,29 @@ const HomePage: NextPage = () => {
   const showConvsOnly = isSmall && focus === "conversations-panel";
   const showChatOnly = isSmall && focus === "chat";
 
-  const handleSelect = useCallback((selectedPeerId) => {
-    setState(
-      produce((draft) => {
-        draft.selectedConversation = selectedPeerId;
-        return draft;
-      })
-    );
+  const handleSelect = (selectedCounterparty: string) => {
+    setSelectedCounterparty(selectedCounterparty);
     setFocus("chat");
-  }, []);
+  };
 
-  const handleSend = useCallback(async (content) => {
+  const handleSend = async (content: string) => {
     const sendMessage = async () => Promise.resolve();
 
     sendMessage().then(() => {
-      setState(
-        produce((draft) => {
-          if (!draft.selectedConversation) return;
-          const conv = draft.conversations.get(draft.selectedConversation);
-          if (!conv) return;
+      if (!state.myPeerId || !state.selectedCounterparty) return;
 
-          conv.messages.add({
-            id: String(conv.messages.size),
-            from: draft.peerId || "",
-            direction: "sent",
-            time: +new Date(),
-            content,
-          });
-
-          return draft;
-        })
-      );
+      addMessage(state.selectedCounterparty, {
+        isIncoming: false,
+        content,
+        createdBy: state.myPeerId,
+      });
     });
-  }, []);
+  };
 
-  const handleNewConversation = useCallback((peerId) => {
-    setState(
-      produce((draft) => {
-        draft.selectedConversation = peerId;
-        draft.conversations.set(peerId, {
-          with: peerId,
-          messages: new Set(),
-        });
-        return draft;
-      })
-    );
+  const handleNewConversation = (newCounterparty: string) => {
+    startNewConversation(newCounterparty);
     setFocus("chat");
-  }, []);
+  };
 
   return (
     <Box fill direction="row" justify="between" pad="small">
@@ -80,8 +57,8 @@ const HomePage: NextPage = () => {
         }}
       >
         <ConversationsPanel
-          conversations={conversations}
-          selected={conversation}
+          counterparties={Array.from(state.conversations.keys())}
+          selectedCounterparty={state.selectedCounterparty}
           onSelect={handleSelect}
           onNewConversation={handleNewConversation}
         />
@@ -102,8 +79,11 @@ const HomePage: NextPage = () => {
             onClick={() => setFocus("conversations-panel")}
           />
         ) : null}
-        <PersonalPanel peerId={state.peerId ?? "unknown"} />
-        <Chat conversation={conversation} onSend={handleSend} />
+        <PersonalPanel myPeerId={state.myPeerId ?? "unknown"} />
+        <Chat
+          messages={conversation ? Array.from(conversation.values()) : []}
+          onSend={handleSend}
+        />
       </Box>
     </Box>
   );

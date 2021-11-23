@@ -4,12 +4,12 @@ import { Box, TextInput, Button, Text } from "grommet";
 import { PEER_ID_LENGTH, isValidPeerId } from "../utils";
 
 const NewConversation: FunctionComponent<{
-  currentPeerIds: string[];
+  counterparties: string[];
   onSend: (p: string) => void;
-}> = ({ currentPeerIds, onSend }) => {
+}> = ({ counterparties, onSend }) => {
   const [peerId, setPeerId] = useState<string>("");
   const validPeerId = isValidPeerId(peerId);
-  const alreadyExists = currentPeerIds.includes(peerId);
+  const alreadyExists = counterparties.includes(peerId);
 
   return (
     <Box shadow round pad="large" background="dark-4">

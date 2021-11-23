@@ -1,5 +1,4 @@
 import type { FunctionComponent } from "react";
-import type { Conversation } from "../state";
 import { useState } from "react";
 import { Box, List, Text, Sidebar, Nav, Layer } from "grommet";
 import IconButton from "./icon-button";
@@ -7,11 +6,16 @@ import NewConversation from "./new-conversation";
 import Logo from "./logo";
 
 const ConversationsPanel: FunctionComponent<{
-  conversations: Conversation[];
-  selected?: Conversation;
+  counterparties: string[];
+  selectedCounterparty?: string;
   onSelect: (p: string) => void;
   onNewConversation: (p: string) => void;
-}> = ({ conversations, selected, onSelect, onNewConversation }) => {
+}> = ({
+  counterparties,
+  selectedCounterparty,
+  onSelect,
+  onNewConversation,
+}) => {
   const [show, setShow] = useState<boolean>(false);
 
   return (
@@ -46,7 +50,7 @@ const ConversationsPanel: FunctionComponent<{
           background="none"
         >
           <NewConversation
-            currentPeerIds={conversations.map((c) => c.with)}
+            counterparties={counterparties}
             onSend={(p) => {
               onNewConversation(p);
               setShow(false);
@@ -56,17 +60,16 @@ const ConversationsPanel: FunctionComponent<{
       )}
       <Nav>
         <List
-          primaryKey="with"
-          data={conversations}
+          data={counterparties}
           border={false}
           pad={{
             horizontal: "none",
             bottom: "small",
           }}
-          onClickItem={(props: any) => onSelect(props.item.with)}
+          onClickItem={(props: any) => onSelect(props.item)}
         >
-          {(conv: Conversation, index: number, isActive: string) => {
-            const isSelected = conv.with === selected?.with;
+          {(counterparty: string) => {
+            const isSelected = counterparty === selectedCounterparty;
 
             return (
               <Box background={isSelected ? "white" : undefined}>
@@ -76,7 +79,7 @@ const ConversationsPanel: FunctionComponent<{
                     textOverflow: "ellipsis",
                   }}
                 >
-                  {conv.with}
+                  {counterparty}
                 </Text>
               </Box>
             );

@@ -15,10 +15,8 @@ const ChatView: FunctionComponent<{ messages: Message[] }> = ({ messages }) => {
       }}
     >
       {(message: Message) => {
-        const isIncoming = message.direction === "received";
-
         return (
-          <Box alignSelf={isIncoming ? "start" : "end"}>
+          <Box alignSelf={message.isIncoming ? "start" : "end"}>
             <ChatBubble message={message} />
           </Box>
         );
