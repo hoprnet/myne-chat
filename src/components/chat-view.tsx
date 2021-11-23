@@ -1,27 +1,34 @@
 import type { FunctionComponent } from "react";
 import type { Message } from "../state";
-import { Box, List } from "grommet";
+import { Box, InfiniteScroll } from "grommet";
 import ChatBubble from "./chat-bubble";
 
 const ChatView: FunctionComponent<{ messages: Message[] }> = ({ messages }) => {
   return (
-    <List
-      primaryKey="id"
-      data={messages}
-      border={false}
-      pad={{
-        horizontal: "none",
-        bottom: "large",
+    <Box
+      height="100%"
+      direction="column-reverse"
+      overflow={{
+        vertical: "scroll",
+        horizontal: "hidden",
       }}
     >
-      {(message: Message) => {
-        return (
-          <Box alignSelf={message.isIncoming ? "start" : "end"}>
+      <InfiniteScroll items={messages} replace>
+        {(message: Message, _index: number, ref: any) => (
+          <Box
+            ref={ref}
+            alignSelf={message.isIncoming ? "start" : "end"}
+            flex={false}
+            pad={{
+              horizontal: "none",
+              bottom: "large",
+            }}
+          >
             <ChatBubble message={message} />
           </Box>
-        );
-      }}
-    </List>
+        )}
+      </InfiniteScroll>
+    </Box>
   );
 };
 

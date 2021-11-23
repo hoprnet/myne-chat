@@ -15,10 +15,11 @@ const Chat: FunctionComponent<{
       height="100%"
       background="dark-4"
       pad="small"
+      gap="small"
       round
       shadow
     >
-      <Box>
+      <Box width="100%" height="100%">
         <ChatView messages={messages} />
       </Box>
       <Box>
