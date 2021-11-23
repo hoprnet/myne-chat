@@ -9,7 +9,7 @@ const ChatView: FunctionComponent<{ messages: Message[] }> = ({ messages }) => {
       height="100%"
       direction="column-reverse"
       overflow={{
-        vertical: "scroll",
+        vertical: "auto",
         horizontal: "hidden",
       }}
     >
@@ -20,8 +20,8 @@ const ChatView: FunctionComponent<{ messages: Message[] }> = ({ messages }) => {
             alignSelf={message.isIncoming ? "start" : "end"}
             flex={false}
             pad={{
-              horizontal: "none",
               bottom: "large",
+              right: "small",
             }}
           >
             <ChatBubble message={message} />
