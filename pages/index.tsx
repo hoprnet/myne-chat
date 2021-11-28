@@ -2,16 +2,21 @@ import type { NextPage } from "next";
 import { useState, useContext, useEffect } from "react";
 import { Box, Button, ResponsiveContext } from "grommet";
 import { LinkPrevious } from "grommet-icons";
-import useGlobalState from "../src/state";
+import { useWebsocket, useAppState } from "../src/state";
+import { encodeMessage, decodeMessage } from "../src/utils";
 import ConversationsPanel from "../src/components/conversations-panel";
 import PersonalPanel from "../src/components/personal-panel";
 import Chat from "../src/components/chat";
 
 const HomePage: NextPage = () => {
-  const { state, setSelectedCounterparty, addMessage, startNewConversation } =
-    useGlobalState({
-      conversations: new Map(),
-    });
+  const {
+    state,
+    setSelectedCounterparty,
+    startNewConversation,
+    sendMessage,
+    receivedMessage,
+  } = useAppState();
+  const { socketRef } = useWebsocket(state.wsEndpoint);
 
   const conversation = state.selectedCounterparty
     ? state.conversations.get(state.selectedCounterparty)
@@ -23,23 +28,38 @@ const HomePage: NextPage = () => {
   const showConvsOnly = isSmall && focus === "conversations-panel";
   const showChatOnly = isSmall && focus === "chat";
 
+  useEffect(() => {
+    if (!socketRef.current) return;
+
+    socketRef.current.addEventListener("message", (event) => {
+      try {
+        console.log("ws: message received", event.data);
+        const { from, message } = decodeMessage(event.data);
+        receivedMessage(from, message);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  }, []);
+
   const handleSelect = (selectedCounterparty: string) => {
     setSelectedCounterparty(selectedCounterparty);
     setFocus("chat");
   };
 
-  const handleSend = async (content: string) => {
-    const sendMessage = async () => Promise.resolve();
+  const handleSend = async (message: string) => {
+    if (!state.myPeerId || !state.selectedCounterparty || !socketRef.current)
+      return;
 
-    sendMessage().then(() => {
-      if (!state.myPeerId || !state.selectedCounterparty) return;
-
-      addMessage(state.selectedCounterparty, {
-        isIncoming: false,
-        content,
-        createdBy: state.myPeerId,
-      });
+    const encodedMessage = encodeMessage(state.myPeerId, message);
+    await fetch(`${state.httpEndpoint}/send_message`, {
+      method: "POST",
+      body: JSON.stringify({
+        destination: state.selectedCounterparty,
+        message: encodedMessage,
+      }),
     });
+    sendMessage(state.selectedCounterparty, message);
   };
 
   const handleNewConversation = (newCounterparty: string) => {
@@ -81,6 +101,7 @@ const HomePage: NextPage = () => {
         ) : null}
         <PersonalPanel myPeerId={state.myPeerId ?? "unknown"} />
         <Chat
+          selectedCounterparty={state.selectedCounterparty}
           messages={conversation ? Array.from(conversation.values()) : []}
           onSend={handleSend}
         />

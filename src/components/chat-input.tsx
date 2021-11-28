@@ -4,7 +4,8 @@ import { Box, Button, TextArea, ResponsiveContext } from "grommet";
 
 const ChatInput: FunctionComponent<{
   onSend: (message: string) => Promise<string | void>;
-}> = ({ onSend }) => {
+  selectedCounterparty?: string;
+}> = ({ onSend, selectedCounterparty }) => {
   const size = useContext(ResponsiveContext);
   const direction = size === "small" ? "column" : "row";
   const [error, setError] = useState<string | undefined>();
@@ -12,11 +13,10 @@ const ChatInput: FunctionComponent<{
     "PENDING" | "SUCCESS" | "ERROR" | undefined
   >();
   const [content, setMessage] = useState<string>("");
-  const disabled = status === "PENDING" || content.length === 0;
+  const disableInput = !selectedCounterparty;
+  const disableSend = status === "PENDING" || content.length === 0;
 
   const handleSend = () => {
-    if (disabled) return;
-
     setError(undefined);
     setStatus("PENDING");
 
@@ -60,6 +60,7 @@ const ChatInput: FunctionComponent<{
           value={content}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleEnterPress}
+          disabled={disableInput}
         />
       </Box>
       <Box
@@ -68,7 +69,12 @@ const ChatInput: FunctionComponent<{
           vertical: "medium",
         }}
       >
-        <Button label="send" shadow disabled={disabled} onClick={handleSend} />
+        <Button
+          label="send"
+          shadow
+          disabled={disableSend}
+          onClick={handleSend}
+        />
       </Box>
     </Box>
   );

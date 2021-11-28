@@ -1,6 +1,7 @@
 import type { Immutable } from "immer";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import produce, { enableMapSet } from "immer";
+import { genId } from "./utils";
 enableMapSet();
 
 type PeerId = string;
@@ -13,71 +14,61 @@ export type Message = Immutable<{
   createdAt: number;
 }>;
 
-export type State = {
-  myPeerId?: PeerId;
-  selectedCounterparty?: PeerId;
-  conversations: Map<PeerId, Set<Message>>;
+export const useWebsocket = (endpoint: string) => {
+  const [state, setState] = useState<{
+    connection: "CONNECTED" | "DISCONNECTED";
+    endpoint: string;
+  }>({ connection: "DISCONNECTED", endpoint });
+
+  const socketRef = useRef<WebSocket>();
+
+  // run once
+  useEffect(() => {
+    if (typeof WebSocket === "undefined") return;
+
+    socketRef.current = new WebSocket(state.endpoint);
+
+    // Connection opened
+    socketRef.current.addEventListener("open", function () {
+      setState(
+        produce(state, (draft) => {
+          draft.connection = "CONNECTED";
+        })
+      );
+    });
+
+    // Connection closed
+    socketRef.current.addEventListener("close", function () {
+      setState(
+        produce(state, (draft) => {
+          draft.connection = "DISCONNECTED";
+        })
+      );
+    });
+  }, []);
+
+  return {
+    state,
+    socketRef,
+  };
 };
 
-const useGlobalState = (initialState: State) => {
-  // set state to a mocked state
-  const setToMockState = () => {
-    const SELF = "16Uiu2HAm5ayHUYnv1tAQCrzceJgNnYzvWCZYiRthk4rF1rbY-self";
-    const COUNTERPARTY_A =
-      "16Uiu2HAm5ayHUYnv1tAQCrzceJgNnYzvWCZYiRt-counterpartyA";
-    const COUNTERPARTY_B =
-      "16Uiu2HAm5ayHUYnv1tAQCrzceJgNnYzvWCZYiRt-counterpartyB";
-
-    // cloning object as it breaks react? jesus..
-    const conversations: Map<string, Set<Message>> = new Map([
-      [
-        COUNTERPARTY_A,
-        new Set([
-          {
-            id: "1",
-            createdBy: COUNTERPARTY_A,
-            createdAt: +new Date("01/01/2021"),
-            content: "hello world from A",
-            isIncoming: true,
-          },
-          {
-            id: "2",
-            createdBy: SELF,
-            createdAt: +new Date("01/02/2021"),
-            content: "hello back A",
-            isIncoming: false,
-          },
-        ]),
-      ],
-      [
-        COUNTERPARTY_B,
-        new Set([
-          {
-            id: "1",
-            createdBy: COUNTERPARTY_B,
-            createdAt: +new Date("01/01/2021"),
-            content: "hello world from B",
-            isIncoming: true,
-          },
-          {
-            id: "2",
-            createdBy: SELF,
-            createdAt: +new Date("01/02/2021"),
-            content: "hello back B",
-            isIncoming: false,
-          },
-        ]),
-      ],
-    ]);
-
-    setState(
-      produce(state, (draft) => {
-        draft.conversations = conversations;
-        draft.myPeerId = SELF;
-        draft.selectedCounterparty = COUNTERPARTY_A;
-      })
-    );
-  };
+export const useAppState = () => {
+  const [state, setState] = useState<{
+    conversations: Map<PeerId, Set<Message>>;
+    httpEndpoint: string;
+    wsEndpoint: string;
+    myPeerId?: PeerId;
+    selectedCounterparty?: PeerId;
+  }>({
+    httpEndpoint: "http://localhost:8080",
+    wsEndpoint: "ws://localhost:8081",
+    conversations: new Map(),
+    /*
+      16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs
+      16Uiu2HAm83TSuRSCN8mKaZbCekkx3zfqgniPSxHdeUSeyEkdwvTs
+    */
+  });
 
   const setSelectedCounterparty = (selectedCounterparty: string) => {
     setState(
@@ -88,21 +79,41 @@ const useGlobalState = (initialState: State) => {
     );
   };
 
-  const addMessage = (
-    counterparty: string,
-    data: Pick<Message, "isIncoming" | "content" | "createdBy">
-  ) => {
+  const sendMessage = (destination: string, content: string) => {
     setState(
       produce(state, (draft) => {
-        const messages = draft.conversations.get(counterparty) || new Set();
+        if (!draft.myPeerId) return;
+
+        const messages = draft.conversations.get(destination) || new Set();
 
         draft.conversations.set(
-          counterparty,
+          destination,
           messages.add({
-            id: String(messages.size),
-            isIncoming: data.isIncoming,
-            content: data.content,
-            createdBy: data.createdBy,
+            id: genId(),
+            isIncoming: false,
+            content: content,
+            createdBy: draft.myPeerId,
+            createdAt: +new Date(),
+          })
+        );
+
+        return draft;
+      })
+    );
+  };
+
+  const receivedMessage = (from: string, content: string) => {
+    setState(
+      produce(state, (draft) => {
+        const messages = draft.conversations.get(from) || new Set();
+
+        draft.conversations.set(
+          from,
+          messages.add({
+            id: genId(),
+            isIncoming: true,
+            content: content,
+            createdBy: from,
             createdAt: +new Date(),
           })
         );
@@ -124,18 +135,35 @@ const useGlobalState = (initialState: State) => {
     );
   };
 
-  const [state, setState] = useState<State>(initialState);
+  const fetchPeerId = async (): Promise<string> => {
+    return fetch(`${state.httpEndpoint}/info`)
+      .then((res) => res.json())
+      .then((o) => o.peerId);
+  };
 
-  // add mocked state
-  useEffect(() => setToMockState(), []);
+  // run once
+  useEffect(() => {
+    if (typeof fetch === "undefined") return;
+
+    const init = async () => {
+      const peerId = await fetchPeerId();
+
+      setState(
+        produce(state, (draft) => {
+          draft.myPeerId = peerId;
+          return draft;
+        })
+      );
+    };
+
+    init();
+  }, []);
 
   return {
     state,
-    setToMockState,
     setSelectedCounterparty,
-    addMessage,
+    sendMessage,
+    receivedMessage,
     startNewConversation,
   };
 };
-
-export default useGlobalState;

@@ -17,6 +17,7 @@ const ChatView: FunctionComponent<{ messages: Message[] }> = ({ messages }) => {
         {(message: Message, _index: number, ref: any) => (
           <Box
             ref={ref}
+            key={message.id}
             alignSelf={message.isIncoming ? "start" : "end"}
             flex={false}
             pad={{
