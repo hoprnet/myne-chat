@@ -30,10 +30,7 @@ const HomePage: NextPage = () => {
   const showChatOnly = isSmall && focus === "chat";
 
   useEffect(() => {
-    console.log("will add e")
-
     if (!myPeerId || !socketRef.current) return;
-    console.log("added e")
 
     socketRef.current.addEventListener("message", (event) => {
       try {
