@@ -8,6 +8,12 @@ First, run the development server:
 yarn dev
 ```
 
+Second, run a mock server which simulates a HOPRd node:
+
+```bash
+yarn mocks
+```
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 ## Learn More
