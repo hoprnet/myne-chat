@@ -1,5 +1,5 @@
 /*
-  Run this file to get a simple mocked HOPRd instance
+  Run this file to get a simple mocked HOPRd instance.
 */
 const http = require("http");
 const restana = require("restana");
@@ -20,7 +20,7 @@ const httpService = restana({
 
 httpService
   .use(bodyParser.json({ type: "*/*" }))
-  .use((req, res, next) => {
+  .use((_req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader(
       "Access-Control-Allow-Headers",
@@ -44,8 +44,9 @@ httpService
       console.log("HTTP server warn: no WS connection to client");
       return;
     }
+
     // response
-    ws.send(`${destination}:message received "${message}"`);
+    ws.send(`${destination}:message "${message}" received`);
   });
 
 http.createServer(httpService).listen(HTTP_PORT, "localhost", () => {

@@ -2,25 +2,26 @@ import type { NextPage } from "next";
 import { useState, useContext, useEffect } from "react";
 import { Box, Button, ResponsiveContext } from "grommet";
 import { LinkPrevious } from "grommet-icons";
-import { useWebsocket, useAppState } from "../src/state";
+import { useAppState } from "../src/state";
 import { encodeMessage, decodeMessage } from "../src/utils";
 import ConversationsPanel from "../src/components/conversations-panel";
 import PersonalPanel from "../src/components/personal-panel";
 import Chat from "../src/components/chat";
 
 const HomePage: NextPage = () => {
-  const {
-    state,
-    setSelectedCounterparty,
-    startNewConversation,
-    sendMessage,
-    receivedMessage,
-  } = useAppState();
-  const { socketRef } = useWebsocket(state.wsEndpoint);
+  const { state: {
+    selection,
+    conversations,
+    myPeerId,
+    httpEndpoint,
+  }, socketRef, setSelection, newConversation, sentMessage, receivedMessage } = useAppState()
 
-  const conversation = state.selectedCounterparty
-    ? state.conversations.get(state.selectedCounterparty)
+  // get selected conversation
+  // TODO: use memo?
+  const conversation = selection
+    ? conversations.get(selection)
     : undefined;
+
   const [focus, setFocus] = useState<"conversations-panel" | "chat">(
     "conversations-panel"
   );
@@ -29,41 +30,43 @@ const HomePage: NextPage = () => {
   const showChatOnly = isSmall && focus === "chat";
 
   useEffect(() => {
-    if (!socketRef.current) return;
+    console.log("will add e")
+
+    if (!myPeerId || !socketRef.current) return;
+    console.log("added e")
 
     socketRef.current.addEventListener("message", (event) => {
       try {
-        console.log("ws: message received", event.data);
         const { from, message } = decodeMessage(event.data);
         receivedMessage(from, message);
       } catch (err) {
         console.error(err);
       }
     });
-  }, []);
+  }, [socketRef.current, myPeerId]);
 
-  const handleSelect = (selectedCounterparty: string) => {
-    setSelectedCounterparty(selectedCounterparty);
+  const handleSelect = (selection: string) => {
+    setSelection(selection);
     setFocus("chat");
   };
 
   const handleSend = async (message: string) => {
-    if (!state.myPeerId || !state.selectedCounterparty || !socketRef.current)
+    if (!myPeerId || !selection || !socketRef.current)
       return;
 
-    const encodedMessage = encodeMessage(state.myPeerId, message);
-    await fetch(`${state.httpEndpoint}/send_message`, {
+    const encodedMessage = encodeMessage(myPeerId, message);
+    sentMessage(myPeerId, selection, message);
+    await fetch(`${httpEndpoint}/send_message`, {
       method: "POST",
       body: JSON.stringify({
-        destination: state.selectedCounterparty,
+        destination: selection,
         message: encodedMessage,
       }),
     });
-    sendMessage(state.selectedCounterparty, message);
   };
 
   const handleNewConversation = (newCounterparty: string) => {
-    startNewConversation(newCounterparty);
+    newConversation(newCounterparty);
     setFocus("chat");
   };
 
@@ -77,8 +80,8 @@ const HomePage: NextPage = () => {
         }}
       >
         <ConversationsPanel
-          counterparties={Array.from(state.conversations.keys())}
-          selectedCounterparty={state.selectedCounterparty}
+          counterparties={Array.from(conversations.keys())}
+          selectedCounterparty={selection}
           onSelect={handleSelect}
           onNewConversation={handleNewConversation}
         />
@@ -99,9 +102,9 @@ const HomePage: NextPage = () => {
             onClick={() => setFocus("conversations-panel")}
           />
         ) : null}
-        <PersonalPanel myPeerId={state.myPeerId ?? "unknown"} />
+        <PersonalPanel myPeerId={myPeerId ?? "unknown"} />
         <Chat
-          selectedCounterparty={state.selectedCounterparty}
+          selectedCounterparty={selection}
           messages={conversation ? Array.from(conversation.values()) : []}
           onSend={handleSend}
         />

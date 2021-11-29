@@ -1,65 +1,139 @@
 import type { Immutable } from "immer";
-import { useState, useEffect, useRef } from "react";
 import produce, { enableMapSet } from "immer";
-import { genId } from "./utils";
 enableMapSet();
-
-type PeerId = string;
+import { useState, useEffect, useRef } from "react";
+import { genId } from "./utils";
 
 export type Message = Immutable<{
   id: string;
   isIncoming: boolean;
   content: string;
-  createdBy: PeerId;
+  createdBy: string;
   createdAt: number;
 }>;
 
-export const useWebsocket = (endpoint: string) => {
+/*
+  Handle websocket connection and track its state.
+*/
+export const useWebsocketState = (endpoint: string) => {
   const [state, setState] = useState<{
-    connection: "CONNECTED" | "DISCONNECTED";
+    status: "CONNECTED" | "DISCONNECTED";
     endpoint: string;
-  }>({ connection: "DISCONNECTED", endpoint });
+    error?: string;
+  }>({ status: "DISCONNECTED", endpoint });
 
   const socketRef = useRef<WebSocket>();
 
-  // run once
+  const setEndpoint = (v: string) => {
+    setState(s => produce(s, draft => {
+      draft.endpoint = v
+    }))
+  }
+
+  // runs everytime "endpoint" changes
   useEffect(() => {
     if (typeof WebSocket === "undefined") return;
 
+    // disconnect from previous connection
+    if (socketRef.current) {
+      socketRef.current.close(1000, "Shutting down")
+    }
+
     socketRef.current = new WebSocket(state.endpoint);
 
-    // Connection opened
-    socketRef.current.addEventListener("open", function () {
-      setState(
-        produce(state, (draft) => {
-          draft.connection = "CONNECTED";
+    // handle connection opening
+    socketRef.current.addEventListener("open", () => {
+      console.info("WS CONNECTED")
+      setState(s =>
+        produce(s, (draft) => {
+          draft.status = "CONNECTED";
         })
       );
     });
 
-    // Connection closed
-    socketRef.current.addEventListener("close", function () {
-      setState(
-        produce(state, (draft) => {
-          draft.connection = "DISCONNECTED";
+    // handle connection closing
+    socketRef.current.addEventListener("close", () => {
+      console.info("WS DISCONNECTED")
+      setState(s =>
+        produce(s, (draft) => {
+          draft.status = "DISCONNECTED";
         })
       );
     });
-  }, []);
+
+    // handle errors
+    socketRef.current.addEventListener("error", (e) => {
+      console.error(e)
+      setState(s =>
+        produce(s, (draft) => {
+          draft.error = String(e)
+        })
+      );
+    });
+  }, [endpoint]);
 
   return {
     state,
     socketRef,
+    setEndpoint
   };
 };
 
+/*
+  Keep user state updated.
+*/
+export const useUserState = (endpoint: string) => {
+  const [state, setState] = useState<{
+    endpoint: string;
+    myPeerId?: string;
+    error?: string
+  }>({
+    endpoint,
+  });
+
+  const fetchInfo = async (): Promise<string> => {
+    return fetch(`${state.endpoint}/info`)
+      .then((res) => res.json())
+      .then((o) => o.peerId);
+  }
+
+  const setEndpoint = (v: string) => {
+    setState(s => produce(s, draft => {
+      draft.endpoint = v
+    }))
+  }
+
+  // runs everytime "endpoint" changes
+  useEffect(() => {
+    if (typeof fetch === "undefined") return;
+
+    fetchInfo().then(peerId => {
+      console.info("Fetched PeerId", peerId)
+      setState(s => produce(s, draft => {
+        draft.myPeerId = peerId
+        return draft
+      }))
+    }).catch(err => {
+      console.error(err)
+      setState(s => produce(s, draft => {
+        draft.error = err
+        return draft
+      }))
+    })
+  }, [endpoint])
+
+  return {
+    state,
+    setEndpoint
+  }
+}
+
 export const useAppState = () => {
   const [state, setState] = useState<{
-    conversations: Map<PeerId, Set<Message>>;
-    httpEndpoint: string;
-    wsEndpoint: string;
-    myPeerId?: PeerId;
-    selectedCounterparty?: PeerId;
+    httpEndpoint: string,
+    wsEndpoint: string,
+    conversations: Map<string, Set<Message>>;
+    selection?: string;
   }>({
     httpEndpoint: "http://localhost:8080",
     wsEndpoint: "ws://localhost:8081",
@@ -69,21 +143,41 @@ export const useAppState = () => {
       16Uiu2HAm83TSuRSCN8mKaZbCekkx3zfqgniPSxHdeUSeyEkdwvTs
     */
   });
+  const websocket = useWebsocketState(state.wsEndpoint)
+  const user = useUserState(state.httpEndpoint)
 
-  const setSelectedCounterparty = (selectedCounterparty: string) => {
-    setState(
-      produce(state, (draft) => {
-        draft.selectedCounterparty = selectedCounterparty;
+  useEffect(() => {
+    websocket.setEndpoint(state.wsEndpoint)
+  }, [state.wsEndpoint])
+  useEffect(() => {
+    user.setEndpoint(state.httpEndpoint)
+  }, [state.httpEndpoint])
+
+  const updateSettings = (settings: {
+    httpEndpoint?: string,
+    wsEndpoint?: string,
+  }) => {
+    setState(s =>
+      produce(s, (draft) => {
+        if (settings.httpEndpoint) draft.httpEndpoint = settings.httpEndpoint
+        else if (settings.wsEndpoint) draft.wsEndpoint = settings.wsEndpoint
+        return draft;
+      })
+    );
+  }
+
+  const setSelection = (selection: string) => {
+    setState(s =>
+      produce(s, (draft) => {
+        draft.selection = selection;
         return draft;
       })
     );
   };
 
-  const sendMessage = (destination: string, content: string) => {
-    setState(
-      produce(state, (draft) => {
-        if (!draft.myPeerId) return;
-
+  const sentMessage = (myPeerId: string, destination: string, content: string) => {
+    setState(s =>
+      produce(s, (draft) => {
         const messages = draft.conversations.get(destination) || new Set();
 
         draft.conversations.set(
@@ -92,7 +186,7 @@ export const useAppState = () => {
             id: genId(),
             isIncoming: false,
             content: content,
-            createdBy: draft.myPeerId,
+            createdBy: myPeerId,
             createdAt: +new Date(),
           })
         );
@@ -103,8 +197,8 @@ export const useAppState = () => {
   };
 
   const receivedMessage = (from: string, content: string) => {
-    setState(
-      produce(state, (draft) => {
+    setState(s =>
+      produce(s, (draft) => {
         const messages = draft.conversations.get(from) || new Set();
 
         draft.conversations.set(
@@ -123,47 +217,29 @@ export const useAppState = () => {
     );
   };
 
-  const startNewConversation = (counterparty: string) => {
-    setState(
-      produce(state, (draft) => {
-        if (!draft.conversations.has(counterparty)) {
-          draft.conversations.set(counterparty, new Set());
+  const newConversation = (peerId: string) => {
+    setState(s =>
+      produce(s, (draft) => {
+        if (!draft.conversations.has(peerId)) {
+          draft.conversations.set(peerId, new Set());
         }
-        draft.selectedCounterparty = counterparty;
+        draft.selection = peerId;
         return draft;
       })
     );
   };
 
-  const fetchPeerId = async (): Promise<string> => {
-    return fetch(`${state.httpEndpoint}/info`)
-      .then((res) => res.json())
-      .then((o) => o.peerId);
-  };
-
-  // run once
-  useEffect(() => {
-    if (typeof fetch === "undefined") return;
-
-    const init = async () => {
-      const peerId = await fetchPeerId();
-
-      setState(
-        produce(state, (draft) => {
-          draft.myPeerId = peerId;
-          return draft;
-        })
-      );
-    };
-
-    init();
-  }, []);
-
   return {
-    state,
-    setSelectedCounterparty,
-    sendMessage,
+    state: {
+      ...state,
+      ...websocket.state,
+      ...user.state,
+    },
+    socketRef: websocket.socketRef,
+    updateSettings,
+    setSelection,
+    sentMessage,
     receivedMessage,
-    startNewConversation,
+    newConversation,
   };
 };

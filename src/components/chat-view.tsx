@@ -4,6 +4,11 @@ import { Box, InfiniteScroll } from "grommet";
 import ChatBubble from "./chat-bubble";
 
 const ChatView: FunctionComponent<{ messages: Message[] }> = ({ messages }) => {
+  // ASC
+  const sorted = messages.sort((a, b) => {
+    return b.createdAt - a.createdAt
+  })
+
   return (
     <Box
       height="100%"
@@ -13,7 +18,7 @@ const ChatView: FunctionComponent<{ messages: Message[] }> = ({ messages }) => {
         horizontal: "hidden",
       }}
     >
-      <InfiniteScroll items={messages} replace>
+      <InfiniteScroll items={sorted} replace>
         {(message: Message, _index: number, ref: any) => (
           <Box
             ref={ref}
