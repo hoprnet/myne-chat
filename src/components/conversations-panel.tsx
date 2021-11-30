@@ -38,39 +38,38 @@ const ConversationsPanel: FunctionComponent<{
       round
       shadow
     >
-      <Nav>
-        <List
-          data={counterparties}
-          border={false}
-          pad={{
-            horizontal: "none",
-            bottom: "small",
-          }}
-          onClickItem={(props: any) => onSelect(props.item)}
-        >
-          {(
-            counterparty: string,
-            _index: any,
-            { active: isHovered }: { active: boolean }
-          ) => {
-            const isSelected = counterparty === selection;
-            const highlight = isHovered || isSelected;
+      <List
+        data={counterparties}
+        border={false}
+        pad={{
+          horizontal: "none",
+          bottom: "small",
+        }}
+        onClickItem={(props: any) => onSelect(props.item)}
+      >
+        {(
+          counterparty: string,
+          _index: any,
+          { active: isHovered }: { active: boolean }
+        ) => {
+          const isSelected = counterparty === selection;
+          const highlight = isHovered || isSelected;
 
-            return (
-              <Box background={highlight ? "white" : undefined}>
-                <Text
-                  style={{
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {counterparty}
-                </Text>
-              </Box>
-            );
-          }}
-        </List>
-      </Nav>
+          return (
+            <Box background={highlight ? "white" : undefined}>
+              <Text
+                style={{
+                  direction: "rtl",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {counterparty}
+              </Text>
+            </Box>
+          );
+        }}
+      </List>
       {show && (
         <Layer
           onEsc={() => setShow(false)}

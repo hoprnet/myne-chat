@@ -12,7 +12,7 @@ const ChatBubble: FunctionComponent<{ message: Message }> = ({ message }) => {
         {new Date(message.createdAt).toLocaleString()}
       </Text>
       <Box background={backgroundColor} pad="small" round shadow>
-        <Text color={textColor} size="medium">
+        <Text color={textColor} size="medium" wordBreak="break-word">
           {message.content}
         </Text>
       </Box>
