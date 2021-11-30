@@ -8,7 +8,6 @@ const PersonalPanel: FunctionComponent<{
   myPeerId: string;
 }> = ({ myPeerId }) => {
   const copyToClipboard = useCallback(() => {
-    console.log("copy");
     navigator.clipboard.writeText(myPeerId);
   }, [myPeerId]);
 

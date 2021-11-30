@@ -13,12 +13,14 @@
     "grommet": "^2.18.0",
     "grommet-icons": "^4.7.0",
     "immer": "^9.0.6",
+    "lodash": "^4.17.21",
     "next": "12.0.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "styled-components": "^5.3.3"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.177",
     "@types/node": "16.11.6",
     "@types/react": "17.0.33",
     "@types/styled-components": "^5.1.15",

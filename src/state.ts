@@ -148,9 +148,8 @@ export const useAppState = () => {
     httpEndpoint: "http://localhost:8080",
     wsEndpoint: "ws://localhost:8081",
     conversations: new Map([
-[      "16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs", new Set<any>(),
-],[      "16Uiu2HAm83TSuRSCN8mKaZbCekkx3zfqgniPSxHdeUSeyEkdwvTs", new Set<any>(),
-]    ]),
+      ["16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs", new Set<any>()]
+    ]),
     /*
       16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs
       16Uiu2HAm83TSuRSCN8mKaZbCekkx3zfqgniPSxHdeUSeyEkdwvTs

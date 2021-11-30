@@ -17,6 +17,8 @@ const ChatInput: FunctionComponent<{
   const disableSend = status === "PENDING" || content.length === 0;
 
   const handleSend = () => {
+    if (disableSend) return;
+
     setError(undefined);
     setStatus("PENDING");
 
