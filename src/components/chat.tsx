@@ -5,10 +5,10 @@ import ChatView from "./chat-view";
 import ChatInput from "./chat-input";
 
 const Chat: FunctionComponent<{
-  selectedCounterparty?: string;
+  selection?: string;
   messages?: Message[];
   onSend: (message: string) => Promise<string | void>;
-}> = ({ selectedCounterparty, messages = [], onSend }) => {
+}> = ({ selection, messages = [], onSend }) => {
   return (
     <Box
       justify="between"
@@ -24,10 +24,7 @@ const Chat: FunctionComponent<{
         <ChatView messages={messages} />
       </Box>
       <Box>
-        <ChatInput
-          onSend={onSend}
-          selectedCounterparty={selectedCounterparty}
-        />
+        <ChatInput onSend={onSend} selection={selection} />
       </Box>
     </Box>
   );

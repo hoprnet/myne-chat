@@ -7,15 +7,10 @@ import Logo from "./logo";
 
 const ConversationsPanel: FunctionComponent<{
   counterparties: string[];
-  selectedCounterparty?: string;
+  selection?: string;
   onSelect: (p: string) => void;
   onNewConversation: (p: string) => void;
-}> = ({
-  counterparties,
-  selectedCounterparty,
-  onSelect,
-  onNewConversation,
-}) => {
+}> = ({ counterparties, selection, onSelect, onNewConversation }) => {
   const [show, setShow] = useState<boolean>(false);
 
   return (
@@ -43,6 +38,39 @@ const ConversationsPanel: FunctionComponent<{
       round
       shadow
     >
+      <Nav>
+        <List
+          data={counterparties}
+          border={false}
+          pad={{
+            horizontal: "none",
+            bottom: "small",
+          }}
+          onClickItem={(props: any) => onSelect(props.item)}
+        >
+          {(
+            counterparty: string,
+            _index: any,
+            { active: isHovered }: { active: boolean }
+          ) => {
+            const isSelected = counterparty === selection;
+            const highlight = isHovered || isSelected;
+
+            return (
+              <Box background={highlight ? "white" : undefined}>
+                <Text
+                  style={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {counterparty}
+                </Text>
+              </Box>
+            );
+          }}
+        </List>
+      </Nav>
       {show && (
         <Layer
           onEsc={() => setShow(false)}
@@ -58,34 +86,6 @@ const ConversationsPanel: FunctionComponent<{
           />
         </Layer>
       )}
-      <Nav>
-        <List
-          data={counterparties}
-          border={false}
-          pad={{
-            horizontal: "none",
-            bottom: "small",
-          }}
-          onClickItem={(props: any) => onSelect(props.item)}
-        >
-          {(counterparty: string) => {
-            const isSelected = counterparty === selectedCounterparty;
-
-            return (
-              <Box background={isSelected ? "white" : undefined}>
-                <Text
-                  style={{
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {counterparty}
-                </Text>
-              </Box>
-            );
-          }}
-        </List>
-      </Nav>
     </Sidebar>
   );
 };

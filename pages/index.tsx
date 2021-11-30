@@ -77,7 +77,7 @@ const HomePage: NextPage = () => {
       >
         <ConversationsPanel
           counterparties={Array.from(conversations.keys())}
-          selectedCounterparty={selection}
+          selection={selection}
           onSelect={handleSelect}
           onNewConversation={handleNewConversation}
         />
@@ -100,7 +100,7 @@ const HomePage: NextPage = () => {
         ) : null}
         <PersonalPanel myPeerId={myPeerId ?? "unknown"} />
         <Chat
-          selectedCounterparty={selection}
+          selection={selection}
           messages={conversation ? Array.from(conversation.values()) : []}
           onSend={handleSend}
         />

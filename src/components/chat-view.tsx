@@ -29,7 +29,9 @@ const ChatView: FunctionComponent<{
     container.current.addEventListener("scroll", setScrollToBottomDebounced);
 
     return () => {
-      container.current!.removeEventListener(
+      if (!container.current) return;
+
+      container.current.removeEventListener(
         "scroll",
         setScrollToBottomDebounced
       );
