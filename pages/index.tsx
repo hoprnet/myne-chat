@@ -9,18 +9,18 @@ import PersonalPanel from "../src/components/personal-panel";
 import Chat from "../src/components/chat";
 
 const HomePage: NextPage = () => {
-  const { state: {
-    selection,
-    conversations,
-    myPeerId,
-    httpEndpoint,
-  }, socketRef, setSelection, newConversation, sentMessage, receivedMessage } = useAppState()
+  const {
+    state: { selection, conversations, myPeerId, httpEndpoint },
+    socketRef,
+    setSelection,
+    newConversation,
+    sentMessage,
+    receivedMessage,
+  } = useAppState();
 
   // get selected conversation
   // TODO: use memo?
-  const conversation = selection
-    ? conversations.get(selection)
-    : undefined;
+  const conversation = selection ? conversations.get(selection) : undefined;
 
   const [focus, setFocus] = useState<"conversations-panel" | "chat">(
     "conversations-panel"
@@ -48,8 +48,7 @@ const HomePage: NextPage = () => {
   };
 
   const handleSend = async (message: string) => {
-    if (!myPeerId || !selection || !socketRef.current)
-      return;
+    if (!myPeerId || !selection || !socketRef.current) return;
 
     const encodedMessage = encodeMessage(myPeerId, message);
     sentMessage(myPeerId, selection, message);

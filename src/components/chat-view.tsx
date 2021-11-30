@@ -6,8 +6,8 @@ import ChatBubble from "./chat-bubble";
 const ChatView: FunctionComponent<{ messages: Message[] }> = ({ messages }) => {
   // ASC
   const sorted = messages.sort((a, b) => {
-    return b.createdAt - a.createdAt
-  })
+    return b.createdAt - a.createdAt;
+  });
 
   return (
     <Box
