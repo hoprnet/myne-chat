@@ -30,6 +30,8 @@ const makeTheme = <T extends ThemeType>(t: T) => t;
 
 // transform theme data to Grommet compatible theme
 const theme = makeTheme({
+  custom,
+
   global: {
     colors: {
       brand: custom.colors["myne-turquoise"],

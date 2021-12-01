@@ -5,12 +5,30 @@ import { createGlobalStyle } from "styled-components";
 import theme from "../src/theme";
 
 const GlobalStyle = createGlobalStyle`
+  /* load custom font */
   @font-face {
     font-family: GerstnerProgrammFSL;
     src: url("fonts/GerstnerProgrammFSL/GerstnerProgrammFSL-Regular.otf") format("opentype");
     font-weight: normal;
     font-style: normal;
     font-display: swap;
+  }
+
+  /* custom scrollbar */
+  /* our style can be fully supported by webkit only */
+  ::-webkit-scrollbar {
+    width: ${theme.global.edgeSize.medium};
+  }
+  ::-webkit-scrollbar-track {
+    background: ${theme.global.colors["dark-2"]};
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: ${theme.global.colors["light-1"]};
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: ${theme.global.colors["light-1"]};
   }
 `;
 

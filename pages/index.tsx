@@ -1,19 +1,26 @@
 import type { NextPage } from "next";
-import { useState, useContext, useCallback } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Box, Button, ResponsiveContext } from "grommet";
 import { LinkPrevious } from "grommet-icons";
-import produce from "immer";
-import { State, updateToMockState } from "../src/state";
+import { useAppState } from "../src/state";
+import { encodeMessage, decodeMessage } from "../src/utils";
 import ConversationsPanel from "../src/components/conversations-panel";
 import PersonalPanel from "../src/components/personal-panel";
 import Chat from "../src/components/chat";
 
 const HomePage: NextPage = () => {
-  const [state, setState] = useState<State>(updateToMockState());
-  const conversations = Array.from(state.conversations.values());
-  const conversation = state.selectedConversation
-    ? state.conversations.get(state.selectedConversation)
-    : undefined;
+  const {
+    state: { selection, conversations, myPeerId, httpEndpoint },
+    socketRef,
+    setSelection,
+    newConversation,
+    sentMessage,
+    receivedMessage,
+  } = useAppState();
+
+  // get selected conversation
+  // TODO: use memo?
+  const conversation = selection ? conversations.get(selection) : undefined;
 
   const [focus, setFocus] = useState<"conversations-panel" | "chat">(
     "conversations-panel"
@@ -22,53 +29,42 @@ const HomePage: NextPage = () => {
   const showConvsOnly = isSmall && focus === "conversations-panel";
   const showChatOnly = isSmall && focus === "chat";
 
-  const handleSelect = useCallback((selectedPeerId) => {
-    setState(
-      produce((draft) => {
-        draft.selectedConversation = selectedPeerId;
-        return draft;
-      })
-    );
-    setFocus("chat");
-  }, []);
+  useEffect(() => {
+    if (!myPeerId || !socketRef.current) return;
 
-  const handleSend = useCallback(async (content) => {
-    const sendMessage = async () => Promise.resolve();
-
-    sendMessage().then(() => {
-      setState(
-        produce((draft) => {
-          if (!draft.selectedConversation) return;
-          const conv = draft.conversations.get(draft.selectedConversation);
-          if (!conv) return;
-
-          conv.messages.add({
-            id: String(conv.messages.size),
-            from: draft.peerId || "",
-            direction: "sent",
-            time: +new Date(),
-            content,
-          });
-
-          return draft;
-        })
-      );
+    socketRef.current.addEventListener("message", (event) => {
+      try {
+        const { from, message } = decodeMessage(event.data);
+        receivedMessage(from, message);
+      } catch (err) {
+        console.error(err);
+      }
     });
-  }, []);
+  }, [socketRef.current, myPeerId]);
 
-  const handleNewConversation = useCallback((peerId) => {
-    setState(
-      produce((draft) => {
-        draft.selectedConversation = peerId;
-        draft.conversations.set(peerId, {
-          with: peerId,
-          messages: new Set(),
-        });
-        return draft;
-      })
-    );
+  const handleSelect = (selection: string) => {
+    setSelection(selection);
     setFocus("chat");
-  }, []);
+  };
+
+  const handleSend = async (message: string) => {
+    if (!myPeerId || !selection || !socketRef.current) return;
+
+    const encodedMessage = encodeMessage(myPeerId, message);
+    sentMessage(myPeerId, selection, message);
+    await fetch(`${httpEndpoint}/send_message`, {
+      method: "POST",
+      body: JSON.stringify({
+        destination: selection,
+        message: encodedMessage,
+      }),
+    });
+  };
+
+  const handleNewConversation = (newCounterparty: string) => {
+    newConversation(newCounterparty);
+    setFocus("chat");
+  };
 
   return (
     <Box fill direction="row" justify="between" pad="small">
@@ -80,8 +76,8 @@ const HomePage: NextPage = () => {
         }}
       >
         <ConversationsPanel
-          conversations={conversations}
-          selected={conversation}
+          counterparties={Array.from(conversations.keys())}
+          selection={selection}
           onSelect={handleSelect}
           onNewConversation={handleNewConversation}
         />
@@ -102,8 +98,12 @@ const HomePage: NextPage = () => {
             onClick={() => setFocus("conversations-panel")}
           />
         ) : null}
-        <PersonalPanel peerId={state.peerId ?? "unknown"} />
-        <Chat conversation={conversation} onSend={handleSend} />
+        <PersonalPanel myPeerId={myPeerId ?? "unknown"} />
+        <Chat
+          selection={selection}
+          messages={conversation ? Array.from(conversation.values()) : []}
+          onSend={handleSend}
+        />
       </Box>
     </Box>
   );
