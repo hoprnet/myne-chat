@@ -3,40 +3,25 @@ import { useState, useContext } from "react";
 import { Box, Button, TextArea, ResponsiveContext } from "grommet";
 
 const ChatInput: FunctionComponent<{
-  onSend: (message: string) => Promise<string | void>;
+  sendMessage: (destination: string, message: string) => void;
   selection?: string;
-}> = ({ onSend, selection }) => {
-  const size = useContext(ResponsiveContext);
-  const direction = size === "small" ? "column" : "row";
-  const [error, setError] = useState<string | undefined>();
-  const [status, setStatus] = useState<
-    "PENDING" | "SUCCESS" | "ERROR" | undefined
-  >();
+}> = ({ sendMessage, selection }) => {
+  const screenSize = useContext(ResponsiveContext);
   const [content, setMessage] = useState<string>("");
+  const direction = screenSize === "small" ? "column" : "row";
   const disableInput = !selection;
-  const disableSend = status === "PENDING" || content.length === 0;
+  const disableSend = !selection || content.length === 0;
 
-  const handleSend = () => {
+  const handleSendMessage = () => {
     if (disableSend) return;
-
-    setError(undefined);
-    setStatus("PENDING");
-
-    onSend(content)
-      .then(() => {
-        setStatus("SUCCESS");
-        setMessage("");
-      })
-      .catch((err) => {
-        setStatus("ERROR");
-        setError(err);
-      });
+    sendMessage(selection, content);
+    setMessage("");
   };
 
   const handleEnterPress = (e: KeyboardEvent) => {
     if (e.key === "Enter" && e.shiftKey == false) {
       e.preventDefault();
-      handleSend();
+      handleSendMessage();
     }
   };
 
@@ -75,7 +60,7 @@ const ChatInput: FunctionComponent<{
           label="send"
           shadow
           disabled={disableSend}
-          onClick={handleSend}
+          onClick={handleSendMessage}
         />
       </Box>
     </Box>

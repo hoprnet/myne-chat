@@ -2,7 +2,12 @@ import type { AppProps } from "next/app";
 import Head from "next/head";
 import { Grommet, Main } from "grommet";
 import { createGlobalStyle } from "styled-components";
+import { enableMapSet } from "immer";
 import theme from "../src/theme";
+
+// enables the use of Map and Set
+// see https://immerjs.github.io/immer/installation/#pick-your-immer-version
+enableMapSet();
 
 const GlobalStyle = createGlobalStyle`
   /* load custom font */

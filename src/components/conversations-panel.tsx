@@ -1,32 +1,57 @@
 import type { FunctionComponent } from "react";
+import type { ConnectionStatus } from "../state";
 import { useState } from "react";
-import { Box, List, Text, Sidebar, Nav, Layer } from "grommet";
+import { Box, List, Text, Sidebar, Layer } from "grommet";
+import { normalizeColor } from "grommet/utils";
 import IconButton from "./icon-button";
 import NewConversation from "./new-conversation";
 import Logo from "./logo";
+import Circle from "./circle";
+
+const Header: FunctionComponent<{
+  status: ConnectionStatus;
+  setShow: (v: boolean) => void;
+}> = ({ status, setShow }) => {
+  return (
+    <Box pad="small" justify="between" direction="row" align="center">
+      <Box pad="small">
+        <Circle
+          size="15px"
+          color={status === "CONNECTED" ? "status-success" : "status-error"}
+        />
+      </Box>
+      <Box>
+        <IconButton
+          pad="small"
+          alignSelf="end"
+          round
+          onClick={() => setShow(true)}
+        >
+          <Text>+</Text>
+        </IconButton>
+      </Box>
+    </Box>
+  );
+};
 
 const ConversationsPanel: FunctionComponent<{
+  status: ConnectionStatus;
   counterparties: string[];
+  setSelection: (p: string) => void;
+  addNewConversation: (p: string) => void;
   selection?: string;
-  onSelect: (p: string) => void;
-  onNewConversation: (p: string) => void;
-}> = ({ counterparties, selection, onSelect, onNewConversation }) => {
+}> = ({
+  status,
+  counterparties,
+  selection,
+  setSelection,
+  addNewConversation,
+}) => {
   const [show, setShow] = useState<boolean>(false);
 
   return (
     <Sidebar
-      header={
-        <Box pad="small">
-          <IconButton
-            pad="small"
-            alignSelf="end"
-            round
-            onClick={() => setShow(true)}
-          >
-            <Text>+</Text>
-          </IconButton>
-        </Box>
-      }
+      header={<Header status={status} setShow={setShow} />}
       footer={
         <Box pad="small">
           <Logo />
@@ -45,7 +70,7 @@ const ConversationsPanel: FunctionComponent<{
           horizontal: "none",
           bottom: "small",
         }}
-        onClickItem={(props: any) => onSelect(props.item)}
+        onClickItem={(props: any) => setSelection(props.item)}
       >
         {(
           counterparty: string,
@@ -78,8 +103,8 @@ const ConversationsPanel: FunctionComponent<{
         >
           <NewConversation
             counterparties={counterparties}
-            onSend={(p) => {
-              onNewConversation(p);
+            addNewConversation={(p) => {
+              addNewConversation(p);
               setShow(false);
             }}
           />

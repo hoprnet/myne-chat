@@ -47,6 +47,8 @@ const theme = makeTheme({
       "accent-4": custom.colors["myne-darkorange"],
       "background-back": custom.colors.windowBG,
       "status-disabled": custom.colors["myne-darkgreen"],
+      "status-success": custom.colors["myne-turquoise"],
+      "status-error": custom.colors["myne-darkgreen"],
     },
 
     // this setting affects various areas, see https://v2.grommet.io/box at `global.edgeSize`

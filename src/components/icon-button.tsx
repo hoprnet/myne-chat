@@ -4,7 +4,7 @@ import { Box, Button } from "grommet";
 import { normalizeColor } from "grommet/utils";
 
 const StyledBox = styled(Box)`
-  display: inline-block;
+  display: inline-flex;
   cursor: pointer;
   max-height: min-content;
   max-width: min-content;

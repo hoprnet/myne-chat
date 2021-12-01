@@ -5,8 +5,8 @@ import { PEER_ID_LENGTH, isValidPeerId } from "../utils";
 
 const NewConversation: FunctionComponent<{
   counterparties: string[];
-  onSend: (p: string) => void;
-}> = ({ counterparties, onSend }) => {
+  addNewConversation: (p: string) => void;
+}> = ({ counterparties, addNewConversation }) => {
   const [peerId, setPeerId] = useState<string>("");
   const validPeerId = isValidPeerId(peerId);
   const alreadyExists = counterparties.includes(peerId);
@@ -25,7 +25,7 @@ const NewConversation: FunctionComponent<{
         />
         <Button
           label="send"
-          onClick={() => onSend(peerId)}
+          onClick={() => addNewConversation(peerId)}
           disabled={!validPeerId || alreadyExists}
         />
       </Box>
