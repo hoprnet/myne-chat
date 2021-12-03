@@ -12,7 +12,6 @@ export const isValidPeerId = (v: string): boolean => {
 };
 
 // message encoding / decoding
-// TODO: update according to upcoming spec
 export const encodeMessage = (from: string, message: string): string => {
   return `${from}:${message}`;
 };

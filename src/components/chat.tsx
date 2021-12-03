@@ -1,30 +1,45 @@
 import type { FunctionComponent } from "react";
-import type { Message } from "../state";
+import type { Message, Settings } from "../state";
 import { Box } from "grommet";
+import PersonalPanel from "./personal-panel";
 import ChatView from "./chat-view";
 import ChatInput from "./chat-input";
 
 const Chat: FunctionComponent<{
+  updateSettings: (settings: Partial<Settings>) => void;
+  sendMessage: (destination: string, message: string) => void;
+  settings: Settings;
+  messages: Message[];
+  myPeerId?: string;
   selection?: string;
-  messages?: Message[];
-  onSend: (message: string) => Promise<string | void>;
-}> = ({ selection, messages = [], onSend }) => {
+}> = ({
+  myPeerId,
+  settings,
+  selection,
+  messages,
+  sendMessage,
+  updateSettings,
+}) => {
   return (
-    <Box
-      justify="between"
-      width="100%"
-      height="100%"
-      background="dark-4"
-      pad="small"
-      gap="small"
-      round
-      shadow
-    >
-      <Box width="100%" height="100%">
-        <ChatView messages={messages} />
-      </Box>
+    <Box fill justify="between" background="dark-4" round shadow>
       <Box>
-        <ChatInput onSend={onSend} selection={selection} />
+        <PersonalPanel
+          myPeerId={myPeerId ?? "unknown"}
+          settings={settings}
+          updateSettings={updateSettings}
+        />
+      </Box>
+      <Box fill gap="small" pad="small">
+        <Box fill>
+          <ChatView messages={messages} />
+        </Box>
+        <Box
+          height={{
+            min: "min-content",
+          }}
+        >
+          <ChatInput sendMessage={sendMessage} selection={selection} />
+        </Box>
       </Box>
     </Box>
   );

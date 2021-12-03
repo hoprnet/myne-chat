@@ -2,107 +2,128 @@ import type { NextPage } from "next";
 import { useState, useContext, useEffect } from "react";
 import { Box, Button, ResponsiveContext } from "grommet";
 import { LinkPrevious } from "grommet-icons";
-import { useAppState } from "../src/state";
+import useAppState from "../src/state";
 import { encodeMessage, decodeMessage } from "../src/utils";
 import ConversationsPanel from "../src/components/conversations-panel";
-import PersonalPanel from "../src/components/personal-panel";
 import Chat from "../src/components/chat";
 
 const HomePage: NextPage = () => {
   const {
-    state: { selection, conversations, myPeerId, httpEndpoint },
+    state: { selection, conversations, myPeerId, settings, status },
     socketRef,
     setSelection,
-    newConversation,
-    sentMessage,
-    receivedMessage,
+    addNewConversation,
+    addSentMessage,
+    addReceivedMessage,
+    updateMessage,
+    updateSettings,
   } = useAppState();
 
   // get selected conversation
-  // TODO: use memo?
   const conversation = selection ? conversations.get(selection) : undefined;
 
+  // currently focused element (used in mobile mode)
   const [focus, setFocus] = useState<"conversations-panel" | "chat">(
     "conversations-panel"
   );
-  const isSmall = useContext(ResponsiveContext) === "small";
-  const showConvsOnly = isSmall && focus === "conversations-panel";
-  const showChatOnly = isSmall && focus === "chat";
+  const screenSize = useContext(ResponsiveContext);
+  const isMobile = screenSize === "small";
 
-  useEffect(() => {
-    if (!myPeerId || !socketRef.current) return;
+  const handleReceivedMessage = (ev: MessageEvent<string>) => {
+    try {
+      const { from, message } = decodeMessage(ev.data);
+      addReceivedMessage(from, message);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    socketRef.current.addEventListener("message", (event) => {
-      try {
-        const { from, message } = decodeMessage(event.data);
-        receivedMessage(from, message);
-      } catch (err) {
-        console.error(err);
-      }
-    });
-  }, [socketRef.current, myPeerId]);
-
-  const handleSelect = (selection: string) => {
-    setSelection(selection);
+  const handleSetSelection = (counterparty: string) => {
+    setSelection(counterparty);
     setFocus("chat");
   };
 
-  const handleSend = async (message: string) => {
+  const handleSendMessage = (destination: string, message: string) => {
     if (!myPeerId || !selection || !socketRef.current) return;
 
     const encodedMessage = encodeMessage(myPeerId, message);
-    sentMessage(myPeerId, selection, message);
-    await fetch(`${httpEndpoint}/send_message`, {
+    const id = addSentMessage(myPeerId, destination, message);
+    fetch(`${settings.httpEndpoint}/send_message`, {
       method: "POST",
       body: JSON.stringify({
         destination: selection,
         message: encodedMessage,
       }),
-    });
+    })
+      .then(() => {
+        updateMessage(destination, id, "SUCCESS");
+      })
+      .catch((err) => {
+        console.error("ERROR sending message", err);
+        updateMessage(destination, id, "FAILURE", String(err));
+      });
   };
 
-  const handleNewConversation = (newCounterparty: string) => {
-    newConversation(newCounterparty);
+  const handleAddNewConversation = (counterparty: string) => {
+    addNewConversation(counterparty);
     setFocus("chat");
   };
+
+  // attach event listener for new messages
+  useEffect(() => {
+    if (!myPeerId || !socketRef.current) return;
+    socketRef.current.addEventListener("message", handleReceivedMessage);
+
+    return () => {
+      if (!socketRef.current) return;
+      socketRef.current.removeEventListener("message", handleReceivedMessage);
+    };
+  }, [myPeerId, socketRef.current]);
 
   return (
     <Box fill direction="row" justify="between" pad="small">
       <Box
-        width={isSmall ? "100%" : "250px"}
-        pad={{ right: isSmall ? undefined : "small" }}
+        fill={isMobile ? true : "vertical"}
+        flex={{ shrink: 1, grow: 1 }}
+        basis="0%"
+        pad={{ right: isMobile ? undefined : "small" }}
         style={{
-          display: showChatOnly ? "none" : undefined,
+          display:
+            isMobile && focus !== "conversations-panel" ? "none" : undefined,
         }}
       >
         <ConversationsPanel
+          status={status}
           counterparties={Array.from(conversations.keys())}
           selection={selection}
-          onSelect={handleSelect}
-          onNewConversation={handleNewConversation}
+          setSelection={handleSetSelection}
+          addNewConversation={handleAddNewConversation}
         />
       </Box>
       <Box
-        width="100%"
-        height="100%"
+        fill={isMobile ? true : "vertical"}
+        flex={{ shrink: 6, grow: 6 }}
+        basis="0%"
         direction="column"
         justify="between"
         style={{
-          display: showConvsOnly ? "none" : undefined,
+          display: isMobile && focus !== "chat" ? "none" : undefined,
         }}
         gap="small"
       >
-        {isSmall ? (
+        {isMobile ? (
           <Button
             icon={<LinkPrevious />}
             onClick={() => setFocus("conversations-panel")}
           />
         ) : null}
-        <PersonalPanel myPeerId={myPeerId ?? "unknown"} />
         <Chat
+          settings={settings}
+          myPeerId={myPeerId}
           selection={selection}
           messages={conversation ? Array.from(conversation.values()) : []}
-          onSend={handleSend}
+          updateSettings={updateSettings}
+          sendMessage={handleSendMessage}
         />
       </Box>
     </Box>

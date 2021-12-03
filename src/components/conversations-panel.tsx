@@ -1,75 +1,105 @@
 import type { FunctionComponent } from "react";
+import type { ConnectionStatus } from "../state";
 import { useState } from "react";
-import { Box, List, Text, Sidebar, Nav, Layer } from "grommet";
+import { Box, List, Text, Layer } from "grommet";
+import { Add } from "grommet-icons";
 import IconButton from "./icon-button";
 import NewConversation from "./new-conversation";
 import Logo from "./logo";
+import Circle from "./circle";
 
 const ConversationsPanel: FunctionComponent<{
+  status: ConnectionStatus;
   counterparties: string[];
+  setSelection: (p: string) => void;
+  addNewConversation: (p: string) => void;
   selection?: string;
-  onSelect: (p: string) => void;
-  onNewConversation: (p: string) => void;
-}> = ({ counterparties, selection, onSelect, onNewConversation }) => {
+}> = ({
+  status,
+  counterparties,
+  selection,
+  setSelection,
+  addNewConversation,
+}) => {
   const [show, setShow] = useState<boolean>(false);
 
   return (
-    <Sidebar
-      header={
-        <Box pad="small">
-          <IconButton
-            pad="small"
-            alignSelf="end"
-            round
-            onClick={() => setShow(true)}
-          >
-            <Text>+</Text>
-          </IconButton>
-        </Box>
-      }
-      footer={
-        <Box pad="small">
-          <Logo />
-        </Box>
-      }
+    <Box
+      fill="vertical"
+      justify="between"
       pad="none"
       gap="small"
       background="dark-3"
       round
       shadow
     >
-      <List
-        data={counterparties}
-        border={false}
-        pad={{
-          horizontal: "none",
-          bottom: "small",
+      {/* header */}
+      <Box
+        pad="small"
+        justify="between"
+        direction="row"
+        align="center"
+        height={{
+          min: "min-content",
         }}
-        onClickItem={(props: any) => onSelect(props.item)}
       >
-        {(
-          counterparty: string,
-          _index: any,
-          { active: isHovered }: { active: boolean }
-        ) => {
-          const isSelected = counterparty === selection;
-          const highlight = isHovered || isSelected;
+        <Box pad="small">
+          <Circle
+            size="20px"
+            color={status === "CONNECTED" ? "status-success" : "status-error"}
+          />
+        </Box>
+        <Box>
+          <IconButton
+            pad="small"
+            alignSelf="end"
+            round
+            onClick={() => setShow(true)}
+          >
+            <Add color="light-1" />
+          </IconButton>
+        </Box>
+      </Box>
+      {/* conversations */}
+      <Box fill="vertical">
+        <List
+          data={counterparties}
+          border={false}
+          pad={{
+            horizontal: "none",
+            bottom: "small",
+          }}
+          onClickItem={(props: any) => setSelection(props.item)}
+        >
+          {(
+            counterparty: string,
+            _index: any,
+            { active: isHovered }: { active: boolean }
+          ) => {
+            const isSelected = counterparty === selection;
+            const highlight = isHovered || isSelected;
 
-          return (
-            <Box background={highlight ? "white" : undefined}>
-              <Text
-                style={{
-                  direction: "rtl",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {counterparty}
-              </Text>
-            </Box>
-          );
-        }}
-      </List>
+            return (
+              <Box background={highlight ? "white" : undefined}>
+                <Text
+                  style={{
+                    direction: "rtl",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {counterparty}
+                </Text>
+              </Box>
+            );
+          }}
+        </List>
+      </Box>
+      {/* footer */}
+      <Box pad="small" height={{ min: "min-content" }}>
+        <Logo />
+      </Box>
+      {/* add new conversaion popup */}
       {show && (
         <Layer
           onEsc={() => setShow(false)}
@@ -78,14 +108,14 @@ const ConversationsPanel: FunctionComponent<{
         >
           <NewConversation
             counterparties={counterparties}
-            onSend={(p) => {
-              onNewConversation(p);
+            addNewConversation={(p) => {
+              addNewConversation(p);
               setShow(false);
             }}
           />
         </Layer>
       )}
-    </Sidebar>
+    </Box>
   );
 };
 
