@@ -1,6 +1,6 @@
 import type { FunctionComponent } from "react";
 import type { Message } from "../state";
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Box, Text, InfiniteScroll } from "grommet";
 import { debounce } from "lodash";
 import ChatBubble from "./chat-bubble";

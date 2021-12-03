@@ -42,13 +42,19 @@ const PersonalPanel: FunctionComponent<{
       justify="between"
       direction="row"
     >
-      <Box>
-        <Text>
-          Your Peer ID: {myPeerId}
-          <IconButton onClick={() => navigator.clipboard.writeText(myPeerId)}>
-            <Copy />
-          </IconButton>
-        </Text>
+      <Box
+        direction="row"
+        justify="start"
+        align="center"
+        height={{
+          min: "min-content",
+          height: "100px",
+        }}
+      >
+        <Text>Your Peer ID: {myPeerId}</Text>
+        <IconButton onClick={() => navigator.clipboard.writeText(myPeerId)}>
+          <Copy />
+        </IconButton>
       </Box>
       <Box>
         <IconButton onClick={() => setShowSettings(true)}>
@@ -61,16 +67,24 @@ const PersonalPanel: FunctionComponent<{
           onClickOutside={() => setShowSettings(false)}
           background="none"
         >
-          <Box shadow round pad="large" background="dark-4">
-            <TextInput
-              value={draft.httpEndpoint}
-              onChange={HandleSetDraftSetting("httpEndpoint")}
-            />
-            <TextInput
-              value={draft.wsEndpoint}
-              onChange={HandleSetDraftSetting("wsEndpoint")}
-            />
-            <Button label="save" onClick={handleSave} />
+          <Box shadow round pad="large" background="dark-4" gap="medium">
+            <Box>
+              HTTP endpoint:
+              <TextInput
+                placeholder="http://localhost:8080"
+                value={draft.httpEndpoint}
+                onChange={HandleSetDraftSetting("httpEndpoint")}
+              />
+            </Box>
+            <Box>
+              WS endpoint:
+              <TextInput
+                placeholder="ws://localhost:8081"
+                value={draft.wsEndpoint}
+                onChange={HandleSetDraftSetting("wsEndpoint")}
+              />
+              <Button label="save" onClick={handleSave} />
+            </Box>
           </Box>
         </Layer>
       )}

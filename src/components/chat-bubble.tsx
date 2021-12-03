@@ -13,18 +13,7 @@ const ChatBubble: FunctionComponent<{ message: Message }> = ({ message }) => {
         {new Date(message.createdAt).toLocaleString()}
       </Text>
       <Box background={backgroundColor} pad="small" round shadow>
-        <Text
-          color={textColor}
-          size="medium"
-          wordBreak="break-word"
-          tip={
-            message.error
-              ? {
-                  content: message.error,
-                }
-              : undefined
-          }
-        >
+        <Text color={textColor} size="medium" wordBreak="break-word">
           {message.content}{" "}
           {message.status === "FAILURE" ? (
             <Tip content={message.error}>

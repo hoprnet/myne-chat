@@ -5,7 +5,6 @@ import { LinkPrevious } from "grommet-icons";
 import useAppState from "../src/state";
 import { encodeMessage, decodeMessage } from "../src/utils";
 import ConversationsPanel from "../src/components/conversations-panel";
-import PersonalPanel from "../src/components/personal-panel";
 import Chat from "../src/components/chat";
 
 const HomePage: NextPage = () => {
@@ -28,9 +27,7 @@ const HomePage: NextPage = () => {
     "conversations-panel"
   );
   const screenSize = useContext(ResponsiveContext);
-  const isSmall = screenSize === "small";
-  const showConvsOnly = isSmall && focus === "conversations-panel";
-  const showChatOnly = isSmall && focus === "chat";
+  const isMobile = screenSize === "small";
 
   const handleReceivedMessage = (ev: MessageEvent<string>) => {
     try {
@@ -86,10 +83,13 @@ const HomePage: NextPage = () => {
   return (
     <Box fill direction="row" justify="between" pad="small">
       <Box
-        width={isSmall ? "100%" : "250px"}
-        pad={{ right: isSmall ? undefined : "small" }}
+        fill={isMobile ? true : "vertical"}
+        flex={{ shrink: 1, grow: 1 }}
+        basis="0%"
+        pad={{ right: isMobile ? undefined : "small" }}
         style={{
-          display: showChatOnly ? "none" : undefined,
+          display:
+            isMobile && focus !== "conversations-panel" ? "none" : undefined,
         }}
       >
         <ConversationsPanel
@@ -101,29 +101,28 @@ const HomePage: NextPage = () => {
         />
       </Box>
       <Box
-        width="100%"
-        height="100%"
+        fill={isMobile ? true : "vertical"}
+        flex={{ shrink: 6, grow: 6 }}
+        basis="0%"
         direction="column"
         justify="between"
         style={{
-          display: showConvsOnly ? "none" : undefined,
+          display: isMobile && focus !== "chat" ? "none" : undefined,
         }}
         gap="small"
       >
-        {isSmall ? (
+        {isMobile ? (
           <Button
             icon={<LinkPrevious />}
             onClick={() => setFocus("conversations-panel")}
           />
         ) : null}
-        <PersonalPanel
-          myPeerId={myPeerId ?? "unknown"}
-          settings={settings}
-          updateSettings={updateSettings}
-        />
         <Chat
+          settings={settings}
+          myPeerId={myPeerId}
           selection={selection}
           messages={conversation ? Array.from(conversation.values()) : []}
+          updateSettings={updateSettings}
           sendMessage={handleSendMessage}
         />
       </Box>
