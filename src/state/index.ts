@@ -63,7 +63,7 @@ const useAppState = () => {
   const updateSettings = (settings: Partial<Settings>) => {
     setState((draft) => {
       for (const [k, v] of Object.entries(settings)) {
-        (draft as any)[k] = v;
+        (draft.settings as any)[k] = v;
       }
       return draft;
     });
