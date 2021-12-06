@@ -83,8 +83,8 @@ const PersonalPanel: FunctionComponent<{
                 value={draft.wsEndpoint}
                 onChange={HandleSetDraftSetting("wsEndpoint")}
               />
-              <Button label="save" onClick={handleSave} />
             </Box>
+            <Button label="save" onClick={handleSave} />
           </Box>
         </Layer>
       )}

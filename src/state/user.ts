@@ -42,6 +42,7 @@ const useUser = (endpoint: string) => {
       .catch((err) => {
         console.error(err);
         setState((draft) => {
+          draft.myPeerId = undefined;
           draft.error = err;
           return draft;
         });
