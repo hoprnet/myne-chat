@@ -25,7 +25,7 @@ const GlobalStyle = createGlobalStyle`
     width: ${theme.global.edgeSize.medium};
   }
   ::-webkit-scrollbar-track {
-    background: ${theme.global.colors["dark-2"]};
+    background: ${theme.global.colors["dark-3"]};
     border-radius: 4px;
   }
   ::-webkit-scrollbar-thumb {

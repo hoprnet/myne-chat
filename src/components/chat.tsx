@@ -1,37 +1,48 @@
 import type { FunctionComponent } from "react";
-import type { Message, Settings } from "../state";
-import { Box } from "grommet";
-import PersonalPanel from "./personal-panel";
+import type { Message } from "../state";
+import { Box, Text } from "grommet";
+import { Copy } from "grommet-icons";
 import ChatView from "./chat-view";
 import ChatInput from "./chat-input";
+import IconButton from "./icon-button";
 
 const Chat: FunctionComponent<{
-  updateSettings: (settings: Partial<Settings>) => void;
   sendMessage: (destination: string, message: string) => void;
-  settings: Settings;
   messages: Message[];
-  myPeerId?: string;
   selection?: string;
-}> = ({
-  myPeerId,
-  settings,
-  selection,
-  messages,
-  sendMessage,
-  updateSettings,
-}) => {
+}> = ({ selection, messages, sendMessage }) => {
   return (
     <Box fill justify="between" background="dark-4" round shadow>
-      <Box>
-        <PersonalPanel
-          myPeerId={myPeerId ?? "unknown"}
-          settings={settings}
-          updateSettings={updateSettings}
-        />
-      </Box>
+      {selection ? (
+        <Box
+          shadow
+          round
+          pad="medium"
+          background="dark-3"
+          justify="between"
+          direction="row"
+        >
+          <Box
+            direction="row"
+            justify="start"
+            align="center"
+            height={{
+              min: "min-content",
+              height: "100px",
+            }}
+          >
+            <Text>User Peer ID: {selection}</Text>
+            <IconButton
+              onClick={() => navigator.clipboard.writeText(selection)}
+            >
+              <Copy />
+            </IconButton>
+          </Box>
+        </Box>
+      ) : null}
       <Box fill gap="small" pad="small">
         <Box fill>
-          <ChatView messages={messages} />
+          <ChatView selection={selection} messages={messages} />
         </Box>
         <Box
           height={{

@@ -65,6 +65,12 @@ const theme = makeTheme({
       family: "GerstnerProgrammFSL",
       size: "medium",
     },
+
+    focus: {
+      border: {
+        color: "none",
+      },
+    },
   },
 
   box: {

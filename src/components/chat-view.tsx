@@ -6,8 +6,9 @@ import { debounce } from "lodash";
 import ChatBubble from "./chat-bubble";
 
 const ChatView: FunctionComponent<{
+  selection?: string;
   messages: Message[];
-}> = ({ messages }) => {
+}> = ({ messages, selection }) => {
   // sorted in ASC by createdAt
   const sorted = messages.sort((a, b) => {
     return b.createdAt - a.createdAt;
@@ -67,7 +68,19 @@ const ChatView: FunctionComponent<{
       }}
       ref={container}
     >
-      {messages.length > 0 ? (
+      {!selection ? (
+        <Box justify="center" height="100%">
+          <Text textAlign="center" color="light-2">
+            Add & Select a conversation.
+          </Text>
+        </Box>
+      ) : messages.length === 0 ? (
+        <Box justify="center" height="100%">
+          <Text textAlign="center" color="light-2">
+            No messages, say hi!
+          </Text>
+        </Box>
+      ) : (
         <InfiniteScroll items={sorted}>
           {(message: Message, _index: number, ref: any) => (
             <Box
@@ -84,12 +97,6 @@ const ChatView: FunctionComponent<{
             </Box>
           )}
         </InfiniteScroll>
-      ) : (
-        <Box justify="center" height="100%">
-          <Text textAlign="center" color="light-2">
-            No messages, say hi!
-          </Text>
-        </Box>
       )}
     </Box>
   );
