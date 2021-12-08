@@ -6,8 +6,7 @@ import { useEffect } from "react";
 import { useImmer } from "use-immer";
 import useWebsocket from "./websocket";
 import useUser from "./user";
-import { genId } from "../utils";
-import { current } from "immer";
+import { genId, getUrlParams } from "../utils";
 
 export type { ConnectionStatus } from "./websocket";
 
@@ -33,10 +32,11 @@ export type State = {
 };
 
 const useAppState = () => {
+  const urlParams = getUrlParams();
   const [state, setState] = useImmer<State>({
     settings: {
-      httpEndpoint: "http://localhost:8080",
-      wsEndpoint: "ws://localhost:8081",
+      httpEndpoint: urlParams.httpEndpoint || "http://localhost:8080",
+      wsEndpoint: urlParams.wsEndpoint || "ws://localhost:8081",
     },
     conversations: new Map([
       ["16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs", new Map()],
@@ -139,7 +139,6 @@ const useAppState = () => {
       message.status = status;
       message.error = error;
 
-      console.log("updateMessage", messageId, current(message));
       conversations.set(messageId, message);
       return draft;
     });

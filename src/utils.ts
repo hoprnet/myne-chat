@@ -32,3 +32,16 @@ export const decodeMessage = (
     message,
   };
 };
+
+export const getUrlParams = (): {
+  httpEndpoint?: string;
+  wsEndpoint?: string;
+} => {
+  if (typeof location === "undefined") return {};
+
+  const params = new URLSearchParams(location.search);
+  return {
+    httpEndpoint: params.get("httpEndpoint") || undefined,
+    wsEndpoint: params.get("wsEndpoint") || undefined,
+  };
+};

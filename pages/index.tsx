@@ -94,10 +94,13 @@ const HomePage: NextPage = () => {
       >
         <ConversationsPanel
           status={status}
-          counterparties={Array.from(conversations.keys())}
+          myPeerId={myPeerId}
+          settings={settings}
+          updateSettings={updateSettings}
           selection={selection}
           setSelection={handleSetSelection}
           addNewConversation={handleAddNewConversation}
+          counterparties={Array.from(conversations.keys())}
         />
       </Box>
       <Box
@@ -118,11 +121,8 @@ const HomePage: NextPage = () => {
           />
         ) : null}
         <Chat
-          settings={settings}
-          myPeerId={myPeerId}
           selection={selection}
           messages={conversation ? Array.from(conversation.values()) : []}
-          updateSettings={updateSettings}
           sendMessage={handleSendMessage}
         />
       </Box>
