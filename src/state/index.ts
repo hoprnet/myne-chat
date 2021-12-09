@@ -23,6 +23,7 @@ export type Message = {
 export type Settings = {
   httpEndpoint: string;
   wsEndpoint: string;
+  securityToken?: string;
 };
 
 export type State = {
