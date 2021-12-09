@@ -1,3 +1,5 @@
+import type { Settings } from "./state";
+
 // simple ID generator
 export const genId = () => String(Math.floor(Math.random() * 1e18));
 
@@ -33,15 +35,18 @@ export const decodeMessage = (
   };
 };
 
-export const getUrlParams = (): {
-  httpEndpoint?: string;
-  wsEndpoint?: string;
-} => {
+/**
+ * Inspects the url to find valid settings.
+ * @returns settings found in url query
+ */
+export const getUrlParams = (): Partial<Settings> => {
+  // don't run server-side
   if (typeof location === "undefined") return {};
 
   const params = new URLSearchParams(location.search);
   return {
     httpEndpoint: params.get("httpEndpoint") || undefined,
     wsEndpoint: params.get("wsEndpoint") || undefined,
+    securityToken: params.get("securityToken") || undefined,
   };
 };

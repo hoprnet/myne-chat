@@ -2,33 +2,26 @@
   A react hook.
   Keeps websocket connection alive, reconnects on disconnections or endpoint change.
 */
+import type { Settings } from ".";
 import { useEffect, useRef, useState } from "react";
 import { useImmer } from "use-immer";
 import { debounce } from "lodash";
 
 export type ConnectionStatus = "CONNECTED" | "DISCONNECTED";
 
-const useWebsocket = (endpoint: string) => {
+const useWebsocket = (settings: Settings) => {
   // update timestamp when you want to reconnect to the websocket
   const [reconnectTmsp, setReconnectTmsp] = useState<number>();
   const [state, setState] = useImmer<{
     status: ConnectionStatus;
-    endpoint: string;
     error?: string;
-  }>({ status: "DISCONNECTED", endpoint });
+  }>({ status: "DISCONNECTED" });
 
   const socketRef = useRef<WebSocket>();
 
   const setReconnectTmspDebounced = debounce((timestamp: number) => {
     setReconnectTmsp(timestamp);
   }, 1e3);
-
-  const setEndpoint = (endpoint: string) => {
-    setState((draft) => {
-      draft.endpoint = endpoint;
-      return draft;
-    });
-  };
 
   const handleOpenEvent = () => {
     console.info("WS CONNECTED");
@@ -65,7 +58,7 @@ const useWebsocket = (endpoint: string) => {
       socketRef.current.close(1000, "Shutting down");
     }
 
-    socketRef.current = new WebSocket(state.endpoint);
+    socketRef.current = new WebSocket(settings.wsEndpoint);
 
     // handle connection opening
     socketRef.current.addEventListener("open", handleOpenEvent);
@@ -82,12 +75,11 @@ const useWebsocket = (endpoint: string) => {
       socketRef.current.removeEventListener("close", handleCloseEvent);
       socketRef.current.removeEventListener("error", handleErrorEvent);
     };
-  }, [state.endpoint, reconnectTmsp]);
+  }, [settings.wsEndpoint, settings.securityToken, reconnectTmsp]);
 
   return {
     state,
     socketRef,
-    setEndpoint,
   };
 };
 

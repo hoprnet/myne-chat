@@ -29,10 +29,10 @@ httpService
     res.setHeader("Content-Type", "application/json");
     next();
   })
-  .get("/info", (req, res) => {
+  .get("/api/v2/account/address", (req, res) => {
     console.log("->", req.method, req.url);
     res.send({
-      peerId: NODE_PEERID,
+      hoprAddress: NODE_PEERID,
     });
   })
   .post("/api/v2/messages", (req, res) => {
