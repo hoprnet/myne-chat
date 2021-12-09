@@ -2,7 +2,6 @@
   A react hook.
   Contains the app's global state.
 */
-import { useEffect } from "react";
 import { useImmer } from "use-immer";
 import useWebsocket from "./websocket";
 import useUser from "./user";
@@ -23,6 +22,7 @@ export type Message = {
 export type Settings = {
   httpEndpoint: string;
   wsEndpoint: string;
+  securityToken?: string;
 };
 
 export type State = {
@@ -35,12 +35,11 @@ const useAppState = () => {
   const urlParams = getUrlParams();
   const [state, setState] = useImmer<State>({
     settings: {
-      httpEndpoint: urlParams.httpEndpoint || "http://localhost:8080",
-      wsEndpoint: urlParams.wsEndpoint || "ws://localhost:8081",
+      httpEndpoint: urlParams.httpEndpoint || "http://localhost:3001",
+      wsEndpoint: urlParams.wsEndpoint || "ws://localhost:3000",
+      securityToken: urlParams.securityToken,
     },
-    conversations: new Map([
-      ["16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs", new Map()],
-    ]),
+    conversations: new Map([]),
     /*
       16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs
       16Uiu2HAm83TSuRSCN8mKaZbCekkx3zfqgniPSxHdeUSeyEkdwvTs

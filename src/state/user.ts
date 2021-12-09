@@ -6,10 +6,20 @@ import type { Settings } from ".";
 import { useEffect } from "react";
 import { useImmer } from "use-immer";
 
-const fetchPeerId = async (endpoint: string): Promise<string> => {
-  return fetch(`${endpoint}/info`)
+const fetchPeerId = async (
+  endpoint: string,
+  authCredentials?: string
+): Promise<string> => {
+  const headers = new Headers();
+  if (authCredentials && authCredentials !== "") {
+    headers.set("Authorization", "Basic " + btoa(authCredentials));
+  }
+
+  return fetch(`${endpoint}/api/v2/account/address`, { headers })
     .then((res) => res.json())
-    .then((o) => o.peerId);
+    .then((data) => {
+      return data.hoprAddress;
+    });
 };
 
 const useUser = (settings: Settings) => {
@@ -18,12 +28,12 @@ const useUser = (settings: Settings) => {
     error?: string;
   }>({});
 
-  // runs everytime "endpoint" changes
+  // runs everytime "httpEndpoint" changes
   useEffect(() => {
     if (typeof fetch === "undefined") return;
     console.info("Fetching user data..");
 
-    fetchPeerId(settings.httpEndpoint)
+    fetchPeerId(settings.httpEndpoint, settings.securityToken)
       .then((peerId) => {
         console.info("Fetched PeerId", peerId);
         setState((draft) => {
@@ -39,7 +49,7 @@ const useUser = (settings: Settings) => {
           return draft;
         });
       });
-  }, [settings.httpEndpoint]);
+  }, [settings.httpEndpoint, settings.securityToken]);
 
   return {
     state,

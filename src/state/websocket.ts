@@ -58,6 +58,8 @@ const useWebsocket = (settings: Settings) => {
       socketRef.current.close(1000, "Shutting down");
     }
 
+    // need to set the token in the cookie, to enable websocket authentication
+    document.cookie = `X-Auth-Token=${settings.securityToken}; path=/`;
     socketRef.current = new WebSocket(settings.wsEndpoint);
 
     // handle connection opening
@@ -75,7 +77,7 @@ const useWebsocket = (settings: Settings) => {
       socketRef.current.removeEventListener("close", handleCloseEvent);
       socketRef.current.removeEventListener("error", handleErrorEvent);
     };
-  }, [settings.wsEndpoint, reconnectTmsp]);
+  }, [settings.wsEndpoint, settings.securityToken, reconnectTmsp]);
 
   return {
     state,

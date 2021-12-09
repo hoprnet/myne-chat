@@ -10,6 +10,7 @@ const Settings: FunctionComponent<{
   const [draft, setDraft] = useState<TSettings>({
     httpEndpoint: settings.httpEndpoint,
     wsEndpoint: settings.wsEndpoint,
+    securityToken: settings.securityToken,
   });
 
   const HandleSetDraftSetting = <K extends keyof TSettings>(k: K) => {
@@ -25,6 +26,7 @@ const Settings: FunctionComponent<{
     updateSettings({
       httpEndpoint: draft.httpEndpoint,
       wsEndpoint: draft.wsEndpoint,
+      securityToken: draft.securityToken,
     });
   };
 
@@ -44,6 +46,13 @@ const Settings: FunctionComponent<{
           placeholder="ws://localhost:8081"
           value={draft.wsEndpoint}
           onChange={HandleSetDraftSetting("wsEndpoint")}
+        />
+      </Box>
+      <Box>
+        Security Token:
+        <TextInput
+          value={draft.securityToken || ""}
+          onChange={HandleSetDraftSetting("securityToken")}
         />
       </Box>
       <Button label="save" onClick={handleSave} />

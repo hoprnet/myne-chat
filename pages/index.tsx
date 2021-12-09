@@ -31,8 +31,15 @@ const HomePage: NextPage = () => {
 
   const handleReceivedMessage = (ev: MessageEvent<string>) => {
     try {
-      const { from, message } = decodeMessage(ev.data);
-      addReceivedMessage(from, message);
+      // we are only interested in messages, not all the other events coming in on the socket
+      const data = JSON.parse(ev.data);
+      if (data.type == "message") {
+        const { tag, from, message } = decodeMessage(data.msg);
+        // we are only interested in myne messages
+        if (tag == "myne") {
+          addReceivedMessage(from, message);
+        }
+      }
     } catch (err) {
       console.error(err);
     }
@@ -48,11 +55,21 @@ const HomePage: NextPage = () => {
 
     const encodedMessage = encodeMessage(myPeerId, message);
     const id = addSentMessage(myPeerId, destination, message);
-    fetch(`${settings.httpEndpoint}/send_message`, {
+
+    const headers = new Headers();
+    if (settings.securityToken && settings.securityToken !== "") {
+      headers.set("Authorization", "Basic " + btoa(settings.securityToken));
+    }
+
+    headers.set("Content-Type", "application/json");
+    headers.set("Accept-Content", "application/json");
+
+    fetch(`${settings.httpEndpoint}/api/v2/messages`, {
       method: "POST",
+      headers,
       body: JSON.stringify({
-        destination: selection,
-        message: encodedMessage,
+        recipient: selection,
+        body: encodedMessage,
       }),
     })
       .then(() => {

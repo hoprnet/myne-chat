@@ -1,3 +1,5 @@
+import type { Settings } from "./state";
+
 // simple ID generator
 export const genId = () => String(Math.floor(Math.random() * 1e18));
 
@@ -13,35 +15,41 @@ export const isValidPeerId = (v: string): boolean => {
 
 // message encoding / decoding
 export const encodeMessage = (from: string, message: string): string => {
-  return `${from}:${message}`;
+  // we prepends messages with our app's tag so we can distinguish the
+  // messages from other apps
+  return `myne:${from}:${message}`;
 };
 export const decodeMessage = (
-  encodedMessage: string
-): { from: string; message: string } => {
-  const [from, ...messages] = encodedMessage.split(":");
+  fullMessage: string
+): { tag: string; from: string; message: string } => {
+  const [tag, from, ...messages] = fullMessage.split(":");
   const message = messages.join(":");
 
   if (!isValidPeerId(from)) {
     throw Error(
-      `Message "${encodedMessage}" was sent from an invalid PeerID "${from}"`
+      `Received message "${fullMessage}" was sent from an invalid PeerID "${from}"`
     );
   }
 
   return {
+    tag,
     from,
     message,
   };
 };
 
-export const getUrlParams = (): {
-  httpEndpoint?: string;
-  wsEndpoint?: string;
-} => {
+/**
+ * Inspects the url to find valid settings.
+ * @returns settings found in url query
+ */
+export const getUrlParams = (): Partial<Settings> => {
+  // don't run server-side
   if (typeof location === "undefined") return {};
 
   const params = new URLSearchParams(location.search);
   return {
     httpEndpoint: params.get("httpEndpoint") || undefined,
     wsEndpoint: params.get("wsEndpoint") || undefined,
+    securityToken: params.get("securityToken") || undefined,
   };
 };

@@ -6,8 +6,8 @@ const restana = require("restana");
 const bodyParser = require("body-parser");
 const { WebSocketServer } = require("ws");
 
-const HTTP_PORT = 8080;
-const WS_PORT = 8081;
+const HTTP_PORT = 3001;
+const WS_PORT = 3000;
 const NODE_PEERID = "16Uiu2HAm1oEHkaUGk1TjGVGZqA7V1AaRKUEcxzaEqpTbpYVqPsMq";
 
 // HTTP Server
@@ -29,15 +29,15 @@ httpService
     res.setHeader("Content-Type", "application/json");
     next();
   })
-  .get("/info", (req, res) => {
+  .get("/api/v2/account/address", (req, res) => {
     console.log("->", req.method, req.url);
     res.send({
-      peerId: NODE_PEERID,
+      hoprAddress: NODE_PEERID,
     });
   })
-  .post("/send_message", (req, res) => {
+  .post("/api/v2/messages", (req, res) => {
     console.log("->", req.method, req.url, req.body);
-    const { destination, message } = req.body;
+    const { recipient, body } = req.body;
     res.end();
 
     if (!ws) {
@@ -46,7 +46,7 @@ httpService
     }
 
     // response
-    ws.send(`${destination}:message "${message}" received`);
+    ws.send(`${recipient}:message "${body}" received`);
   });
 
 http.createServer(httpService).listen(HTTP_PORT, "localhost", () => {
@@ -54,7 +54,7 @@ http.createServer(httpService).listen(HTTP_PORT, "localhost", () => {
 });
 
 // WS Server
-const wss = new WebSocketServer({ host: "localhost", port: 8081 });
+const wss = new WebSocketServer({ host: "localhost", port: WS_PORT });
 let ws;
 
 wss.on("listening", () => {
