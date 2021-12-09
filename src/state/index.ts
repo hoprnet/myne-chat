@@ -47,18 +47,9 @@ const useAppState = () => {
     */
   });
   // initialize websocket connection & state tracking
-  const websocket = useWebsocket(state.settings.wsEndpoint);
+  const websocket = useWebsocket(state.settings);
   // fetch user data
-  const user = useUser(state.settings.httpEndpoint);
-
-  // reconnect to new WS endpoint
-  useEffect(() => {
-    websocket.setEndpoint(state.settings.wsEndpoint);
-  }, [state.settings.wsEndpoint]);
-  // refetch user data
-  useEffect(() => {
-    user.setEndpoint(state.settings.httpEndpoint);
-  }, [state.settings.httpEndpoint]);
+  const user = useUser(state.settings);
 
   const updateSettings = (settings: Partial<Settings>) => {
     setState((draft) => {
