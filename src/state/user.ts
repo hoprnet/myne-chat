@@ -5,23 +5,41 @@
 import { useEffect } from "react";
 import { useImmer } from "use-immer";
 
-const fetchPeerId = async (endpoint: string): Promise<string> => {
-  return fetch(`${endpoint}/info`)
-    .then((res) => res.json())
+const fetchPeerId = async (
+  endpoint: string,
+  authCredentials: string
+): Promise<string> => {
+  const headers = new Headers();
+  if (authCredentials && authCredentials !== "") {
+    headers.set("Authorization", "Basic " + btoa(authCredentials));
+  }
+
+  return fetch(`${endpoint}api/v2/account/address`, { headers })
+    .then((res) => {
+      const data = res.json();
+      return data.hoprAddress;
+    })
     .then((o) => o.peerId);
 };
 
 const useUser = (endpoint: string) => {
+  // extract auth credentials if present
+  const url = new URL(endpoint);
+  endpoint = `${url.protocol}//${url.host}${url.pathname}`;
   const [state, setState] = useImmer<{
     endpoint: string;
+    endpointAuthCredentials: string;
     myPeerId?: string;
     error?: string;
-  }>({ endpoint });
+  }>({ endpoint, endpointAuthCredentials: `${url.username}:${url.password}` });
 
   // set new endpoint
   const setEndpoint = (endpoint: string) => {
+    // extract auth credentials if present
+    const url = new URL(endpoint);
     setState((draft) => {
-      draft.endpoint = endpoint;
+      draft.endpointAuthCredentials = `${url.username}:${url.password}`;
+      draft.endpoint = `${url.protocol}//${url.host}${url.pathname}`;
       return draft;
     });
   };
@@ -31,7 +49,7 @@ const useUser = (endpoint: string) => {
     if (typeof fetch === "undefined") return;
     console.info("Fetching user data..");
 
-    fetchPeerId(state.endpoint)
+    fetchPeerId(state.endpoint, state.endpointAuthCredentials)
       .then((peerId) => {
         console.info("Fetched PeerId", peerId);
         setState((draft) => {

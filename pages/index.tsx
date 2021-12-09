@@ -48,11 +48,23 @@ const HomePage: NextPage = () => {
 
     const encodedMessage = encodeMessage(myPeerId, message);
     const id = addSentMessage(myPeerId, destination, message);
-    fetch(`${settings.httpEndpoint}/send_message`, {
+
+    const url = new URL(setting.httpEndpoint);
+    const endpoint = `${url.protocol}//${url.host}${url.pathname}`;
+    const headers = new Headers();
+    if (url.username && url.username !== "") {
+      headers.set(
+        "Authorization",
+        "Basic " + btoa(`${url.username}:${url.password}`)
+      );
+    }
+
+    fetch(`${endpoint}api/v2/messages`, {
       method: "POST",
+      headers,
       body: JSON.stringify({
-        destination: selection,
-        message: encodedMessage,
+        recipient: selection,
+        body: encodedMessage,
       }),
     })
       .then(() => {
