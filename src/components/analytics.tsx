@@ -11,7 +11,7 @@ const Analytics: FunctionComponent<{
       <Box align="center">
         <Text>Your Peer ID</Text>
         <br />
-        <Text>{myPeerId}</Text>
+        <Text>{myPeerId || "Unknown"}</Text>
         <IconButton
           onClick={() => navigator.clipboard.writeText(myPeerId || "")}
           disabled={!myPeerId}
