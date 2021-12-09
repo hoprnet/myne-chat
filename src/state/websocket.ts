@@ -75,7 +75,7 @@ const useWebsocket = (settings: Settings) => {
       socketRef.current.removeEventListener("close", handleCloseEvent);
       socketRef.current.removeEventListener("error", handleErrorEvent);
     };
-  }, [settings.wsEndpoint, reconnectTmsp]);
+  }, [settings.wsEndpoint, settings.securityToken, reconnectTmsp]);
 
   return {
     state,

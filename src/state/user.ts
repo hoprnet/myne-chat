@@ -39,7 +39,7 @@ const useUser = (settings: Settings) => {
           return draft;
         });
       });
-  }, [settings.httpEndpoint]);
+  }, [settings.httpEndpoint, settings.securityToken]);
 
   return {
     state,

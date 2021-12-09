@@ -35,7 +35,12 @@ export const decodeMessage = (
   };
 };
 
+/**
+ * Inspects the url to find valid settings.
+ * @returns settings found in url query
+ */
 export const getUrlParams = (): Partial<Settings> => {
+  // don't run server-side
   if (typeof location === "undefined") return {};
 
   const params = new URLSearchParams(location.search);

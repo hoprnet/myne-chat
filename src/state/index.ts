@@ -38,6 +38,7 @@ const useAppState = () => {
     settings: {
       httpEndpoint: urlParams.httpEndpoint || "http://localhost:8080",
       wsEndpoint: urlParams.wsEndpoint || "ws://localhost:8081",
+      securityToken: urlParams.securityToken,
     },
     conversations: new Map([
       ["16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs", new Map()],
