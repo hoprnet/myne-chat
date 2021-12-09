@@ -31,8 +31,15 @@ const HomePage: NextPage = () => {
 
   const handleReceivedMessage = (ev: MessageEvent<string>) => {
     try {
-      const { from, message } = decodeMessage(ev.data);
-      addReceivedMessage(from, message);
+      // we are only interested in messages, not all the other events coming in on the socket
+      const data = JSON.parse(ev.data);
+      if (data.type == "message") {
+        const { tag, from, message } = decodeMessage(data.msg);
+        // we are only interested in myne messages
+        if (tag == "myne") {
+          addReceivedMessage(from, message);
+        }
+      }
     } catch (err) {
       console.error(err);
     }
@@ -58,6 +65,9 @@ const HomePage: NextPage = () => {
         "Basic " + btoa(`${url.username}:${url.password}`)
       );
     }
+
+    headers.set("Content-Type", "application/json");
+    headers.set("Accept-Content", "application/json");
 
     fetch(`${endpoint}api/v2/messages`, {
       method: "POST",

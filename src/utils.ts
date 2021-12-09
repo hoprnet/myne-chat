@@ -15,21 +15,24 @@ export const isValidPeerId = (v: string): boolean => {
 
 // message encoding / decoding
 export const encodeMessage = (from: string, message: string): string => {
-  return `${from}:${message}`;
+  // we prepends messages with our app's tag so we can distinguish the
+  // messages from other apps
+  return `myne:${from}:${message}`;
 };
 export const decodeMessage = (
-  encodedMessage: string
-): { from: string; message: string } => {
-  const [from, ...messages] = encodedMessage.split(":");
+  fullMessage: string
+): { tag: string; from: string; message: string } => {
+  const [tag, from, ...messages] = fullMessage.split(":");
   const message = messages.join(":");
 
   if (!isValidPeerId(from)) {
     throw Error(
-      `Message "${encodedMessage}" was sent from an invalid PeerID "${from}"`
+      `Received message "${fullMessage}" was sent from an invalid PeerID "${from}"`
     );
   }
 
   return {
+    tag,
     from,
     message,
   };
