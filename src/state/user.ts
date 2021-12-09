@@ -2,6 +2,7 @@
   A react hook.
   Keeps user state updated whenever endpoint is changed.
 */
+import type { Settings } from ".";
 import { useEffect } from "react";
 import { useImmer } from "use-immer";
 
@@ -11,27 +12,18 @@ const fetchPeerId = async (endpoint: string): Promise<string> => {
     .then((o) => o.peerId);
 };
 
-const useUser = (endpoint: string) => {
+const useUser = (settings: Settings) => {
   const [state, setState] = useImmer<{
-    endpoint: string;
     myPeerId?: string;
     error?: string;
-  }>({ endpoint });
-
-  // set new endpoint
-  const setEndpoint = (endpoint: string) => {
-    setState((draft) => {
-      draft.endpoint = endpoint;
-      return draft;
-    });
-  };
+  }>({});
 
   // runs everytime "endpoint" changes
   useEffect(() => {
     if (typeof fetch === "undefined") return;
     console.info("Fetching user data..");
 
-    fetchPeerId(state.endpoint)
+    fetchPeerId(settings.httpEndpoint)
       .then((peerId) => {
         console.info("Fetched PeerId", peerId);
         setState((draft) => {
@@ -47,11 +39,10 @@ const useUser = (endpoint: string) => {
           return draft;
         });
       });
-  }, [state.endpoint]);
+  }, [settings.httpEndpoint]);
 
   return {
     state,
-    setEndpoint,
   };
 };
 
