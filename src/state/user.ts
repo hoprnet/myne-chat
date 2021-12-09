@@ -3,7 +3,7 @@
   Keeps user state updated whenever endpoint is changed.
 */
 import type { Settings } from ".";
-import { useMemo, useEffect } from "react";
+import { useEffect } from "react";
 import { useImmer } from "use-immer";
 
 const fetchPeerId = async (
@@ -15,7 +15,7 @@ const fetchPeerId = async (
     headers.set("Authorization", "Basic " + btoa(authCredentials));
   }
 
-  return fetch(`${endpoint}api/v2/account/address`, { headers })
+  return fetch(`${endpoint}/api/v2/account/address`, { headers })
     .then((res) => res.json())
     .then((data) => {
       return data.hoprAddress;
@@ -28,17 +28,12 @@ const useUser = (settings: Settings) => {
     error?: string;
   }>({});
 
-  const endpoint = useMemo(() => {
-    const url = new URL(settings.httpEndpoint);
-    return `${url.protocol}//${url.host}${url.pathname}`;
-  }, [settings.httpEndpoint]);
-
-  // runs everytime "endpoint" changes
+  // runs everytime "httpEndpoint" changes
   useEffect(() => {
     if (typeof fetch === "undefined") return;
     console.info("Fetching user data..");
 
-    fetchPeerId(endpoint, settings.securityToken)
+    fetchPeerId(settings.httpEndpoint, settings.securityToken)
       .then((peerId) => {
         console.info("Fetched PeerId", peerId);
         setState((draft) => {
@@ -54,7 +49,7 @@ const useUser = (settings: Settings) => {
           return draft;
         });
       });
-  }, [endpoint, settings.securityToken]);
+  }, [settings.httpEndpoint, settings.securityToken]);
 
   return {
     state,
