@@ -49,7 +49,7 @@ const HomePage: NextPage = () => {
     const encodedMessage = encodeMessage(myPeerId, message);
     const id = addSentMessage(myPeerId, destination, message);
 
-    const url = new URL(setting.httpEndpoint);
+    const url = new URL(settings.httpEndpoint);
     const endpoint = `${url.protocol}//${url.host}${url.pathname}`;
     const headers = new Headers();
     if (url.username && url.username !== "") {
