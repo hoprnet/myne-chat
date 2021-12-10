@@ -2,16 +2,17 @@
   Run this file to get a simple mocked HOPRd instance.
 */
 const http = require("http");
-const restana = require("restana");
+const express = require("express");
+const cors = require("cors");
 const bodyParser = require("body-parser");
 const { WebSocketServer } = require("ws");
 
 const HTTP_PORT = 3001;
-const WS_PORT = 3000;
+const WS_PORT = 3002;
 const NODE_PEERID = "16Uiu2HAm1oEHkaUGk1TjGVGZqA7V1AaRKUEcxzaEqpTbpYVqPsMq";
 
 // HTTP Server
-const httpService = restana({
+const httpService = express({
   errorHandler(err, req, res) {
     console.log(`HTTP server error: ${err.message || err}`);
     res.send(err);
@@ -20,15 +21,7 @@ const httpService = restana({
 
 httpService
   .use(bodyParser.json({ type: "*/*" }))
-  .use((_req, res, next) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
-    );
-    res.setHeader("Content-Type", "application/json");
-    next();
-  })
+  .use(cors())
   .get("/api/v2/account/address", (req, res) => {
     console.log("->", req.method, req.url);
     res.send({
@@ -45,8 +38,11 @@ httpService
       return;
     }
 
-    // response
-    ws.send(`${recipient}:message "${body}" received`);
+    // respond to client
+    ws.send(JSON.stringify({
+      type: "message",
+      msg: `myne:${recipient}:mocked server has recevied "${body}" message`
+    }));
   });
 
 http.createServer(httpService).listen(HTTP_PORT, "localhost", () => {

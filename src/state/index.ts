@@ -5,7 +5,7 @@
 import { useImmer } from "use-immer";
 import useWebsocket from "./websocket";
 import useUser from "./user";
-import { genId, getUrlParams } from "../utils";
+import { genId, getUrlParams, isSSR } from "../utils";
 
 export type { ConnectionStatus } from "./websocket";
 
@@ -32,11 +32,11 @@ export type State = {
 };
 
 const useAppState = () => {
-  const urlParams = getUrlParams();
+  const urlParams = !isSSR ? getUrlParams() : {};
   const [state, setState] = useImmer<State>({
     settings: {
       httpEndpoint: urlParams.httpEndpoint || "http://localhost:3001",
-      wsEndpoint: urlParams.wsEndpoint || "ws://localhost:3000",
+      wsEndpoint: urlParams.wsEndpoint || "ws://localhost:3002",
       securityToken: urlParams.securityToken,
     },
     conversations: new Map([]),
@@ -150,6 +150,7 @@ const useAppState = () => {
       ...websocket.state,
       ...user.state,
     },
+    getReqHeaders: user.getReqHeaders,
     socketRef: websocket.socketRef,
     updateSettings,
     setSelection,
