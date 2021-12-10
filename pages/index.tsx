@@ -10,6 +10,7 @@ import Chat from "../src/components/chat";
 const HomePage: NextPage = () => {
   const {
     state: { selection, conversations, myPeerId, settings, status },
+    getReqHeaders,
     socketRef,
     setSelection,
     addNewConversation,
@@ -56,17 +57,9 @@ const HomePage: NextPage = () => {
     const encodedMessage = encodeMessage(myPeerId, message);
     const id = addSentMessage(myPeerId, destination, message);
 
-    const headers = new Headers();
-    if (settings.securityToken && settings.securityToken !== "") {
-      headers.set("Authorization", "Basic " + btoa(settings.securityToken));
-    }
-
-    headers.set("Content-Type", "application/json");
-    headers.set("Accept-Content", "application/json");
-
     fetch(`${settings.httpEndpoint}/api/v2/messages`, {
       method: "POST",
-      headers,
+      headers: getReqHeaders(true),
       body: JSON.stringify({
         recipient: selection,
         body: encodedMessage,

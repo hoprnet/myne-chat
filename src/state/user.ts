@@ -5,22 +5,7 @@
 import type { Settings } from ".";
 import { useEffect } from "react";
 import { useImmer } from "use-immer";
-
-const fetchPeerId = async (
-  endpoint: string,
-  authCredentials?: string
-): Promise<string> => {
-  const headers = new Headers();
-  if (authCredentials && authCredentials !== "") {
-    headers.set("Authorization", "Basic " + btoa(authCredentials));
-  }
-
-  return fetch(`${endpoint}/api/v2/account/address`, { headers })
-    .then((res) => res.json())
-    .then((data) => {
-      return data.hoprAddress;
-    });
-};
+import { isSSR } from "../utils";
 
 const useUser = (settings: Settings) => {
   const [state, setState] = useImmer<{
@@ -28,16 +13,34 @@ const useUser = (settings: Settings) => {
     error?: string;
   }>({});
 
+  // construct headers to be used in authenticated requests
+  // when security token is present
+  const getReqHeaders = (isPost: boolean = false) => {
+    const headers = new Headers();
+    if (isPost) {
+      headers.set("Content-Type", "application/json");
+      headers.set("Accept-Content", "application/json");
+    }
+    if (settings.securityToken) {
+      headers.set("Authorization", "Basic " + btoa(settings.securityToken));
+    }
+
+    return headers;
+  };
+
   // runs everytime "httpEndpoint" changes
   useEffect(() => {
-    if (typeof fetch === "undefined") return;
+    if (isSSR) return;
     console.info("Fetching user data..");
 
-    fetchPeerId(settings.httpEndpoint, settings.securityToken)
-      .then((peerId) => {
-        console.info("Fetched PeerId", peerId);
+    fetch(`${settings.httpEndpoint}/api/v2/account/address`, {
+      headers: getReqHeaders(),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.info("Fetched PeerId", data.hoprAddress);
         setState((draft) => {
-          draft.myPeerId = peerId;
+          draft.myPeerId = data.hoprAddress;
           return draft;
         });
       })
@@ -53,6 +56,7 @@ const useUser = (settings: Settings) => {
 
   return {
     state,
+    getReqHeaders,
   };
 };
 

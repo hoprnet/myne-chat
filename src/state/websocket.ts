@@ -6,6 +6,8 @@ import type { Settings } from ".";
 import { useEffect, useRef, useState } from "react";
 import { useImmer } from "use-immer";
 import { debounce } from "lodash";
+import cookies from "js-cookie";
+import { isSSR } from "../utils";
 
 export type ConnectionStatus = "CONNECTED" | "DISCONNECTED";
 
@@ -51,15 +53,25 @@ const useWebsocket = (settings: Settings) => {
 
   // runs everytime "endpoint" or "reconnectTmsp" changes
   useEffect(() => {
-    if (typeof WebSocket === "undefined") return;
+    if (isSSR) return;
 
     // disconnect from previous connection
     if (socketRef.current) {
+      console.info("WS Disconnecting..");
       socketRef.current.close(1000, "Shutting down");
     }
 
     // need to set the token in the cookie, to enable websocket authentication
-    document.cookie = `X-Auth-Token=${settings.securityToken}; path=/`;
+    if (settings.securityToken) {
+      cookies.set("X-Auth-Token", settings.securityToken, {
+        path: "/",
+      });
+    } else {
+      cookies.remove("X-Auth-Token", {
+        path: "/",
+      });
+    }
+    console.info("WS Connecting..");
     socketRef.current = new WebSocket(settings.wsEndpoint);
 
     // handle connection opening

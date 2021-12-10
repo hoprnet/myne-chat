@@ -1,10 +1,22 @@
 import type { Settings } from "./state";
 
-// simple ID generator
+/**
+ * True if instance is running on server
+ */
+export const isSSR: boolean = typeof window === "undefined";
+
+/**
+ * Generates a pseudo random ID
+ * @returns random string
+ */
 export const genId = () => String(Math.floor(Math.random() * 1e18));
 
-// validate PeerIds
 export const PEER_ID_LENGTH = 53;
+
+/**
+ * @param v peerId
+ * @returns true if 'v' is a valid peerId
+ */
 export const isValidPeerId = (v: string): boolean => {
   return (
     v.startsWith("16Uiu2HA") &&
@@ -13,19 +25,29 @@ export const isValidPeerId = (v: string): boolean => {
   );
 };
 
-// message encoding / decoding
+/**
+ * Prepends messages with our app's tag so we can distinguish the
+ * messages from other apps.
+ * @param from
+ * @param message
+ * @returns encoded message
+ */
 export const encodeMessage = (from: string, message: string): string => {
-  // we prepends messages with our app's tag so we can distinguish the
-  // messages from other apps
   return `myne:${from}:${message}`;
 };
+
+/**
+ * Decodes incoming message.
+ * @param fullMessage
+ * @returns
+ */
 export const decodeMessage = (
   fullMessage: string
 ): { tag: string; from: string; message: string } => {
   const [tag, from, ...messages] = fullMessage.split(":");
   const message = messages.join(":");
 
-  if (!isValidPeerId(from)) {
+  if (!from || !isValidPeerId(from)) {
     throw Error(
       `Received message "${fullMessage}" was sent from an invalid PeerID "${from}"`
     );
@@ -43,9 +65,6 @@ export const decodeMessage = (
  * @returns settings found in url query
  */
 export const getUrlParams = (): Partial<Settings> => {
-  // don't run server-side
-  if (typeof location === "undefined") return {};
-
   const params = new URLSearchParams(location.search);
   return {
     httpEndpoint: params.get("httpEndpoint") || undefined,
