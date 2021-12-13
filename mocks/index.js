@@ -39,10 +39,12 @@ httpService
     }
 
     // respond to client
-    ws.send(JSON.stringify({
-      type: "message",
-      msg: `myne:${recipient}:mocked server has recevied "${body}" message`
-    }));
+    ws.send(
+      JSON.stringify({
+        type: "message",
+        msg: `myne:${recipient}:mocked server has recevied "${body}" message`,
+      })
+    );
   });
 
 http.createServer(httpService).listen(HTTP_PORT, "localhost", () => {

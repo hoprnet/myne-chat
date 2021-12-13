@@ -6,7 +6,6 @@ import type { Settings } from ".";
 import { useEffect, useRef, useState } from "react";
 import { useImmer } from "use-immer";
 import { debounce } from "lodash";
-import cookies from "js-cookie";
 import { isSSR } from "../utils";
 
 export type ConnectionStatus = "CONNECTED" | "DISCONNECTED";
@@ -61,18 +60,13 @@ const useWebsocket = (settings: Settings) => {
       socketRef.current.close(1000, "Shutting down");
     }
 
-    // need to set the token in the cookie, to enable websocket authentication
+    // need to set the token in the query parameters, to enable websocket authentication
+    const wsUrl = new URL(settings.wsEndpoint);
     if (settings.securityToken) {
-      cookies.set("X-Auth-Token", settings.securityToken, {
-        path: "/",
-      });
-    } else {
-      cookies.remove("X-Auth-Token", {
-        path: "/",
-      });
+      wsUrl.search = `?apiToken=${settings.securityToken}`;
     }
     console.info("WS Connecting..");
-    socketRef.current = new WebSocket(settings.wsEndpoint);
+    socketRef.current = new WebSocket(wsUrl);
 
     // handle connection opening
     socketRef.current.addEventListener("open", handleOpenEvent);
