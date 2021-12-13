@@ -32,7 +32,7 @@ export type State = {
 };
 
 const useAppState = () => {
-  const urlParams = !isSSR ? getUrlParams() : {};
+  const urlParams = !isSSR ? getUrlParams(location) : {};
   const [state, setState] = useImmer<State>({
     settings: {
       httpEndpoint: urlParams.httpEndpoint || "http://localhost:3001",

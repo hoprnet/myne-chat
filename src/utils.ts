@@ -64,8 +64,8 @@ export const decodeMessage = (
  * Inspects the url to find valid settings.
  * @returns settings found in url query
  */
-export const getUrlParams = (): Partial<Settings> => {
-  const params = new URLSearchParams(location.search);
+export const getUrlParams = (loc: Location): Partial<Settings> => {
+  const params = new URLSearchParams(loc.search);
   return {
     httpEndpoint: params.get("httpEndpoint") || undefined,
     wsEndpoint: params.get("wsEndpoint") || undefined,
