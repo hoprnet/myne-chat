@@ -65,6 +65,12 @@ const theme = makeTheme({
       family: "GerstnerProgrammFSL",
       size: "medium",
     },
+
+    focus: {
+      border: {
+        color: "none",
+      },
+    },
   },
 
   box: {
@@ -125,6 +131,11 @@ const theme = makeTheme({
 
 // react hook to access our theme
 export type Theme = typeof theme;
+
+/**
+ * React hook which returns our theme.
+ * @returns the theme
+ */
 export const useTheme = () => useContext<Theme>(ThemeContext as any);
 
 export default theme;

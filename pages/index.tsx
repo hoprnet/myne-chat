@@ -10,6 +10,7 @@ import Chat from "../src/components/chat";
 const HomePage: NextPage = () => {
   const {
     state: { selection, conversations, myPeerId, settings, status },
+    getReqHeaders,
     socketRef,
     setSelection,
     addNewConversation,
@@ -31,8 +32,15 @@ const HomePage: NextPage = () => {
 
   const handleReceivedMessage = (ev: MessageEvent<string>) => {
     try {
-      const { from, message } = decodeMessage(ev.data);
-      addReceivedMessage(from, message);
+      // we are only interested in messages, not all the other events coming in on the socket
+      const data = JSON.parse(ev.data);
+      if (data.type == "message") {
+        const { tag, from, message } = decodeMessage(data.msg);
+        // we are only interested in myne messages
+        if (tag == "myne") {
+          addReceivedMessage(from, message);
+        }
+      }
     } catch (err) {
       console.error(err);
     }
@@ -48,11 +56,13 @@ const HomePage: NextPage = () => {
 
     const encodedMessage = encodeMessage(myPeerId, message);
     const id = addSentMessage(myPeerId, destination, message);
-    fetch(`${settings.httpEndpoint}/send_message`, {
+
+    fetch(`${settings.httpEndpoint}/api/v2/messages`, {
       method: "POST",
+      headers: getReqHeaders(true),
       body: JSON.stringify({
-        destination: selection,
-        message: encodedMessage,
+        recipient: selection,
+        body: encodedMessage,
       }),
     })
       .then(() => {
@@ -94,10 +104,13 @@ const HomePage: NextPage = () => {
       >
         <ConversationsPanel
           status={status}
-          counterparties={Array.from(conversations.keys())}
+          myPeerId={myPeerId}
+          settings={settings}
+          updateSettings={updateSettings}
           selection={selection}
           setSelection={handleSetSelection}
           addNewConversation={handleAddNewConversation}
+          counterparties={Array.from(conversations.keys())}
         />
       </Box>
       <Box
@@ -118,11 +131,8 @@ const HomePage: NextPage = () => {
           />
         ) : null}
         <Chat
-          settings={settings}
-          myPeerId={myPeerId}
           selection={selection}
           messages={conversation ? Array.from(conversation.values()) : []}
-          updateSettings={updateSettings}
           sendMessage={handleSendMessage}
         />
       </Box>

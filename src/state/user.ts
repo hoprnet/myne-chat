@@ -2,40 +2,45 @@
   A react hook.
   Keeps user state updated whenever endpoint is changed.
 */
+import type { Settings } from ".";
 import { useEffect } from "react";
 import { useImmer } from "use-immer";
+import { isSSR } from "../utils";
 
-const fetchPeerId = async (endpoint: string): Promise<string> => {
-  return fetch(`${endpoint}/info`)
-    .then((res) => res.json())
-    .then((o) => o.peerId);
-};
-
-const useUser = (endpoint: string) => {
+const useUser = (settings: Settings) => {
   const [state, setState] = useImmer<{
-    endpoint: string;
     myPeerId?: string;
     error?: string;
-  }>({ endpoint });
+  }>({});
 
-  // set new endpoint
-  const setEndpoint = (endpoint: string) => {
-    setState((draft) => {
-      draft.endpoint = endpoint;
-      return draft;
-    });
+  // construct headers to be used in authenticated requests
+  // when security token is present
+  const getReqHeaders = (isPost: boolean = false) => {
+    const headers = new Headers();
+    if (isPost) {
+      headers.set("Content-Type", "application/json");
+      headers.set("Accept-Content", "application/json");
+    }
+    if (settings.securityToken) {
+      headers.set("Authorization", "Basic " + btoa(settings.securityToken));
+    }
+
+    return headers;
   };
 
-  // runs everytime "endpoint" changes
+  // runs everytime "httpEndpoint" changes
   useEffect(() => {
-    if (typeof fetch === "undefined") return;
+    if (isSSR) return;
     console.info("Fetching user data..");
 
-    fetchPeerId(state.endpoint)
-      .then((peerId) => {
-        console.info("Fetched PeerId", peerId);
+    fetch(`${settings.httpEndpoint}/api/v2/account/address`, {
+      headers: getReqHeaders(),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.info("Fetched PeerId", data.hoprAddress);
         setState((draft) => {
-          draft.myPeerId = peerId;
+          draft.myPeerId = data.hoprAddress;
           return draft;
         });
       })
@@ -47,11 +52,11 @@ const useUser = (endpoint: string) => {
           return draft;
         });
       });
-  }, [state.endpoint]);
+  }, [settings.httpEndpoint, settings.securityToken]);
 
   return {
     state,
-    setEndpoint,
+    getReqHeaders,
   };
 };
 

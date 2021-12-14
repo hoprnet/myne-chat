@@ -2,12 +2,10 @@
   A react hook.
   Contains the app's global state.
 */
-import { useEffect } from "react";
 import { useImmer } from "use-immer";
 import useWebsocket from "./websocket";
 import useUser from "./user";
-import { genId } from "../utils";
-import { current } from "immer";
+import { genId, getUrlParams, isSSR } from "../utils";
 
 export type { ConnectionStatus } from "./websocket";
 
@@ -24,6 +22,7 @@ export type Message = {
 export type Settings = {
   httpEndpoint: string;
   wsEndpoint: string;
+  securityToken?: string;
 };
 
 export type State = {
@@ -33,32 +32,23 @@ export type State = {
 };
 
 const useAppState = () => {
+  const urlParams = !isSSR ? getUrlParams(location) : {};
   const [state, setState] = useImmer<State>({
     settings: {
-      httpEndpoint: "http://localhost:8080",
-      wsEndpoint: "ws://localhost:8081",
+      httpEndpoint: urlParams.httpEndpoint || "http://localhost:3001",
+      wsEndpoint: urlParams.wsEndpoint || "ws://localhost:3002",
+      securityToken: urlParams.securityToken,
     },
-    conversations: new Map([
-      ["16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs", new Map()],
-    ]),
+    conversations: new Map([]),
     /*
       16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs
       16Uiu2HAm83TSuRSCN8mKaZbCekkx3zfqgniPSxHdeUSeyEkdwvTs
     */
   });
   // initialize websocket connection & state tracking
-  const websocket = useWebsocket(state.settings.wsEndpoint);
+  const websocket = useWebsocket(state.settings);
   // fetch user data
-  const user = useUser(state.settings.httpEndpoint);
-
-  // reconnect to new WS endpoint
-  useEffect(() => {
-    websocket.setEndpoint(state.settings.wsEndpoint);
-  }, [state.settings.wsEndpoint]);
-  // refetch user data
-  useEffect(() => {
-    user.setEndpoint(state.settings.httpEndpoint);
-  }, [state.settings.httpEndpoint]);
+  const user = useUser(state.settings);
 
   const updateSettings = (settings: Partial<Settings>) => {
     setState((draft) => {
@@ -139,7 +129,6 @@ const useAppState = () => {
       message.status = status;
       message.error = error;
 
-      console.log("updateMessage", messageId, current(message));
       conversations.set(messageId, message);
       return draft;
     });
@@ -161,6 +150,7 @@ const useAppState = () => {
       ...websocket.state,
       ...user.state,
     },
+    getReqHeaders: user.getReqHeaders,
     socketRef: websocket.socketRef,
     updateSettings,
     setSelection,

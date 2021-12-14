@@ -1,10 +1,19 @@
 import type { FunctionComponent } from "react";
+import type { ConnectionStatus } from "../state";
 import Image from "next/image";
-import { Box, Text } from "grommet";
+import { Box, Anchor } from "grommet";
 
-const Logo: FunctionComponent = () => {
+const Logo: FunctionComponent<{
+  status?: ConnectionStatus;
+}> = ({ status }) => {
+  const faded = status === "DISCONNECTED";
+
   return (
-    <Box>
+    <Box
+      style={{
+        opacity: faded ? "0.5" : 1,
+      }}
+    >
       <Box
         width={{
           max: "250px",
@@ -21,13 +30,12 @@ const Logo: FunctionComponent = () => {
           height="125px"
         />
       </Box>
-      <Box
-        pad={{
-          horizontal: "medium",
-        }}
-      >
-        <Text>Privacy powered by HOPR</Text>
-      </Box>
+      <Anchor
+        href="https://hoprnet.org"
+        target="_blank"
+        label="Privacy powered by HOPR"
+        alignSelf="end"
+      />
     </Box>
   );
 };

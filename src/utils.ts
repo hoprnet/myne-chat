@@ -1,8 +1,22 @@
-// simple ID generator
+import type { Settings } from "./state";
+
+/**
+ * True if instance is running on server
+ */
+export const isSSR: boolean = typeof window === "undefined";
+
+/**
+ * Generates a pseudo random ID
+ * @returns random string
+ */
 export const genId = () => String(Math.floor(Math.random() * 1e18));
 
-// validate PeerIds
 export const PEER_ID_LENGTH = 53;
+
+/**
+ * @param v peerId
+ * @returns true if 'v' is a valid peerId
+ */
 export const isValidPeerId = (v: string): boolean => {
   return (
     v.startsWith("16Uiu2HA") &&
@@ -11,24 +25,50 @@ export const isValidPeerId = (v: string): boolean => {
   );
 };
 
-// message encoding / decoding
+/**
+ * Prepends messages with our app's tag so we can distinguish the
+ * messages from other apps.
+ * @param from
+ * @param message
+ * @returns encoded message
+ */
 export const encodeMessage = (from: string, message: string): string => {
-  return `${from}:${message}`;
+  return `myne:${from}:${message}`;
 };
+
+/**
+ * Decodes incoming message.
+ * @param fullMessage
+ * @returns
+ */
 export const decodeMessage = (
-  encodedMessage: string
-): { from: string; message: string } => {
-  const [from, ...messages] = encodedMessage.split(":");
+  fullMessage: string
+): { tag: string; from: string; message: string } => {
+  const [tag, from, ...messages] = fullMessage.split(":");
   const message = messages.join(":");
 
-  if (!isValidPeerId(from)) {
+  if (!from || !isValidPeerId(from)) {
     throw Error(
-      `Message "${encodedMessage}" was sent from an invalid PeerID "${from}"`
+      `Received message "${fullMessage}" was sent from an invalid PeerID "${from}"`
     );
   }
 
   return {
+    tag,
     from,
     message,
+  };
+};
+
+/**
+ * Inspects the url to find valid settings.
+ * @returns settings found in url query
+ */
+export const getUrlParams = (loc: Location): Partial<Settings> => {
+  const params = new URLSearchParams(loc.search);
+  return {
+    httpEndpoint: params.get("httpEndpoint") || undefined,
+    wsEndpoint: params.get("wsEndpoint") || undefined,
+    securityToken: params.get("securityToken") || undefined,
   };
 };

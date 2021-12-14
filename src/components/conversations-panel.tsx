@@ -1,121 +1,171 @@
 import type { FunctionComponent } from "react";
-import type { ConnectionStatus } from "../state";
+import type { ConnectionStatus, Settings as TSettings } from "../state";
 import { useState } from "react";
 import { Box, List, Text, Layer } from "grommet";
-import { Add } from "grommet-icons";
+import { Add, SettingsOption, BarChart } from "grommet-icons";
 import IconButton from "./icon-button";
+import Settings from "./settings";
+import Analytics from "./analytics";
 import NewConversation from "./new-conversation";
 import Logo from "./logo";
-import Circle from "./circle";
 
 const ConversationsPanel: FunctionComponent<{
   status: ConnectionStatus;
-  counterparties: string[];
-  setSelection: (p: string) => void;
-  addNewConversation: (p: string) => void;
+  myPeerId?: string;
+  // settings
+  settings: TSettings;
+  updateSettings: (o: TSettings) => void;
+  // selection
   selection?: string;
+  setSelection: (p: string) => void;
+  // conversations
+  counterparties: string[];
+  addNewConversation: (p: string) => void;
 }> = ({
   status,
-  counterparties,
+  myPeerId,
+  settings,
+  updateSettings,
   selection,
   setSelection,
+  counterparties,
   addNewConversation,
 }) => {
-  const [show, setShow] = useState<boolean>(false);
+  const [showSettings, setShowSettings] = useState<boolean>(false);
+  const [showAnalytics, setShowAnalytics] = useState<boolean>(false);
+  const [showAddNewConv, setShowAddNewConv] = useState<boolean>(false);
 
   return (
-    <Box
-      fill="vertical"
-      justify="between"
-      pad="none"
-      gap="small"
-      background="dark-3"
-      round
-      shadow
-    >
-      {/* header */}
+    <>
       <Box
-        pad="small"
+        fill="vertical"
         justify="between"
-        direction="row"
-        align="center"
-        height={{
-          min: "min-content",
-        }}
+        pad="none"
+        gap="small"
+        background="dark-3"
+        round
+        shadow
       >
-        <Box pad="small">
-          <Circle
-            size="20px"
-            color={status === "CONNECTED" ? "status-success" : "status-error"}
-          />
-        </Box>
-        <Box>
-          <IconButton
-            pad="small"
-            alignSelf="end"
-            round
-            onClick={() => setShow(true)}
-          >
-            <Add color="light-1" />
-          </IconButton>
-        </Box>
-      </Box>
-      {/* conversations */}
-      <Box fill="vertical">
-        <List
-          data={counterparties}
-          border={false}
-          pad={{
-            horizontal: "none",
-            bottom: "small",
+        {/* header */}
+        <Box
+          pad="small"
+          justify="between"
+          direction="row"
+          align="center"
+          height={{
+            min: "min-content",
           }}
-          onClickItem={(props: any) => setSelection(props.item)}
         >
-          {(
-            counterparty: string,
-            _index: any,
-            { active: isHovered }: { active: boolean }
-          ) => {
-            const isSelected = counterparty === selection;
-            const highlight = isHovered || isSelected;
+          <Box direction="row">
+            <IconButton
+              pad="small"
+              alignSelf="end"
+              round
+              onClick={() => setShowSettings(true)}
+            >
+              <SettingsOption color="light-1" />
+            </IconButton>
+            <IconButton
+              pad="small"
+              alignSelf="end"
+              round
+              onClick={() => setShowAnalytics(true)}
+            >
+              <BarChart color="light-1" />
+            </IconButton>
+          </Box>
+          <Box>
+            <IconButton
+              pad="small"
+              alignSelf="end"
+              round
+              onClick={() => setShowAddNewConv(true)}
+            >
+              <Add color="light-1" />
+            </IconButton>
+          </Box>
+        </Box>
+        {/* conversations */}
+        <Box fill="vertical">
+          <List
+            data={counterparties}
+            border={false}
+            pad={{
+              horizontal: "none",
+            }}
+            // removes focus indicator
+            style={{
+              outline: 0,
+            }}
+            onClickItem={(props: any) => setSelection(props.item)}
+          >
+            {(
+              counterparty: string,
+              _index: any,
+              { active: isHovered }: { active: boolean }
+            ) => {
+              const isSelected = counterparty === selection;
+              const highlight = isHovered || isSelected;
 
-            return (
-              <Box background={highlight ? "white" : undefined}>
-                <Text
-                  style={{
-                    direction: "rtl",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
-                >
-                  {counterparty}
-                </Text>
-              </Box>
-            );
-          }}
-        </List>
+              return (
+                <Box pad="small" background={highlight ? "dark-4" : undefined}>
+                  <Text
+                    style={{
+                      direction: "rtl",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {counterparty}
+                  </Text>
+                </Box>
+              );
+            }}
+          </List>
+        </Box>
+        {/* footer */}
+        <Box pad="small" height={{ min: "min-content" }}>
+          <Logo status={status} />
+        </Box>
       </Box>
-      {/* footer */}
-      <Box pad="small" height={{ min: "min-content" }}>
-        <Logo />
-      </Box>
-      {/* add new conversaion popup */}
-      {show && (
+      {showSettings ? (
         <Layer
-          onEsc={() => setShow(false)}
-          onClickOutside={() => setShow(false)}
+          onEsc={() => setShowSettings(false)}
+          onClickOutside={() => setShowSettings(false)}
+          background="none"
+        >
+          <Settings
+            settings={settings}
+            updateSettings={(s) => {
+              setShowSettings(false);
+              updateSettings(s);
+            }}
+          />
+        </Layer>
+      ) : showAnalytics ? (
+        <Layer
+          onEsc={() => setShowAnalytics(false)}
+          onClickOutside={() => setShowAnalytics(false)}
+          background="none"
+        >
+          <Analytics myPeerId={myPeerId} />
+        </Layer>
+      ) : showAddNewConv ? (
+        <Layer
+          onEsc={() => setShowAddNewConv(false)}
+          onClickOutside={() => setShowAddNewConv(false)}
           background="none"
         >
           <NewConversation
             counterparties={counterparties}
             addNewConversation={(p) => {
               addNewConversation(p);
-              setShow(false);
+              setShowAddNewConv(false);
             }}
           />
         </Layer>
-      )}
-    </Box>
+      ) : null}
+    </>
   );
 };
 

@@ -2,33 +2,27 @@
   A react hook.
   Keeps websocket connection alive, reconnects on disconnections or endpoint change.
 */
+import type { Settings } from ".";
 import { useEffect, useRef, useState } from "react";
 import { useImmer } from "use-immer";
 import { debounce } from "lodash";
+import { isSSR } from "../utils";
 
 export type ConnectionStatus = "CONNECTED" | "DISCONNECTED";
 
-const useWebsocket = (endpoint: string) => {
+const useWebsocket = (settings: Settings) => {
   // update timestamp when you want to reconnect to the websocket
   const [reconnectTmsp, setReconnectTmsp] = useState<number>();
   const [state, setState] = useImmer<{
     status: ConnectionStatus;
-    endpoint: string;
     error?: string;
-  }>({ status: "DISCONNECTED", endpoint });
+  }>({ status: "DISCONNECTED" });
 
   const socketRef = useRef<WebSocket>();
 
   const setReconnectTmspDebounced = debounce((timestamp: number) => {
     setReconnectTmsp(timestamp);
   }, 1e3);
-
-  const setEndpoint = (endpoint: string) => {
-    setState((draft) => {
-      draft.endpoint = endpoint;
-      return draft;
-    });
-  };
 
   const handleOpenEvent = () => {
     console.info("WS CONNECTED");
@@ -58,14 +52,21 @@ const useWebsocket = (endpoint: string) => {
 
   // runs everytime "endpoint" or "reconnectTmsp" changes
   useEffect(() => {
-    if (typeof WebSocket === "undefined") return;
+    if (isSSR) return;
 
     // disconnect from previous connection
     if (socketRef.current) {
+      console.info("WS Disconnecting..");
       socketRef.current.close(1000, "Shutting down");
     }
 
-    socketRef.current = new WebSocket(state.endpoint);
+    // need to set the token in the query parameters, to enable websocket authentication
+    const wsUrl = new URL(settings.wsEndpoint);
+    if (settings.securityToken) {
+      wsUrl.search = `?apiToken=${settings.securityToken}`;
+    }
+    console.info("WS Connecting..");
+    socketRef.current = new WebSocket(wsUrl);
 
     // handle connection opening
     socketRef.current.addEventListener("open", handleOpenEvent);
@@ -82,12 +83,11 @@ const useWebsocket = (endpoint: string) => {
       socketRef.current.removeEventListener("close", handleCloseEvent);
       socketRef.current.removeEventListener("error", handleErrorEvent);
     };
-  }, [state.endpoint, reconnectTmsp]);
+  }, [settings.wsEndpoint, settings.securityToken, reconnectTmsp]);
 
   return {
     state,
     socketRef,
-    setEndpoint,
   };
 };
 
