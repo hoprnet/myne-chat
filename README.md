@@ -1,22 +1,57 @@
 Myne-chat is an application powered by [HOPR](https://github.com/hoprnet/hoprnet).
 
-## Getting Started
+## Getting started
 
-First, run the development server:
+Setting up Myne Chat:
 
 ```bash
-yarn dev
+git clone https://github.com/hoptnet/myne-chat
+cd myne-chat
+yarn # install libraries
 ```
 
-Second, run a mock server which simulates a HOPRd node:
+## Running Myne Chat
+
+To run a hosting server:
+
+```bash
+yarn build # build website
+yarn start # run a hosting server
+```
+
+Open [http://localhost:8080](http://localhost:8080) with your browser to see the result.
+
+## Developing Myne Chat
+
+To run the development server:
+
+```bash
+yarn dev # run development server
+```
+
+Open [http://localhost:8080](http://localhost:8080) with your browser to see the result.
+
+## Connecting Myne Chat to a mocked HOPRd API
+
+This repository comes we a mock server which simulates a HOPRd node:
 
 ```bash
 yarn mocks
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Two endpoints become available which match the default HOPRd endpoints:
 
-## Learn More
+```text
+HTTP API=http://localhost:3001
+WS API=ws://localhost:3000
+```
+
+## Connecting Myne Chat to a real HOPRd API
+
+You need to start a local hoprd node (at least v1.85.0).
+See [hopr documentantion](https://docs.hoprnet.org/en/latest/src/install-hoprd/index.html) or checkout the [tutorial](#tutorial) for more info.
+
+## Learn More about HOPR
 
 To learn more about HOPR, take a look at the following resources:
 
@@ -35,32 +70,31 @@ To learn more about HOPR, take a look at the following resources:
 
 ## Tutorial
 
-If order to run Myne Chat, a user has two options: (1) Use a deployed version of Myne Chat available at https://app.myne.chat; (2) or run Myne Chat locally. Myne Chat doesn't exchange data with the host which it is served from, but still the most privacy-preserving option is to run Myne Chat locally.
+If order to run Myne Chat, a user has to Myne Chat locally.
+This tutorial shows how to set up myne chat and a hoprd node locally.
 
-This tutorial shows how to set up option 2 including a locally running hoprd node.
+1. You need to start a local hoprd node (at least v1.85.0). Multiple ways to do this are described in the [hoprd documentation](https://docs.hoprnet.org/en/latest/src/install-hoprd/index.html). For simplicity, use Docker and spin up a node locally using the `budapest` release:
 
-1. You need to start a local hoprd node (at least v1.85.0). Multiple ways to do this are described in the hoprd documentation. For simplicity, use Docker and spin up a node locally using the `budapest` release:
 ```
 docker run --pull always -p 3000:3000 -p 3001:3001 gcr.io/hoprassociation/hoprd:budapest --apiToken ^MYtoken4testing^ --password hodlerATWORK --rest --admin --init
 ```
+
 To be able to use the node you must fund it with native (xDAI) and HOPR tokens.
-1. Following that, Myne Chat should be build locally:
-```
-git clone https://github.com/hoptnet/myne-chat
-cd myne-chat
-yarn
-yarn build
-```
-1. Now Myne Chat can be started:
-```
-yarn dev
-```
-As a result you may now navigate to http://localhost:3002/ and view the Myne Chat UI.
-1. Now the local hoprd node can be configured as the endpoint within your Myne Chat UI. Click on the settings icon in the top left corner and enter the following details:
-    - HTTP Endpoint: http://localhost:3001
-    - WS Endpoint: ws://localhost:3000
-    - Security Token: ^MYtoken4testing^
-1. Once save, Myne Chat should connect to the hoprd node. The Myne Chat logo will turn white once it has successfully connected.
+
+2. Following that, Myne Chat needs to be build and start locally.
+
+   1. [Setup Myne Chat](#getting-started)
+   2. [Run Myne Chat](#running-myne-chat)
+
+As a result you may now navigate to http://localhost:8080/ and view the Myne Chat UI.
+
+3. Now the local hoprd node can be configured as the endpoint within your Myne Chat UI. Click on the settings icon in the top left corner and enter the following details:
+
+   - HTTP Endpoint: http://localhost:3001
+   - WS Endpoint: ws://localhost:3000
+   - Security Token: ^MYtoken4testing^
+
+4. Once save, Myne Chat should connect to the hoprd node. The Myne Chat logo will turn white once it has successfully connected.
 
 Now Myne Chat and hoprd are set up.
 

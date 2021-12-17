@@ -8,7 +8,7 @@ const bodyParser = require("body-parser");
 const { WebSocketServer } = require("ws");
 
 const HTTP_PORT = 3001;
-const WS_PORT = 3002;
+const WS_PORT = 3000;
 const NODE_PEERID = "16Uiu2HAm1oEHkaUGk1TjGVGZqA7V1AaRKUEcxzaEqpTbpYVqPsMq";
 
 // HTTP Server
