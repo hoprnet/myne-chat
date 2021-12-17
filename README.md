@@ -70,7 +70,7 @@ To learn more about HOPR, take a look at the following resources:
 
 ## Tutorial
 
-If order to run Myne Chat, a user has to Myne Chat locally.
+In order to run Myne Chat, a user has to setup Myne Chat locally.
 This tutorial shows how to set up myne chat and a hoprd node locally.
 
 1. You need to start a local hoprd node (at least v1.85.0). Multiple ways to do this are described in the [hoprd documentation](https://docs.hoprnet.org/en/latest/src/install-hoprd/index.html). For simplicity, use Docker and spin up a node locally using the `budapest` release:
