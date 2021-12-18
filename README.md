@@ -94,6 +94,8 @@ As a result you may now navigate to http://localhost:8080/ and view the Myne Cha
    - WS Endpoint: ws://localhost:3000
    - Security Token: ^MYtoken4testing^
 
+_Important: Your API token might vary, which means it might have unsupported parameters as query parameters (e.g, `%`, `+`). Because we are passing the API token as query string, your token might need to be `URIEncoded` for it to work. To make sure, please make sure it's properly [encoded](https://www.onlinewebtoolkit.com/url-encode-decode) before pasting the API token into the UI. This will be improved in future versions of Mynechat._
+
 4. Once save, Myne Chat should connect to the hoprd node. The Myne Chat logo will turn white once it has successfully connected.
 
 Now Myne Chat and hoprd are set up.
