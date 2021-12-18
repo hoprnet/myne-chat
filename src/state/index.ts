@@ -36,7 +36,7 @@ const useAppState = () => {
   const [state, setState] = useImmer<State>({
     settings: {
       httpEndpoint: urlParams.httpEndpoint || "http://localhost:3001",
-      wsEndpoint: urlParams.wsEndpoint || "ws://localhost:3002",
+      wsEndpoint: urlParams.wsEndpoint || "ws://localhost:3000",
       securityToken: urlParams.securityToken,
     },
     conversations: new Map([]),
