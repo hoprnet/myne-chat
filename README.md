@@ -5,7 +5,7 @@ Myne-chat is an application powered by [HOPR](https://github.com/hoprnet/hoprnet
 Setting up Myne Chat:
 
 ```bash
-git clone https://github.com/hoptnet/myne-chat
+git clone https://github.com/hoprnet/myne-chat
 cd myne-chat
 yarn # install libraries
 ```
