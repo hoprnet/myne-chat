@@ -65,8 +65,12 @@ const HomePage: NextPage = () => {
         body: encodedMessage,
       }),
     })
-      .then(() => {
-        updateMessage(destination, id, "SUCCESS");
+      .then((res) => {
+        if (res.status === 204) return updateMessage(destination, id, "SUCCESS");
+        // If we didn't get a supported status response code, we return unknown
+        const err = 'Unknown response status.'
+        console.error("ERROR sending message", err);
+        return updateMessage(destination, id, "UNKNOWN", err)
       })
       .catch((err) => {
         console.error("ERROR sending message", err);
