@@ -157,6 +157,7 @@ const ConversationsPanel: FunctionComponent<{
           background="none"
         >
           <NewConversation
+            myPeerId={myPeerId}
             counterparties={counterparties}
             addNewConversation={(p) => {
               addNewConversation(p);
