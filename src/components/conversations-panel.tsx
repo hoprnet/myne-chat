@@ -69,6 +69,7 @@ const ConversationsPanel: FunctionComponent<{
               pad="small"
               alignSelf="end"
               round
+              disabled={status === 'DISCONNECTED'}
               onClick={() => setShowAnalytics(true)}
             >
               <BarChart color="light-1" />
@@ -79,6 +80,7 @@ const ConversationsPanel: FunctionComponent<{
               pad="small"
               alignSelf="end"
               round
+              disabled={status === 'DISCONNECTED'}
               onClick={() => setShowAddNewConv(true)}
             >
               <Add color="light-1" />
