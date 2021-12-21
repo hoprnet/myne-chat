@@ -2,15 +2,15 @@ import type { FunctionComponent } from "react";
 import type { Message } from "../state";
 import { Box, Text } from "grommet";
 import { Copy } from "grommet-icons";
-import ChatView from "./chat-view";
 import ChatInput from "./chat-input";
 import IconButton from "./icon-button";
 
 const Chat: FunctionComponent<{
+  chatContent: JSX.Element,
   sendMessage: (destination: string, message: string) => void;
   messages: Message[];
   selection?: string;
-}> = ({ selection, messages, sendMessage }) => {
+}> = ({ chatContent, selection, messages, sendMessage }) => {
   return (
     <Box fill justify="between" background="dark-4" round shadow>
       {selection ? (
@@ -42,7 +42,7 @@ const Chat: FunctionComponent<{
       ) : null}
       <Box fill gap="small" pad="small">
         <Box fill>
-          <ChatView selection={selection} messages={messages} />
+          {chatContent}
         </Box>
         <Box
           height={{

@@ -1,4 +1,4 @@
-import type { NextPage } from "next";
+import type { GetStaticProps } from "next";
 import { useState, useContext, useEffect } from "react";
 import { Box, Button, ResponsiveContext } from "grommet";
 import { LinkPrevious } from "grommet-icons";
@@ -6,10 +6,13 @@ import useAppState from "../src/state";
 import { encodeMessage, decodeMessage } from "../src/utils";
 import ConversationsPanel from "../src/components/conversations-panel";
 import Chat from "../src/components/chat";
+import { getReadme } from "../src/readme";
+import Help from "../src/components/help";
+import ChatView from "../src/components/chat-view";
 
-const HomePage: NextPage = () => {
+const HomePage = ({ readmeInHTML }: { readmeInHTML: string }) => {
   const {
-    state: { selection, conversations, myPeerId, settings, status },
+    state: { selection, conversations, myPeerId, settings, status, displayHelp },
     getReqHeaders,
     socketRef,
     setSelection,
@@ -18,6 +21,7 @@ const HomePage: NextPage = () => {
     addReceivedMessage,
     updateMessage,
     updateSettings,
+    toggleDisplayHelp,
   } = useAppState();
 
   // get selected conversation
@@ -84,6 +88,8 @@ const HomePage: NextPage = () => {
     setFocus("chat");
   };
 
+  const messages = conversation ? Array.from(conversation.values()) : []
+
   // attach event listener for new messages
   useEffect(() => {
     if (!myPeerId || !socketRef.current) return;
@@ -113,6 +119,8 @@ const HomePage: NextPage = () => {
           settings={settings}
           updateSettings={updateSettings}
           selection={selection}
+          toggleDisplayHelp={toggleDisplayHelp}
+          displayHelp={displayHelp}
           setSelection={handleSetSelection}
           addNewConversation={handleAddNewConversation}
           counterparties={Array.from(conversations.keys())}
@@ -136,13 +144,19 @@ const HomePage: NextPage = () => {
           />
         ) : null}
         <Chat
+          chatContent={displayHelp ? <Help readmeInHTML={readmeInHTML} /> : <ChatView selection={selection} messages={messages} />}
           selection={selection}
-          messages={conversation ? Array.from(conversation.values()) : []}
+          messages={messages}
           sendMessage={handleSendMessage}
         />
       </Box>
     </Box>
   );
+};
+
+export const getStaticProps: GetStaticProps = async () => {
+  const readmeInHTML = await getReadme()
+  return { props: { readmeInHTML } };
 };
 
 export default HomePage;

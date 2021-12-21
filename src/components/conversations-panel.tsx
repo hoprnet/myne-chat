@@ -1,6 +1,7 @@
 import type { FunctionComponent } from "react";
 import type { ConnectionStatus, Settings as TSettings } from "../state";
 import { useState } from "react";
+import styled from "styled-components";
 import { Box, List, Text, Layer } from "grommet";
 import { Add, SettingsOption, BarChart } from "grommet-icons";
 import IconButton from "./icon-button";
@@ -10,12 +11,19 @@ import NewConversation from "./new-conversation";
 import Logo from "./logo";
 import useAppState from "../state";
 
+const StyledReadme = styled(Text)`
+  &:hover { opacity: 0.5; }
+`
+
 const ConversationsPanel: FunctionComponent<{
   status: ConnectionStatus;
   myPeerId?: string;
   // settings
   settings: TSettings;
   updateSettings: (o: TSettings) => void;
+  // display help
+  toggleDisplayHelp: () => void;
+  displayHelp: boolean;
   // selection
   selection?: string;
   setSelection: (p: string) => void;
@@ -27,6 +35,8 @@ const ConversationsPanel: FunctionComponent<{
   myPeerId,
   settings,
   updateSettings,
+  toggleDisplayHelp,
+  displayHelp,
   selection,
   setSelection,
   counterparties,
@@ -131,6 +141,7 @@ const ConversationsPanel: FunctionComponent<{
         <Box pad="small" height={{ min: "min-content" }}>
           <Logo status={status} />
           <Text style={{ margin: "5px 0 0" }} size="xs">Version: {version}</Text>
+          <StyledReadme onClick={toggleDisplayHelp} style={{ margin: "5px 0 0", cursor: "pointer" }} size="xs">{displayHelp ? 'Hide About' : 'Show About'}</StyledReadme>
           { environment != 'production' && <Text style={{ margin: "5px 0 0" }} size="xs">Hash: {hash}</Text> }
         </Box>
       </Box>
