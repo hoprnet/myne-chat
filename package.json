@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "scripts": {
     "commit": "cz",
-    "dev": "next dev -p 8080",
-    "build": "next build",
+    "dev": "MYNE_CHAT_GIT_HASH=$(git rev-parse --short HEAD) next dev -p 8080",
+    "build": "MYNE_CHAT_GIT_HASH=$(git rev-parse --short HEAD) next build",
     "start": "next start -p 8080",
     "lint": "next lint",
     "format": "prettier --write --ignore-path .gitignore .",

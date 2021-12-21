@@ -7,6 +7,10 @@ import useWebsocket from "./websocket";
 import useUser from "./user";
 import { genId, getUrlParams, isSSR } from "../utils";
 
+const MYNE_CHAT_GIT_HASH = process.env.NEXT_PUBLIC_MYNE_CHAT_GIT_HASH
+const MYNE_CHAT_VERSION = require('../../package.json').version
+const MYNE_CHAT_ENVIRONMENT = process.env.NEXT_PUBLIC_MYNE_CHAT_ENVIRONMENT
+
 export type { ConnectionStatus } from "./websocket";
 
 export type Message = {
@@ -158,6 +162,9 @@ const useAppState = () => {
     addReceivedMessage,
     updateMessage,
     addNewConversation,
+    hash: MYNE_CHAT_GIT_HASH,
+    version: MYNE_CHAT_VERSION,
+    environment: MYNE_CHAT_ENVIRONMENT
   };
 };
 
