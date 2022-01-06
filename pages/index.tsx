@@ -95,6 +95,20 @@ const HomePage: NextPage = () => {
     };
   }, [myPeerId, socketRef.current]);
 
+  // Adding Dev helper conversation to showcase components.
+  useEffect(() => {
+    const loadDevHelperConversation = () => {
+      console.log("⚙️  Developer Mode enabled.", process.env.NODE_ENV)
+      const dev = '⚙️  Dev'
+      addNewConversation(dev)
+      // setTimeout ensures the event loop takes these state updates in order.
+      setTimeout(() => addReceivedMessage(dev, 'Welcome to the developer mode.'), 0)
+      setTimeout(() => addReceivedMessage(dev, 'This conversation is only available during development.'), 0)
+      setTimeout(() => addReceivedMessage(dev, 'This is how a verified message looks like.', true), 0)
+    }
+    process.env.NODE_ENV != 'production' && loadDevHelperConversation();
+  }, [])
+
   return (
     <Box fill direction="row" justify="between" pad="small">
       <Box

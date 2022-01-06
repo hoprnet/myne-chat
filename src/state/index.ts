@@ -21,6 +21,7 @@ export type Message = {
   createdAt: number;
   status: "UNKNOWN" | "SUCCESS" | "FAILURE";
   error?: string;
+  verified?: boolean;
 };
 
 export type Settings = {
@@ -82,7 +83,8 @@ const useAppState = () => {
   const addSentMessage = (
     myPeerId: string,
     destination: string,
-    content: string
+    content: string,
+    isVerified?: boolean
   ) => {
     const id = genId();
     setState((draft) => {
@@ -97,6 +99,7 @@ const useAppState = () => {
           status: "UNKNOWN",
           createdBy: myPeerId,
           createdAt: +new Date(),
+          verified: isVerified
         })
       );
 
@@ -106,7 +109,7 @@ const useAppState = () => {
     return id;
   };
 
-  const addReceivedMessage = (from: string, content: string) => {
+  const addReceivedMessage = (from: string, content: string, isVerified?: boolean) => {
     setState((draft) => {
       const messages = draft.conversations.get(from) || new Map<string, Message>();
       const id = genId();
@@ -120,6 +123,7 @@ const useAppState = () => {
           status: "SUCCESS",
           createdBy: from,
           createdAt: +new Date(),
+          verified: isVerified
         })
       );
 
