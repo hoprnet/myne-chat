@@ -108,7 +108,8 @@ const HomePage: NextPage = () => {
       // setTimeout ensures the event loop takes these state updates in order.
       setTimeout(() => addReceivedMessage(dev, 'Welcome to the developer mode.'), 0)
       setTimeout(() => addReceivedMessage(dev, 'This conversation is only available during development.'), 0)
-      setTimeout(() => addReceivedMessage(dev, 'This is how a verified message looks like.', true), 0)
+      setTimeout(() => addReceivedMessage(dev, 'This is how a verified message looks like.', 'VERIFIED'), 0)
+      setTimeout(() => addReceivedMessage(dev, 'This is how an unverified message looks like.', 'UNVERIFIED'), 0)
     }
     (development == 'enabled' || process.env.NODE_ENV != 'production') && loadDevHelperConversation();
   }, [development])

@@ -13,6 +13,8 @@ const MYNE_CHAT_ENVIRONMENT = process.env.NEXT_PUBLIC_MYNE_CHAT_ENVIRONMENT
 
 export type { ConnectionStatus } from "./websocket";
 
+export type VerifiedStatus = "UNVERIFIED" | "VERIFIED" | "FAILED_VERIFICATION"
+
 export type Message = {
   id: string;
   isIncoming: boolean;
@@ -21,7 +23,7 @@ export type Message = {
   createdAt: number;
   status: "UNKNOWN" | "SUCCESS" | "FAILURE";
   error?: string;
-  verified?: boolean;
+  verifiedStatus?: VerifiedStatus;
 };
 
 export type Settings = {
@@ -84,7 +86,7 @@ const useAppState = () => {
     myPeerId: string,
     destination: string,
     content: string,
-    isVerified?: boolean
+    verifiedStatus?: VerifiedStatus
   ) => {
     const id = genId();
     setState((draft) => {
@@ -99,7 +101,7 @@ const useAppState = () => {
           status: "UNKNOWN",
           createdBy: myPeerId,
           createdAt: +new Date(),
-          verified: isVerified
+          verifiedStatus,
         })
       );
 
@@ -109,7 +111,7 @@ const useAppState = () => {
     return id;
   };
 
-  const addReceivedMessage = (from: string, content: string, isVerified?: boolean) => {
+  const addReceivedMessage = (from: string, content: string, verifiedStatus?: VerifiedStatus) => {
     setState((draft) => {
       const messages = draft.conversations.get(from) || new Map<string, Message>();
       const id = genId();
@@ -123,7 +125,7 @@ const useAppState = () => {
           status: "SUCCESS",
           createdBy: from,
           createdAt: +new Date(),
-          verified: isVerified
+          verifiedStatus
         })
       );
 
