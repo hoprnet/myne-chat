@@ -86,7 +86,7 @@ const useAppState = () => {
   ) => {
     const id = genId();
     setState((draft) => {
-      const messages = draft.conversations.get(destination) || new Map();
+      const messages = draft.conversations.get(destination) || new Map<string, Message>();
 
       draft.conversations.set(
         destination,
@@ -108,7 +108,7 @@ const useAppState = () => {
 
   const addReceivedMessage = (from: string, content: string) => {
     setState((draft) => {
-      const messages = draft.conversations.get(from) || new Map();
+      const messages = draft.conversations.get(from) || new Map<string, Message>();
       const id = genId();
 
       draft.conversations.set(
@@ -150,7 +150,7 @@ const useAppState = () => {
   const addNewConversation = (peerId: string) => {
     setState((draft) => {
       if (!draft.conversations.has(peerId)) {
-        draft.conversations.set(peerId, new Map());
+        draft.conversations.set(peerId, new Map<string, Message>());
       }
       draft.selection = peerId;
       return draft;
