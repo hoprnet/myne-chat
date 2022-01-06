@@ -33,6 +33,7 @@ export type State = {
   settings: Settings;
   conversations: Map<string, Map<string, Message>>;
   selection?: string;
+  verified: boolean;
 };
 
 const useAppState = () => {
@@ -43,6 +44,7 @@ const useAppState = () => {
       wsEndpoint: urlParams.wsEndpoint || "ws://localhost:3000",
       securityToken: urlParams.securityToken,
     },
+    verified: false,
     conversations: new Map([]),
     /*
       16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs
@@ -69,6 +71,13 @@ const useAppState = () => {
       return draft;
     });
   };
+
+  const setVerified = (verified: boolean) => {
+    setState(draft => {
+      draft.verified = verified;
+      return draft;
+    })
+  }
 
   const addSentMessage = (
     myPeerId: string,
@@ -158,6 +167,7 @@ const useAppState = () => {
     socketRef: websocket.socketRef,
     updateSettings,
     setSelection,
+    setVerified,
     addSentMessage,
     addReceivedMessage,
     updateMessage,
