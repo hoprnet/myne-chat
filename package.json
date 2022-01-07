@@ -13,6 +13,7 @@
     "test:ci": "jest --ci"
   },
   "dependencies": {
+    "@hoprnet/hopr-utils": "^1.86.0-next.1",
     "grommet": "^2.19.1",
     "grommet-icons": "^4.7.0",
     "immer": "^9.0.7",

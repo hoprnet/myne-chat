@@ -1,4 +1,5 @@
 import type { Settings } from "./state";
+import { verifySignatureFromPeerId } from "@hoprnet/hopr-utils";
 
 /**
  * True if instance is running on server
@@ -43,6 +44,17 @@ export const encodeMessage = (from: string, message: string): string => {
  */
 export const encodeSignMessageRequest = (message: string, recipient: string) => {
   return `myne:sign:${recipient}:${message}`;
+}
+
+/**
+ * Verifies signed message given a specific Base58 string
+ * @param originalMessage string
+ * @param signedMessage string
+ * @param signer string
+ * @returns boolean
+ */
+export const verifyAuthenticatedMessage = async (originalMessage: string, signedMessage: string, signer: string) => {
+  return await verifySignatureFromPeerId(signer, originalMessage, signedMessage);
 }
 
 /**

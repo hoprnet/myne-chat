@@ -12,6 +12,3 @@ describe('API', () => {
     expect(await API('localhost', {} as Headers).signRequest("myne:sign:empty:empty")).toEqual(signedMessage)
   })
 })
-
-
-

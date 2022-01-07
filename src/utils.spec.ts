@@ -1,9 +1,11 @@
+import { privKeyToPeerId, u8aConcat, u8aToHex } from '@hoprnet/hopr-utils'
 import {
   encodeSignMessageRequest,
   decodeMessage,
   encodeMessage,
   getUrlParams,
   isValidPeerId,
+  verifyAuthenticatedMessage,
 } from "./utils";
 
 test("isValidPeerId", () => {
@@ -52,8 +54,27 @@ test("getUrlParams", () => {
 });
 
 
-test("encodeSignMessageRequest", async () => {
+test("encodeSignMessageRequest", () => {
   const message = "This is the message";
-  const recipient = "16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs"
+  const recipient = "16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs";
   expect(encodeSignMessageRequest(message, recipient)).toEqual(`myne:sign:${recipient}:${message}`)
+})
+
+test("verifyAuthenticatedMessage:false", async () => {
+  const signedMessage = "0x";
+  const originalMessage = "invalid";
+  const signer = "16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs";
+  expect(await verifyAuthenticatedMessage(originalMessage, signedMessage, signer)).toEqual(false)
+})
+
+test("verifyAuthenticatedMessage:true", async () => {
+  const originalMessage = "This is a message to be signed"
+  const privateKey = '0xcb1e5d91d46eb54a477a7eefec9c87a1575e3e5384d38f990f19c09aa8ddd332'
+  const mockPeerId = privKeyToPeerId(privateKey)
+  const signer = mockPeerId.toB58String();
+
+  const signedMessage = u8aToHex(await mockPeerId.privKey.sign(
+    new TextEncoder().encode(originalMessage)
+  ))
+  expect(await verifyAuthenticatedMessage(originalMessage, signedMessage, signer)).toEqual(true)
 })
