@@ -37,6 +37,15 @@ export const encodeMessage = (from: string, message: string): string => {
 };
 
 /**
+ * Prepends message as a signature request to be sent to our HOPR's node for signing.
+ * @param message string
+ * @returns string
+ */
+export const encodeSignMessageRequest = (message: string, recipient: string) => {
+  return `myne:sign:${recipient}:${message}`;
+}
+
+/**
  * Decodes incoming message.
  * @param fullMessage
  * @returns
