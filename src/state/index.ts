@@ -13,6 +13,8 @@ const MYNE_CHAT_ENVIRONMENT = process.env.NEXT_PUBLIC_MYNE_CHAT_ENVIRONMENT
 
 export type { ConnectionStatus } from "./websocket";
 
+export type VerifiedStatus = "UNVERIFIED" | "VERIFIED" | "FAILED_VERIFICATION"
+
 export type Message = {
   id: string;
   isIncoming: boolean;
@@ -21,6 +23,7 @@ export type Message = {
   createdAt: number;
   status: "UNKNOWN" | "SUCCESS" | "FAILURE";
   error?: string;
+  verifiedStatus?: VerifiedStatus;
 };
 
 export type Settings = {
@@ -33,6 +36,7 @@ export type State = {
   settings: Settings;
   conversations: Map<string, Map<string, Message>>;
   selection?: string;
+  verified: boolean;
 };
 
 const useAppState = () => {
@@ -43,6 +47,7 @@ const useAppState = () => {
       wsEndpoint: urlParams.wsEndpoint || "ws://localhost:3000",
       securityToken: urlParams.securityToken,
     },
+    verified: false,
     conversations: new Map([]),
     /*
       16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs
@@ -70,14 +75,22 @@ const useAppState = () => {
     });
   };
 
+  const setVerified = (verified: boolean) => {
+    setState(draft => {
+      draft.verified = verified;
+      return draft;
+    })
+  }
+
   const addSentMessage = (
     myPeerId: string,
     destination: string,
-    content: string
+    content: string,
+    verifiedStatus?: VerifiedStatus
   ) => {
     const id = genId();
     setState((draft) => {
-      const messages = draft.conversations.get(destination) || new Map();
+      const messages = draft.conversations.get(destination) || new Map<string, Message>();
 
       draft.conversations.set(
         destination,
@@ -88,6 +101,7 @@ const useAppState = () => {
           status: "UNKNOWN",
           createdBy: myPeerId,
           createdAt: +new Date(),
+          verifiedStatus,
         })
       );
 
@@ -97,9 +111,9 @@ const useAppState = () => {
     return id;
   };
 
-  const addReceivedMessage = (from: string, content: string) => {
+  const addReceivedMessage = (from: string, content: string, verifiedStatus?: VerifiedStatus) => {
     setState((draft) => {
-      const messages = draft.conversations.get(from) || new Map();
+      const messages = draft.conversations.get(from) || new Map<string, Message>();
       const id = genId();
 
       draft.conversations.set(
@@ -111,6 +125,7 @@ const useAppState = () => {
           status: "SUCCESS",
           createdBy: from,
           createdAt: +new Date(),
+          verifiedStatus
         })
       );
 
@@ -141,7 +156,7 @@ const useAppState = () => {
   const addNewConversation = (peerId: string) => {
     setState((draft) => {
       if (!draft.conversations.has(peerId)) {
-        draft.conversations.set(peerId, new Map());
+        draft.conversations.set(peerId, new Map<string, Message>());
       }
       draft.selection = peerId;
       return draft;
@@ -158,6 +173,7 @@ const useAppState = () => {
     socketRef: websocket.socketRef,
     updateSettings,
     setSelection,
+    setVerified,
     addSentMessage,
     addReceivedMessage,
     updateMessage,

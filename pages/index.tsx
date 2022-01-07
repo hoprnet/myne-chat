@@ -1,4 +1,5 @@
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import { useState, useContext, useEffect } from "react";
 import { Box, Button, ResponsiveContext } from "grommet";
 import { LinkPrevious } from "grommet-icons";
@@ -22,6 +23,9 @@ const HomePage: NextPage = () => {
 
   // get selected conversation
   const conversation = selection ? conversations.get(selection) : undefined;
+
+  const { query } = useRouter();
+  const { development } = query;
 
   // currently focused element (used in mobile mode)
   const [focus, setFocus] = useState<"conversations-panel" | "chat">(
@@ -94,6 +98,21 @@ const HomePage: NextPage = () => {
       socketRef.current.removeEventListener("message", handleReceivedMessage);
     };
   }, [myPeerId, socketRef.current]);
+
+  // Adding Dev helper conversation to showcase components.
+  useEffect(() => {
+    const loadDevHelperConversation = () => {
+      console.log("⚙️  Developer Mode enabled.", process.env.NODE_ENV)
+      const dev = '⚙️  Dev'
+      addNewConversation(dev)
+      // setTimeout ensures the event loop takes these state updates in order.
+      setTimeout(() => addReceivedMessage(dev, 'Welcome to the developer mode.'), 0)
+      setTimeout(() => addReceivedMessage(dev, 'This conversation is only available during development.'), 0)
+      setTimeout(() => addReceivedMessage(dev, 'This is how a verified message looks like.', 'VERIFIED'), 0)
+      setTimeout(() => addReceivedMessage(dev, 'This is how an unverified message looks like.', 'UNVERIFIED'), 0)
+    }
+    (development == 'enabled' || process.env.NODE_ENV != 'production') && loadDevHelperConversation();
+  }, [development])
 
   return (
     <Box fill direction="row" justify="between" pad="small">
