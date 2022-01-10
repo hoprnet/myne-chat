@@ -14,18 +14,20 @@
     "test:ci": "jest --ci"
   },
   "dependencies": {
-    "@hoprnet/hopr-utils": "^1.86.0-next.1",
+    "@ethersproject/bytes": "^5.5.0",
     "grommet": "^2.19.1",
     "grommet-icons": "^4.7.0",
     "immer": "^9.0.7",
     "lodash": "^4.17.21",
     "next": "12.0.4",
+    "peer-id": "^0.15.4",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "styled-components": "^5.3.3",
     "use-immer": "^0.6.0"
   },
   "devDependencies": {
+    "@hoprnet/hopr-utils": "^1.86.0-next.2",
     "@testing-library/jest-dom": "^5.16.1",
     "@types/js-cookie": "^3.0.1",
     "@types/lodash": "^4.14.177",

@@ -1,4 +1,4 @@
-import { privKeyToPeerId, u8aConcat, u8aToHex } from '@hoprnet/hopr-utils'
+import { privKeyToPeerId, u8aToHex } from '@hoprnet/hopr-utils'
 import {
   encodeSignMessageRequest,
   decodeMessage,
