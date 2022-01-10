@@ -10,7 +10,9 @@
     "format": "prettier --write --ignore-path .gitignore .",
     "mocks": "node ./mocks/index.js",
     "test": "jest --watch",
-    "test:ci": "jest --ci"
+    "test:ci": "jest --ci",
+    "vercel:install": "echo '📦 Overwriting install method in Vercel since app was built already.'",
+    "vercel:build": "echo '⚙️ Overwriting install method in Vercel since app was built already.'"
   },
   "dependencies": {
     "grommet": "^2.19.1",
