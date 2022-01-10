@@ -6,6 +6,7 @@
     "dev": "MYNE_CHAT_GIT_HASH=$(git rev-parse --short HEAD) next dev -p 8080",
     "build": "MYNE_CHAT_GIT_HASH=$(git rev-parse --short HEAD) next build",
     "start": "next start -p 8080",
+    "export": "next export",
     "lint": "next lint",
     "format": "prettier --write --ignore-path .gitignore .",
     "mocks": "node ./mocks/index.js",

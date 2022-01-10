@@ -1,6 +1,6 @@
 import type { FunctionComponent } from "react";
 import type { ConnectionStatus } from "../state";
-import Image from "next/image";
+import LogoSVG from '../../public/myne-chat-logo.svg'
 import { Box, Anchor } from "grommet";
 
 const Logo: FunctionComponent<{
@@ -22,10 +22,9 @@ const Logo: FunctionComponent<{
           max: "125px",
         }}
       >
-        <Image
-          src="/myne-chat-logo.svg"
+        <img
+          src={LogoSVG.src}
           alt="Myne Chat Logo"
-          layout="responsive"
           width="250px"
           height="125px"
         />
