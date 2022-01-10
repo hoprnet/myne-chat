@@ -32,25 +32,28 @@ jobs:
       - name: Build (Static)
         run: yarn build && yarn export
 
+      - name: Set Env Vars on Vercel Project
+        uses: dkershner6/vercel-set-env-action@v1
+        with:
+          token: ${{ secrets.VERCEL_TOKEN }}
+          teamId: ${{ secrets.VERCEL_TEAM_ID }}
+          projectName: myne-chat
+
       - name: Deploy Preview
         uses: amondnet/vercel-action@v20
-        id: vercel-deploy-preview
         if: github.event_name == 'push' && github.ref != 'refs/heads/main'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_MYNE_CHAT_APP_PROJECT_ID }}
-          working-directory: .
 
       - name: Deploy Production
         uses: amondnet/vercel-action@v20
-        id: vercel-deploy-production
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_MYNE_CHAT_APP_PROJECT_ID }}
-          working-directory: .
           vercel-args: "--prod"
