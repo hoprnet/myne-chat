@@ -36,7 +36,7 @@ export const isValidPeerId = (v: string): boolean => {
  * @returns encoded message
  */
 export const encodeMessage = (from: string, message: string, signature?: string): string => {
-  return `myne:${from}${signature && `-${signature}`}:${message}`;
+  return `myne:${from}${signature ? `-${signature}` : ''}:${message}`;
 };
 
 /**

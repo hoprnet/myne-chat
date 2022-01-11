@@ -31,6 +31,16 @@ test("encodeMessage", () => {
   ).toEqual(`myne:16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs:hello`);
 });
 
+test("encodeMessage (with signature)", () => {
+  expect(
+    encodeMessage(
+      "16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs",
+      "hello",
+      "signature"
+    )
+  ).toEqual(`myne:16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs-signature:hello`);
+});
+
 test("decodeMessage", () => {
   expect(
     decodeMessage(
