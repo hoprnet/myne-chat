@@ -1,16 +1,16 @@
 export const API = (endpoint: string, headers: Headers) => ({
   signRequest: async (encodedSignMessageRequest: string) => {
-    return fetch(`${endpoint}/api/v2/sign`, {
+    return fetch(`${endpoint}/api/v2/message/sign`, {
       method: "POST",
       headers,
       body: JSON.stringify({
-        body: encodedSignMessageRequest,
+        message: encodedSignMessageRequest,
       }),
     })
       .then((res) => res.json())
       .then((data) => {
-        console.info("Returned response", data.signedMessage)
-        return data.signedMessage;
+        console.info("Returned response", data.signature)
+        return data.signature;
       })
       .catch((err) => {
         console.error("ERROR requesting signature message", err);
