@@ -36,7 +36,7 @@ export const isValidPeerId = (v: string): boolean => {
  * @returns encoded message
  */
 export const encodeMessage = (from: string, message: string, signature?: string): string => {
-  return `myne:${from}${signature ? `-${signature}` : ''}:${message}`;
+  return `myne:${encodeSignedRecipient(from, signature)}:${message}`;
 };
 
 /**
@@ -46,6 +46,16 @@ export const encodeMessage = (from: string, message: string, signature?: string)
  */
 export const encodeSignMessageRequest = (message: string, recipient: string) => {
   return `myne:sign:${recipient}:${message}`;
+}
+
+/**
+ * Encodes recipient with signature for later parsing
+ * @param from string
+ * @param signature strig
+ * @returns encodedSignedRecipient string
+ */
+export const encodeSignedRecipient = (from: string, signature?: string): string => {
+  return `${from}${signature ? `-${signature}` : ''}`
 }
 
 /**

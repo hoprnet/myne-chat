@@ -6,6 +6,7 @@ import {
   getUrlParams,
   isValidPeerId,
   verifyAuthenticatedMessage,
+  encodeSignedRecipient,
 } from "./utils";
 
 test("isValidPeerId", () => {
@@ -65,6 +66,22 @@ test("decodeMessage (with signature)", () => {
     signature: "signature"
   });
 });
+
+test("encodeSignedRecipient", () => {
+  expect(
+    encodeSignedRecipient(
+      '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs', 'signature'
+    )
+  ).toEqual('16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs-signature')
+})
+
+test("encodeSignedRecipient (empty)", () => {
+  expect(
+    encodeSignedRecipient(
+      '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs',
+    )
+  ).toEqual('16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs')
+})
 
 test("getUrlParams", () => {
   const location = {
