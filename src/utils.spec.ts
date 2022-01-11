@@ -53,6 +53,19 @@ test("decodeMessage", () => {
   });
 });
 
+test("decodeMessage (with signature)", () => {
+  expect(
+    decodeMessage(
+      `myne:16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs-signature:hello`
+    )
+  ).toEqual({
+    tag: "myne",
+    from: "16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs",
+    message: "hello",
+    signature: "signature"
+  });
+});
+
 test("getUrlParams", () => {
   const location = {
     search: "?securityToken=hello",

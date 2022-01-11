@@ -75,9 +75,11 @@ export const verifyAuthenticatedMessage = async (originalMessage: string, signed
  */
 export const decodeMessage = (
   fullMessage: string
-): { tag: string; from: string; message: string } => {
-  const [tag, from, ...messages] = fullMessage.split(":");
+): { tag: string; from: string; message: string, signature: string | undefined } => {
+  const [tag, maybeFrom, ...messages] = fullMessage.split(":");
   const message = messages.join(":");
+
+  const [from, signature] = maybeFrom.includes('-') ? maybeFrom.split('-') : [maybeFrom]
 
   if (!from || !isValidPeerId(from)) {
     throw Error(
@@ -89,6 +91,7 @@ export const decodeMessage = (
     tag,
     from,
     message,
+    signature
   };
 };
 
