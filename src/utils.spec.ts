@@ -1,4 +1,5 @@
 import {
+  encodeSignMessageRequest,
   decodeMessage,
   encodeMessage,
   getUrlParams,
@@ -49,3 +50,10 @@ test("getUrlParams", () => {
     securityToken: "hello",
   });
 });
+
+
+test("encodeSignMessageRequest", async () => {
+  const message = "This is the message";
+  const recipient = "16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs"
+  expect(encodeSignMessageRequest(message, recipient)).toEqual(`myne:sign:${recipient}:${message}`)
+})
