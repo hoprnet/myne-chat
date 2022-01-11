@@ -7,10 +7,11 @@ import useAppState from "../src/state";
 import { encodeMessage, decodeMessage } from "../src/utils";
 import ConversationsPanel from "../src/components/conversations-panel";
 import Chat from "../src/components/chat";
+import { API } from "../src/lib/api";
 
 const HomePage: NextPage = () => {
   const {
-    state: { selection, conversations, myPeerId, settings, status },
+    state: { selection, conversations, myPeerId, settings, status, verified },
     getReqHeaders,
     socketRef,
     setSelection,
@@ -55,15 +56,18 @@ const HomePage: NextPage = () => {
     setFocus("chat");
   };
 
-  const handleSendMessage = (destination: string, message: string) => {
+  const handleSendMessage = async (destination: string, message: string) => {
     if (!myPeerId || !selection || !socketRef.current) return;
 
-    const encodedMessage = encodeMessage(myPeerId, message);
+    const headers = getReqHeaders(true)
+    const api = API(settings.httpEndpoint, headers)
+    const signature = verified && await api.signRequest(message);
+    const encodedMessage = encodeMessage(myPeerId, message, signature);
     const id = addSentMessage(myPeerId, destination, message);
 
     fetch(`${settings.httpEndpoint}/api/v2/messages`, {
       method: "POST",
-      headers: getReqHeaders(true),
+      headers,
       body: JSON.stringify({
         recipient: selection,
         body: encodedMessage,

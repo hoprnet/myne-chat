@@ -32,10 +32,11 @@ export const isValidPeerId = (v: string): boolean => {
  * messages from other apps.
  * @param from
  * @param message
+ * @param signature string (optional) - Signature of message from recipient
  * @returns encoded message
  */
-export const encodeMessage = (from: string, message: string): string => {
-  return `myne:${from}:${message}`;
+export const encodeMessage = (from: string, message: string, signature?: string): string => {
+  return `myne:${from}${signature && `-${signature}`}:${message}`;
 };
 
 /**
