@@ -100,6 +100,21 @@ test("decodeSignedRecipient (empty)", () => {
   ).toEqual({ from: '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs' })
 })
 
+test("encoding/decoding signed recipients roundtrip", () => {
+  const from = '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs'
+  const signature = 'signature'
+  expect(decodeSignedRecipient(encodeSignedRecipient(from, signature))).toEqual({ from, signature })
+  expect(decodeSignedRecipient(encodeSignedRecipient(from))).toEqual({ from })
+})
+
+test("encoding/decoding message roundtrip", () => {
+  const from = '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs'
+  const message = 'message'
+  const signature = 'signature'
+  expect(decodeMessage(encodeMessage(from, message, signature))).toEqual({ from, message, signature, tag: 'myne' })
+  expect(decodeMessage(encodeMessage(from, message ))).toEqual({ from, message, tag: 'myne' })
+})
+
 test("getUrlParams", () => {
   const location = {
     search: "?securityToken=hello",
