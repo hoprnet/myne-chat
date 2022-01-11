@@ -58,6 +58,22 @@ export const encodeSignedRecipient = (from: string, signature?: string): string 
   return `${from}${signature ? `-${signature}` : ''}`
 }
 
+
+export type SignedRecipient = {
+  from: string,
+  signature?: string
+}
+
+/**
+ * Decodes recipient to obtain signature if any
+ * @param maybeSignedRecipient string
+ * @returns SignedRecipient
+ */
+ export const decodeSignedRecipient = (maybeSignedRecipient: string): SignedRecipient => {
+  const [from, signature] = maybeSignedRecipient.includes('-') ? maybeSignedRecipient.split('-') : [maybeSignedRecipient]
+  return { from, signature }
+}
+
 /**
  * Copied from @hoprnet/hopr-utils until web support is provided
  * https://github.com/hoprnet/hoprnet/blob/059250384a04463fa1d1068dde38697ce683c817/packages/utils/src/libp2p/verifySignatureFromPeerId.ts#L15-L18
@@ -86,10 +102,10 @@ export const verifyAuthenticatedMessage = async (originalMessage: string, signed
 export const decodeMessage = (
   fullMessage: string
 ): { tag: string; from: string; message: string, signature: string | undefined } => {
-  const [tag, maybeFrom, ...messages] = fullMessage.split(":");
+  const [tag, maybeSignedRecipient, ...messages] = fullMessage.split(":");
   const message = messages.join(":");
 
-  const [from, signature] = maybeFrom.includes('-') ? maybeFrom.split('-') : [maybeFrom]
+  const {from, signature} = decodeSignedRecipient(maybeSignedRecipient);
 
   if (!from || !isValidPeerId(from)) {
     throw Error(

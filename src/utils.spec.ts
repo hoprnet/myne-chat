@@ -7,6 +7,7 @@ import {
   isValidPeerId,
   verifyAuthenticatedMessage,
   encodeSignedRecipient,
+  decodeSignedRecipient,
 } from "./utils";
 
 test("isValidPeerId", () => {
@@ -81,6 +82,22 @@ test("encodeSignedRecipient (empty)", () => {
       '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs',
     )
   ).toEqual('16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs')
+})
+
+test("decodeSignedRecipient", () => {
+  expect(
+    decodeSignedRecipient(
+      '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs-signature'
+    )
+  ).toEqual({ from: '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs', signature: 'signature' })
+})
+
+test("decodeSignedRecipient (empty)", () => {
+  expect(
+    decodeSignedRecipient(
+      '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs'
+    )
+  ).toEqual({ from: '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs' })
 })
 
 test("getUrlParams", () => {
