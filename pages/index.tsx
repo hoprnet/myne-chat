@@ -3,8 +3,8 @@ import { useRouter } from "next/router";
 import { useState, useContext, useEffect } from "react";
 import { Box, Button, ResponsiveContext } from "grommet";
 import { LinkPrevious } from "grommet-icons";
-import useAppState from "../src/state";
-import { encodeMessage, decodeMessage } from "../src/utils";
+import useAppState, { VerifiedStatus } from "../src/state";
+import { encodeMessage, decodeMessage, verifySignatureFromPeerId } from "../src/utils";
 import ConversationsPanel from "../src/components/conversations-panel";
 import Chat from "../src/components/chat";
 import { API } from "../src/lib/api";
@@ -35,15 +35,23 @@ const HomePage: NextPage = () => {
   const screenSize = useContext(ResponsiveContext);
   const isMobile = screenSize === "small";
 
-  const handleReceivedMessage = (ev: MessageEvent<string>) => {
+  const handleReceivedMessage = async (ev: MessageEvent<string>) => {
     try {
       // we are only interested in messages, not all the other events coming in on the socket
       const data = JSON.parse(ev.data);
       if (data.type == "message") {
-        const { tag, from, message } = decodeMessage(data.msg);
+        const { tag, from, message, signature } = decodeMessage(data.msg);
+
+        const verifiedStatus : VerifiedStatus = signature ? 
+          (await verifySignatureFromPeerId(from, message, signature) ? 
+            "VERIFIED" :
+            "FAILED_VERIFICATION"
+          ) :
+          "UNVERIFIED";
+
         // we are only interested in myne messages
         if (tag == "myne") {
-          addReceivedMessage(from, message);
+          addReceivedMessage(from, message, verifiedStatus);
         }
       }
     } catch (err) {
