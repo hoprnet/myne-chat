@@ -1,4 +1,6 @@
 import type { Settings } from "./state";
+import { arrayify } from '@ethersproject/bytes'
+import PeerId from "peer-id";
 
 /**
  * True if instance is running on server
@@ -43,6 +45,26 @@ export const encodeMessage = (from: string, message: string): string => {
  */
 export const encodeSignMessageRequest = (message: string, recipient: string) => {
   return `myne:sign:${recipient}:${message}`;
+}
+
+/**
+ * Copied from @hoprnet/hopr-utils until web support is provided
+ * https://github.com/hoprnet/hoprnet/blob/059250384a04463fa1d1068dde38697ce683c817/packages/utils/src/libp2p/verifySignatureFromPeerId.ts#L15-L18
+ */
+ export async function verifySignatureFromPeerId(peerId: string, message: string, signature: string): Promise<boolean> {
+  const pId = PeerId.createFromB58String(peerId)
+  return await pId.pubKey.verify(new TextEncoder().encode(message), arrayify(signature))
+}
+
+/**
+ * Verifies signed message given a specific Base58 string
+ * @param originalMessage string
+ * @param signedMessage string
+ * @param signer string
+ * @returns boolean
+ */
+export const verifyAuthenticatedMessage = async (originalMessage: string, signedMessage: string, signer: string) => {
+  return await verifySignatureFromPeerId(signer, originalMessage, signedMessage);
 }
 
 /**
