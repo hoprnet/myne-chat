@@ -32,10 +32,11 @@ export const isValidPeerId = (v: string): boolean => {
  * messages from other apps.
  * @param from
  * @param message
+ * @param signature string (optional) - Signature of message from recipient
  * @returns encoded message
  */
-export const encodeMessage = (from: string, message: string): string => {
-  return `myne:${from}:${message}`;
+export const encodeMessage = (from: string, message: string, signature?: string): string => {
+  return `myne:${encodeSignedRecipient(from, signature)}:${message}`;
 };
 
 /**
@@ -45,6 +46,32 @@ export const encodeMessage = (from: string, message: string): string => {
  */
 export const encodeSignMessageRequest = (message: string, recipient: string) => {
   return `myne:sign:${recipient}:${message}`;
+}
+
+/**
+ * Encodes recipient with signature for later parsing
+ * @param from string
+ * @param signature strig
+ * @returns encodedSignedRecipient string
+ */
+export const encodeSignedRecipient = (from: string, signature?: string): string => {
+  return `${from}${signature ? `-${signature}` : ''}`
+}
+
+
+export type SignedRecipient = {
+  from: string,
+  signature?: string
+}
+
+/**
+ * Decodes recipient to obtain signature if any
+ * @param maybeSignedRecipient string
+ * @returns SignedRecipient
+ */
+ export const decodeSignedRecipient = (maybeSignedRecipient: string): SignedRecipient => {
+  const [from, signature] = maybeSignedRecipient.includes('-') ? maybeSignedRecipient.split('-') : [maybeSignedRecipient]
+  return { from, signature }
 }
 
 /**
@@ -74,9 +101,11 @@ export const verifyAuthenticatedMessage = async (originalMessage: string, signed
  */
 export const decodeMessage = (
   fullMessage: string
-): { tag: string; from: string; message: string } => {
-  const [tag, from, ...messages] = fullMessage.split(":");
+): { tag: string; from: string; message: string, signature: string | undefined } => {
+  const [tag, maybeSignedRecipient, ...messages] = fullMessage.split(":");
   const message = messages.join(":");
+
+  const {from, signature} = decodeSignedRecipient(maybeSignedRecipient);
 
   if (!from || !isValidPeerId(from)) {
     throw Error(
@@ -88,6 +117,7 @@ export const decodeMessage = (
     tag,
     from,
     message,
+    signature
   };
 };
 

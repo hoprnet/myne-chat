@@ -6,6 +6,8 @@ import {
   getUrlParams,
   isValidPeerId,
   verifyAuthenticatedMessage,
+  encodeSignedRecipient,
+  decodeSignedRecipient,
 } from "./utils";
 
 test("isValidPeerId", () => {
@@ -31,6 +33,16 @@ test("encodeMessage", () => {
   ).toEqual(`myne:16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs:hello`);
 });
 
+test("encodeMessage (with signature)", () => {
+  expect(
+    encodeMessage(
+      "16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs",
+      "hello",
+      "signature"
+    )
+  ).toEqual(`myne:16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs-signature:hello`);
+});
+
 test("decodeMessage", () => {
   expect(
     decodeMessage(
@@ -42,6 +54,66 @@ test("decodeMessage", () => {
     message: "hello",
   });
 });
+
+test("decodeMessage (with signature)", () => {
+  expect(
+    decodeMessage(
+      `myne:16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs-signature:hello`
+    )
+  ).toEqual({
+    tag: "myne",
+    from: "16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs",
+    message: "hello",
+    signature: "signature"
+  });
+});
+
+test("encodeSignedRecipient", () => {
+  expect(
+    encodeSignedRecipient(
+      '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs', 'signature'
+    )
+  ).toEqual('16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs-signature')
+})
+
+test("encodeSignedRecipient (empty)", () => {
+  expect(
+    encodeSignedRecipient(
+      '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs',
+    )
+  ).toEqual('16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs')
+})
+
+test("decodeSignedRecipient", () => {
+  expect(
+    decodeSignedRecipient(
+      '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs-signature'
+    )
+  ).toEqual({ from: '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs', signature: 'signature' })
+})
+
+test("decodeSignedRecipient (empty)", () => {
+  expect(
+    decodeSignedRecipient(
+      '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs'
+    )
+  ).toEqual({ from: '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs' })
+})
+
+test("encoding/decoding signed recipients roundtrip", () => {
+  const from = '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs'
+  const signature = 'signature'
+  expect(decodeSignedRecipient(encodeSignedRecipient(from, signature))).toEqual({ from, signature })
+  expect(decodeSignedRecipient(encodeSignedRecipient(from))).toEqual({ from })
+})
+
+test("encoding/decoding message roundtrip", () => {
+  const from = '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs'
+  const message = 'message'
+  const signature = 'signature'
+  expect(decodeMessage(encodeMessage(from, message, signature))).toEqual({ from, message, signature, tag: 'myne' })
+  expect(decodeMessage(encodeMessage(from, message ))).toEqual({ from, message, tag: 'myne' })
+})
 
 test("getUrlParams", () => {
   const location = {
