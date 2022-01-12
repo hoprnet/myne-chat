@@ -15,7 +15,6 @@ const HomePage: NextPage = () => {
     state: { myPeerId, settings, status, verified },
     getReqHeaders,
     socketRef,
-    setSelection,
     updateSettings,
   } = useAppState();
 
@@ -29,7 +28,9 @@ const HomePage: NextPage = () => {
     content: message,
     verifiedStatus
   })
-
+  const addSentMessage = (myPeerId: string, destination: string, message: string, id: string) => dispatch({
+    type: 'ADD_SENT_MESSAGE', myPeerId, destination, content: message, id
+  })
   const updateMessage = (counterparty: string, messageId: string, status: Message["status"], error?: string) => dispatch({
     type: 'UPDATE_MESSAGE',
     counterparty,
@@ -37,11 +38,11 @@ const HomePage: NextPage = () => {
     status,
     error
   })
-
   const addNewConversation = (peerId: string) => dispatch({
     type: 'ADD_NEW_CONVERSATION',
     peerId
   })
+  const setSelection = (peerId: string) => dispatch({ type: 'SET_SELECTION', selection: peerId });
 
   // get selected conversation
   const conversation = selection ? conversations.get(selection) : undefined;
@@ -96,7 +97,7 @@ const HomePage: NextPage = () => {
 
     const encodedMessage = encodeMessage(myPeerId, message, signature);
     const id = genId();
-    dispatch({ type: 'ADD_SENT_MESSAGE', myPeerId, destination, content: message, id })
+    addSentMessage(myPeerId, destination, message, id);
 
     await api.sendMessage(selection, encodedMessage, id, destination, updateMessage)
       .catch(err => console.error('ERROR Failed to send message', err));
@@ -126,7 +127,7 @@ const HomePage: NextPage = () => {
       dispatch({ type: 'ADD_NEW_CONVERSATION', peerId: dev })
       // setTimeout ensures the event loop takes these state updates in order.
       setTimeout(() => addReceivedMessage(dev, 'Welcome to the developer mode.'), 0)
-      setTimeout(() => addReceivedMessage(dev, 'This conversation is only available during development.'), 0)
+      setTimeout(() => addSentMessage(myPeerId || '', dev, 'This conversation is only available during development.', genId()), 0)
       setTimeout(() => addReceivedMessage(dev, 'This is how a verified message looks like.', 'VERIFIED'), 0)
       setTimeout(() => addReceivedMessage(dev, 'This is how an unverified message looks like.', 'UNVERIFIED'), 0)
       setTimeout(() => addReceivedMessage(dev, 'This is how a failed verification message looks like.', 'FAILED_VERIFICATION'), 0)

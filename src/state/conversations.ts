@@ -46,7 +46,7 @@ function conversationsReducer(draft: ConversationsState, action: ConversationsAc
       console.log("DRAFT 2", draft.selection, draft.conversations)
       break;
     case "ADD_RECEIVED_MESSAGE":
-      const { from, content, verifiedStatus } = action;
+      const { from, verifiedStatus } = action;
       const fromMessages = draft.conversations.get(from) || new Map<string, Message>();
       const generatedReceivedId = genId();
       draft.conversations.set(
@@ -54,7 +54,7 @@ function conversationsReducer(draft: ConversationsState, action: ConversationsAc
         fromMessages.set(generatedReceivedId, {
           id: genId(),
           isIncoming: true,
-          content: content,
+          content: action.content,
           status: "SUCCESS",
           createdBy: from,
           createdAt: +new Date(),
@@ -70,7 +70,7 @@ function conversationsReducer(draft: ConversationsState, action: ConversationsAc
         sentMessages.set(id, {
           id,
           isIncoming: false,
-          content: content,
+          content: action.content,
           status: "UNKNOWN",
           createdBy: myPeerId,
           createdAt: +new Date(),

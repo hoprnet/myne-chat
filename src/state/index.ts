@@ -34,7 +34,6 @@ export type Settings = {
 
 export type State = {
   settings: Settings;
-  conversations: Map<string, Map<string, Message>>;
   selection?: string;
   verified: boolean;
 };
@@ -48,7 +47,6 @@ const useAppState = () => {
       securityToken: urlParams.securityToken,
     },
     verified: false,
-    conversations: new Map([]),
     /*
       16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs
       16Uiu2HAm83TSuRSCN8mKaZbCekkx3zfqgniPSxHdeUSeyEkdwvTs
@@ -64,13 +62,6 @@ const useAppState = () => {
       for (const [k, v] of Object.entries(settings)) {
         (draft.settings as any)[k] = v;
       }
-      return draft;
-    });
-  };
-
-  const setSelection = (selection: string) => {
-    setState((draft) => {
-      draft.selection = selection;
       return draft;
     });
   };
@@ -91,7 +82,6 @@ const useAppState = () => {
     getReqHeaders: user.getReqHeaders,
     socketRef: websocket.socketRef,
     updateSettings,
-    setSelection,
     setVerified,
     hash: MYNE_CHAT_GIT_HASH,
     version: MYNE_CHAT_VERSION,
