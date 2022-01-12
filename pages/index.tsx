@@ -69,7 +69,8 @@ const HomePage: NextPage = () => {
 
     const headers = getReqHeaders(true)
     const api = API(settings.httpEndpoint, headers)
-    const signature = verified && await api.signRequest(message);
+    const signature = verified && await api.signRequest(message)
+      .catch(err => console.error('ERROR Failed to obtain signature', err));
     const encodedMessage = encodeMessage(myPeerId, message, signature);
     const id = addSentMessage(myPeerId, destination, message);
 
