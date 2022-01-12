@@ -14,7 +14,6 @@ describe('Home', () => {
         json: () => Promise.resolve({}),
       })
     );
-    // @TODO: Actually enable render for testing
-    // render(<HomePage />)
+    render(<HomePage />)
   })
 })

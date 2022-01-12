@@ -5,7 +5,7 @@
 import type { Settings } from ".";
 import { useEffect, useRef, useState } from "react";
 import { useImmer } from "use-immer";
-import { debounce } from "lodash";
+import debounce from "debounce";
 import { isSSR } from "../utils";
 
 export type ConnectionStatus = "CONNECTED" | "DISCONNECTED";

@@ -2,7 +2,7 @@ import type { FunctionComponent } from "react";
 import type { Message } from "../state";
 import { useEffect, useRef, useState } from "react";
 import { Box, Text, InfiniteScroll } from "grommet";
-import { debounce } from "lodash";
+import debounce from "debounce";
 import ChatBubble from "./chat-bubble";
 
 const ChatView: FunctionComponent<{

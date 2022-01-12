@@ -82,87 +82,6 @@ const useAppState = () => {
     })
   }
 
-  const addSentMessage = (
-    myPeerId: string,
-    destination: string,
-    content: string,
-    verifiedStatus?: VerifiedStatus
-  ) => {
-    const id = genId();
-    setState((draft) => {
-      const messages = draft.conversations.get(destination) || new Map<string, Message>();
-
-      draft.conversations.set(
-        destination,
-        messages.set(id, {
-          id,
-          isIncoming: false,
-          content: content,
-          status: "UNKNOWN",
-          createdBy: myPeerId,
-          createdAt: +new Date(),
-          verifiedStatus,
-        })
-      );
-
-      return draft;
-    });
-
-    return id;
-  };
-
-  const addReceivedMessage = (from: string, content: string, verifiedStatus?: VerifiedStatus) => {
-    setState((draft) => {
-      const messages = draft.conversations.get(from) || new Map<string, Message>();
-      const id = genId();
-
-      draft.conversations.set(
-        from,
-        messages.set(id, {
-          id: genId(),
-          isIncoming: true,
-          content: content,
-          status: "SUCCESS",
-          createdBy: from,
-          createdAt: +new Date(),
-          verifiedStatus
-        })
-      );
-
-      return draft;
-    });
-  };
-
-  const updateMessage = (
-    counterparty: string,
-    messageId: string,
-    status: Message["status"],
-    error?: string
-  ) => {
-    setState((draft) => {
-      const conversations = draft.conversations.get(counterparty);
-      if (!conversations) return draft;
-      const message = conversations.get(messageId);
-      if (!message) return draft;
-
-      message.status = status;
-      message.error = error;
-
-      conversations.set(messageId, message);
-      return draft;
-    });
-  };
-
-  const addNewConversation = (peerId: string) => {
-    setState((draft) => {
-      if (!draft.conversations.has(peerId)) {
-        draft.conversations.set(peerId, new Map<string, Message>());
-      }
-      draft.selection = peerId;
-      return draft;
-    });
-  };
-
   return {
     state: {
       ...state,
@@ -174,10 +93,6 @@ const useAppState = () => {
     updateSettings,
     setSelection,
     setVerified,
-    addSentMessage,
-    addReceivedMessage,
-    updateMessage,
-    addNewConversation,
     hash: MYNE_CHAT_GIT_HASH,
     version: MYNE_CHAT_VERSION,
     environment: MYNE_CHAT_ENVIRONMENT

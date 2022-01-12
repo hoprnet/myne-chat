@@ -3,24 +3,45 @@ import { useRouter } from "next/router";
 import { useState, useContext, useEffect } from "react";
 import { Box, Button, ResponsiveContext } from "grommet";
 import { LinkPrevious } from "grommet-icons";
-import useAppState, { VerifiedStatus } from "../src/state";
-import { encodeMessage, decodeMessage, verifySignatureFromPeerId } from "../src/utils";
+import useAppState, { Message, VerifiedStatus } from "../src/state";
+import { encodeMessage, decodeMessage, verifySignatureFromPeerId, genId } from "../src/utils";
 import ConversationsPanel from "../src/components/conversations-panel";
 import Chat from "../src/components/chat";
 import { API } from "../src/lib/api";
+import { useConversations } from "../src/state/conversations";
 
 const HomePage: NextPage = () => {
   const {
-    state: { selection, conversations, myPeerId, settings, status, verified },
+    state: { myPeerId, settings, status, verified },
     getReqHeaders,
     socketRef,
     setSelection,
-    addNewConversation,
-    addSentMessage,
-    addReceivedMessage,
-    updateMessage,
     updateSettings,
   } = useAppState();
+
+  const [ state, dispatch ] = useConversations();
+  const { conversations, selection } = state;
+
+  // @TODO: Move these functions to a more suitable place.
+  const addReceivedMessage = (peerId: string, message: string, verifiedStatus?: VerifiedStatus) => dispatch({
+    type: 'ADD_RECEIVED_MESSAGE',
+    from: peerId,
+    content: message,
+    verifiedStatus
+  })
+
+  const updateMessage = (counterparty: string, messageId: string, status: Message["status"], error?: string) => dispatch({
+    type: 'UPDATE_MESSAGE',
+    counterparty,
+    messageId,
+    status,
+    error
+  })
+
+  const addNewConversation = (peerId: string) => dispatch({
+    type: 'ADD_NEW_CONVERSATION',
+    peerId
+  })
 
   // get selected conversation
   const conversation = selection ? conversations.get(selection) : undefined;
@@ -69,31 +90,16 @@ const HomePage: NextPage = () => {
 
     const headers = getReqHeaders(true)
     const api = API(settings.httpEndpoint, headers)
+
     const signature = verified && await api.signRequest(message)
       .catch(err => console.error('ERROR Failed to obtain signature', err));
-    const encodedMessage = encodeMessage(myPeerId, message, signature);
-    const id = addSentMessage(myPeerId, destination, message);
 
-    fetch(`${settings.httpEndpoint}/api/v2/messages`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        recipient: selection,
-        body: encodedMessage,
-      }),
-    })
-      .then(async (res) => {
-        if (res.status === 204) return updateMessage(destination, id, "SUCCESS");
-        if (res.status === 422) return updateMessage(destination, id, "FAILURE", (await res.json()).error)
-        // If we didn't get a supported status response code, we return unknown
-        const err = 'Unknown response status.'
-        console.error("ERROR sending message", err);
-        return updateMessage(destination, id, "UNKNOWN", err)
-      })
-      .catch((err) => {
-        console.error("ERROR sending message", err);
-        updateMessage(destination, id, "FAILURE", String(err));
-      });
+    const encodedMessage = encodeMessage(myPeerId, message, signature);
+    const id = genId();
+    dispatch({ type: 'ADD_SENT_MESSAGE', myPeerId, destination, content: message, id })
+
+    await api.sendMessage(selection, encodedMessage, id, destination, updateMessage)
+      .catch(err => console.error('ERROR Failed to send message', err));
   };
 
   const handleAddNewConversation = (counterparty: string) => {
@@ -117,7 +123,7 @@ const HomePage: NextPage = () => {
     const loadDevHelperConversation = () => {
       console.log("⚙️  Developer Mode enabled.", process.env.NODE_ENV)
       const dev = '⚙️  Dev'
-      addNewConversation(dev)
+      dispatch({ type: 'ADD_NEW_CONVERSATION', peerId: dev })
       // setTimeout ensures the event loop takes these state updates in order.
       setTimeout(() => addReceivedMessage(dev, 'Welcome to the developer mode.'), 0)
       setTimeout(() => addReceivedMessage(dev, 'This conversation is only available during development.'), 0)
