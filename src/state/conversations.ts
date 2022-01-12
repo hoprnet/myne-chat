@@ -31,19 +31,19 @@ export type ConversationsAction = {
   messageId: string,
   status: Message["status"],
   error?: string
+} | {
+  type: 'SET_SELECTION'
+  selection: string
 }
 
 function conversationsReducer(draft: ConversationsState, action: ConversationsAction) {
   switch (action.type) {
     case "ADD_NEW_CONVERSATION":
       const { peerId } = action;
-      console.log("peerId", peerId)
       if (!draft.conversations.has(peerId)) {
-        console.log("Adding peerId", peerId)
         draft.conversations.set(peerId, new Map<string, Message>());
       }
       draft.selection = peerId;
-      console.log("DRAFT 2", draft.selection, draft.conversations)
       break;
     case "ADD_RECEIVED_MESSAGE":
       const { from, verifiedStatus } = action;
@@ -87,6 +87,9 @@ function conversationsReducer(draft: ConversationsState, action: ConversationsAc
       message.status = status;
       message.error = error;
       conversations.set(messageId, message);
+      break;
+    case "SET_SELECTION":
+      draft.selection = action.selection;
       break;
   }
 }

@@ -8,7 +8,7 @@ import { encodeMessage, decodeMessage, verifySignatureFromPeerId, genId } from "
 import ConversationsPanel from "../src/components/conversations-panel";
 import Chat from "../src/components/chat";
 import { API } from "../src/lib/api";
-import { useConversations } from "../src/state/conversations";
+import { ConversationsAction, useConversations } from "../src/state/conversations";
 
 const HomePage: NextPage = () => {
   const {
@@ -21,7 +21,9 @@ const HomePage: NextPage = () => {
   const [ state, dispatch ] = useConversations();
   const { conversations, selection } = state;
 
-  // @TODO: Move these functions to a more suitable place.
+
+  // N.B: These functions need to remain global as `dispatch` is obtained from this current context.
+  // @TODO: Create a context out of `useConversations` and provide it to each component that needs it.
   const addReceivedMessage = (peerId: string, message: string, verifiedStatus?: VerifiedStatus) => dispatch({
     type: 'ADD_RECEIVED_MESSAGE',
     from: peerId,
@@ -43,6 +45,7 @@ const HomePage: NextPage = () => {
     peerId
   })
   const setSelection = (peerId: string) => dispatch({ type: 'SET_SELECTION', selection: peerId });
+
 
   // get selected conversation
   const conversation = selection ? conversations.get(selection) : undefined;
@@ -124,7 +127,7 @@ const HomePage: NextPage = () => {
     const loadDevHelperConversation = () => {
       console.log("⚙️  Developer Mode enabled.", process.env.NODE_ENV)
       const dev = '⚙️  Dev'
-      dispatch({ type: 'ADD_NEW_CONVERSATION', peerId: dev })
+      addNewConversation(dev);
       // setTimeout ensures the event loop takes these state updates in order.
       setTimeout(() => addReceivedMessage(dev, 'Welcome to the developer mode.'), 0)
       setTimeout(() => addSentMessage(myPeerId || '', dev, 'This conversation is only available during development.', genId()), 0)
