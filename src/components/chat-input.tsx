@@ -1,16 +1,15 @@
 import type { FunctionComponent, KeyboardEvent } from "react";
 import { useState, useContext } from "react";
 import { Box, Button, TextArea, ResponsiveContext, CheckBox, Tip } from "grommet";
-import useAppState from "../state";
 
 const ChatInput: FunctionComponent<{
   sendMessage: (destination: string, message: string) => void;
   selection?: string;
-}> = ({ sendMessage, selection }) => {
+  setVerified: (verified: boolean) => void;
+  verified: boolean
+}> = ({ sendMessage, selection, setVerified, verified }) => {
   const screenSize = useContext(ResponsiveContext);
   const [content, setMessage] = useState<string>("");
-  const { setVerified, state } = useAppState()
-  const { verified } = state;
   const direction = screenSize === "small" ? "column" : "row";
   const disableInput = !selection;
   const disableSend = !selection || content.length === 0;
