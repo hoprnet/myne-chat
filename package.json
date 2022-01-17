@@ -11,7 +11,8 @@
     "format": "prettier --write --ignore-path .gitignore .",
     "mocks": "node ./mocks/index.js",
     "test": "jest --watch",
-    "test:ci": "jest --ci"
+    "test:ci": "jest --ci",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@ethersproject/bytes": "^5.5.0",
