@@ -1,11 +1,11 @@
-import { act, renderHook } from '@testing-library/react-hooks'
+import { renderHook } from '@testing-library/react-hooks'
 import useUser, { UserState } from './user'
 import { Settings } from '.'
 import { API } from '../lib/api'
 import { DraftFunction } from 'use-immer'
 
-describe('State', () => {
-  test("userState", async () => {
+describe('User State', () => {
+  test("init", async () => {
     const settings = {} as Settings;
     // We first mock the data and functions we want to ensure got called.
     const mockPeerId = '0x'
