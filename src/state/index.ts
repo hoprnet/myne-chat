@@ -60,7 +60,7 @@ const useAppState = () => {
   // initialize websocket connection & state tracking
   const websocket = useWebsocket(state.settings);
   // fetch user data
-  const user = useUser(state.settings);
+  const user = useUser(API)(state.settings);
 
   const updateSettings = (settings: Partial<Settings>) => {
     setState((draft) => {

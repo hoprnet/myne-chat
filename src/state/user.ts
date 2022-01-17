@@ -6,14 +6,14 @@ import type { Settings } from ".";
 import { useEffect } from "react";
 import { useImmer } from "use-immer";
 import { isSSR } from "../utils";
-import { API } from "../lib/api";
+import { API as IAPI } from "../lib/api";
 
 export type UserState = {
   myPeerId?: string;
   error?: string;
 }
 
-const useUser = (settings: Settings) => {
+const useUser = (API: typeof IAPI) => (settings: Settings) => {
   const [state, setState] = useImmer<UserState>({});
 
   // construct headers to be used in authenticated requests
