@@ -9,6 +9,30 @@ describe('API', () => {
         json: () => Promise.resolve({ signature }),
       })
     );
-    expect(await API('localhost', {} as Headers).signRequest("myne:sign:empty:empty")).toEqual(signature)
+    expect(
+      await API('localhost', {} as Headers)
+      .signRequest("myne:sign:empty:empty")
+    ).toEqual(signature)
+  })
+
+  test("sendMessage (success)", async () => {
+    const handler = jest.fn().mockResolvedValue(true)
+    const destination = "destination"
+    const id = "0"
+    const globalRef: any = global;
+    globalRef.fetch = jest.fn(() => Promise.resolve({ status: 204 }));
+    await API('localhost', {} as Headers).sendMessage("0x", "message", destination, id, handler)
+    expect(handler).toHaveBeenCalledWith(destination, id, 'SUCCESS');
+  })
+
+  test("sendMessage (failure)", async () => {
+    const handler = jest.fn().mockResolvedValue(true)
+    const destination = "destination"
+    const error = 'FATAL_ERROR'
+    const id = "0"
+    const globalRef: any = global;
+    globalRef.fetch = jest.fn(() => Promise.resolve({ status: 422, json: () => Promise.resolve({ error }) }));
+    await API('localhost', {} as Headers).sendMessage("0x", "message", destination, id, handler)
+    expect(handler).toHaveBeenCalledWith(destination, id, 'FAILURE', error);
   })
 })
