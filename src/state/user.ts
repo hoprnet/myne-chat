@@ -6,12 +6,15 @@ import type { Settings } from ".";
 import { useEffect } from "react";
 import { useImmer } from "use-immer";
 import { isSSR } from "../utils";
+import { API } from "../lib/api";
+
+export type UserState = {
+  myPeerId?: string;
+  error?: string;
+}
 
 const useUser = (settings: Settings) => {
-  const [state, setState] = useImmer<{
-    myPeerId?: string;
-    error?: string;
-  }>({});
+  const [state, setState] = useImmer<UserState>({});
 
   // construct headers to be used in authenticated requests
   // when security token is present
@@ -32,26 +35,9 @@ const useUser = (settings: Settings) => {
   useEffect(() => {
     if (isSSR) return;
     console.info("Fetching user data..");
-
-    fetch(`${settings.httpEndpoint}/api/v2/account/address`, {
-      headers: getReqHeaders(),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.info("Fetched PeerId", data.hoprAddress);
-        setState((draft) => {
-          draft.myPeerId = data.hoprAddress;
-          return draft;
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        setState((draft) => {
-          draft.myPeerId = undefined;
-          draft.error = err;
-          return draft;
-        });
-      });
+    const headers = getReqHeaders()
+    const api = API(settings.httpEndpoint, headers)
+    api.accountAddress(headers, setState);
   }, [settings.httpEndpoint, settings.securityToken]);
 
   return {

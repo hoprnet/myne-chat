@@ -1,4 +1,6 @@
+import { DraftFunction } from "use-immer";
 import { UpdateMessageHandlerInterface } from "../state";
+import { UserState } from "../state/user";
 
 export const API = (endpoint: string, headers: Headers) => ({
   signRequest: async (encodedSignMessageRequest: string) => {
@@ -40,5 +42,26 @@ export const API = (endpoint: string, headers: Headers) => ({
       console.error("ERROR sending message", err);
       updateMessage(destination, id, "FAILURE", String(err));
     });
+  },
+  accountAddress: (headers: Headers, setPeerId: (draft: DraftFunction<UserState>) => void) => {
+    return fetch(`${endpoint}/api/v2/account/address`, {
+      headers,
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.info("Fetched PeerId", data.hoprAddress);
+        setPeerId((draft) => {
+          draft.myPeerId = data.hoprAddress;
+          return draft;
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        setPeerId((draft) => {
+          draft.myPeerId = undefined;
+          draft.error = err;
+          return draft;
+        });
+      });
   }
 })
