@@ -15,6 +15,7 @@ const HomePage: NextPage = () => {
     getReqHeaders,
     socketRef,
     setSelection,
+    setVerified,
     addNewConversation,
     addSentMessage,
     addReceivedMessage,
@@ -169,6 +170,8 @@ const HomePage: NextPage = () => {
           />
         ) : null}
         <Chat
+          setVerified={setVerified}
+          verified={verified}
           selection={selection}
           messages={conversation ? Array.from(conversation.values()) : []}
           sendMessage={handleSendMessage}
