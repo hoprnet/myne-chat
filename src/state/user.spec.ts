@@ -1,34 +1,31 @@
 import { renderHook } from '@testing-library/react-hooks'
 import useUser, { UserState } from './user'
 import { Settings } from '.'
-import { API } from '../lib/api'
 import { DraftFunction } from 'use-immer'
+import * as API from '../lib/api'
 
 describe('User State', () => {
+  const mockedAccount = '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs'
+  let mockedAccountAddress: jest.SpyInstance<(setPeerId: (draft: DraftFunction<UserState>) => void) => Promise<void>, [endpoint: string, headers: Headers]>;
+  beforeEach(() => {
+    mockedAccountAddress = jest.spyOn(API, 'accountAddress').mockImplementation(
+      (_endpoint: string, _headers: Headers) => (setPeerId: (draft: DraftFunction<UserState>) => void): Promise<void> => {
+      return Promise.resolve(setPeerId((draft) => {
+        draft.myPeerId = mockedAccount;
+        return draft;
+      }));
+    })
+  })
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
   test("init", async () => {
     const settings = {} as Settings;
-    // We first mock the data and functions we want to ensure got called.
-    const mockPeerId = '0x'
-    const mockAccountAddress = jest.fn((headers: Headers, setPeerId: (draft: DraftFunction<UserState>) => void) => {
-      setPeerId((draft) => {
-        draft.myPeerId = mockPeerId;
-        return draft;
-      });
-    });
-
-    // We proceed to mock the API implementation, only the needed methods.
-    const api = API('localhost', {} as Headers);
-    const mockedAPI = jest.fn().mockImplementation((endpoint: string, headers: Headers) => ({
-      signRequest: api.signRequest,
-      sendMessage: api.sendMessage,
-      accountAddress: mockAccountAddress
-    }))
-    
     // Finally, we actually call our hook with the mocked API, and verify the calls.
-    const { result } = renderHook(() => useUser(mockedAPI)(settings))
+    const { result } = renderHook(() => useUser(settings));
 
     // Expect our mock to had been called and the state updated as reflected.
-    expect(mockAccountAddress).toBeCalled()
-    expect(result.current.state.myPeerId).toBe(mockPeerId)
+    expect(mockedAccountAddress).toBeCalled()
+    expect(result.current.state.myPeerId).toBe(mockedAccount)
   })
 })

@@ -1,4 +1,4 @@
-import { API } from './api'
+import { signRequest, sendMessage, accountAddress } from './api'
 
 describe('API', () => {
   test("signRequest (success)", async () => {
@@ -10,8 +10,7 @@ describe('API', () => {
       })
     );
     expect(
-      await API('localhost', {} as Headers)
-      .signRequest("myne:sign:empty:empty")
+      await signRequest('localhost', {} as Headers)("myne:sign:empty:empty")
     ).toEqual(signature)
   })
 
@@ -20,8 +19,7 @@ describe('API', () => {
     const globalRef: any = global;
     globalRef.fetch = jest.fn(() => Promise.reject(err));
     expect(
-      await API('localhost', {} as Headers)
-      .signRequest("myne:sign:empty:empty")
+      await signRequest('localhost', {} as Headers)("myne:sign:empty:empty")
     ).toEqual(err)
   })
 
@@ -31,7 +29,7 @@ describe('API', () => {
     const id = "0"
     const globalRef: any = global;
     globalRef.fetch = jest.fn(() => Promise.resolve({ status: 204 }));
-    await API('localhost', {} as Headers).sendMessage("0x", "message", destination, id, handler)
+    await sendMessage('localhost', {} as Headers)("0x", "message", destination, id, handler)
     expect(handler).toHaveBeenCalledWith(destination, id, 'SUCCESS');
   })
 
@@ -42,7 +40,7 @@ describe('API', () => {
     const id = "0"
     const globalRef: any = global;
     globalRef.fetch = jest.fn(() => Promise.resolve({ status: 422, json: () => Promise.resolve({ error }) }));
-    await API('localhost', {} as Headers).sendMessage("0x", "message", destination, id, handler)
+    await sendMessage('localhost', {} as Headers)("0x", "message", destination, id, handler)
     expect(handler).toHaveBeenCalledWith(destination, id, 'FAILURE', error);
   })
 
@@ -53,7 +51,7 @@ describe('API', () => {
     const id = "0"
     const globalRef: any = global;
     globalRef.fetch = jest.fn(() => Promise.reject(error));
-    await API('localhost', {} as Headers).sendMessage("0x", "message", destination, id, handler)
+    await sendMessage('localhost', {} as Headers)("0x", "message", destination, id, handler)
     expect(handler).toHaveBeenCalledWith(destination, id, 'FAILURE', error);
   })
 
@@ -64,7 +62,7 @@ describe('API', () => {
     const id = "0"
     const globalRef: any = global;
     globalRef.fetch = jest.fn(() => Promise.resolve({ status: 418, '🫖': '🫖' }));
-    await API('localhost', {} as Headers).sendMessage("0x", "message", destination, id, handler)
+    await sendMessage('localhost', {} as Headers)("0x", "message", destination, id, handler)
     expect(handler).toHaveBeenCalledWith(destination, id, 'UNKNOWN', HARDCODED_ERR_VALUE_WITHIN_FUNCTION);
   })
 
@@ -75,7 +73,7 @@ describe('API', () => {
     const globalRef: any = global;
     const headers = {} as Headers
     globalRef.fetch = jest.fn(() => Promise.resolve({ json: () => Promise.resolve({ hoprAddress: peerId }) }));
-    await API('localhost', headers).accountAddress(headers, handler)
+    await accountAddress('localhost', {} as Headers)(handler)
     expect(handler).toHaveReturnedWith(resolvedState);
   })
 
@@ -86,7 +84,7 @@ describe('API', () => {
     const globalRef: any = global;
     const headers = {} as Headers
     globalRef.fetch = jest.fn(() => Promise.reject(error));
-    await API('localhost', headers).accountAddress(headers, handler)
+    await accountAddress('localhost', {} as Headers)(handler)
     expect(handler).toHaveReturnedWith(resolvedState);
   })
 })

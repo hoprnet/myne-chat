@@ -3,11 +3,9 @@
   Contains the app's global state.
 */
 import { useImmer } from "use-immer";
-import useWebsocket from "./websocket";
-import useUser from "./user";
 import { decodeMessage, encodeMessage, genId, getUrlParams, isSSR, verifySignatureFromPeerId } from "../utils";
-import { API } from "../lib/api";
 import { MutableRefObject } from "react";
+import { sendMessage, signRequest } from "../lib/api";
 
 const MYNE_CHAT_GIT_HASH = process.env.NEXT_PUBLIC_MYNE_CHAT_GIT_HASH
 const MYNE_CHAT_VERSION = require('../../package.json').version
@@ -171,13 +169,12 @@ const useAppState = () => {
   const handleSendMessage = (myPeerId: string | undefined, socketRef: MutableRefObject<WebSocket | undefined>, headers: Headers) => async (destination: string, message: string) => {
     const { selection, settings, verified } = state;
     if (!myPeerId || !selection || !socketRef.current) return;
-    const api = API(settings.httpEndpoint, headers)
-    const signature = verified && await api.signRequest(message)
+    const signature = verified && await signRequest(settings.httpEndpoint, headers)(message)
       .catch((err: any) => console.error('ERROR Failed to obtain signature', err));
     const encodedMessage = encodeMessage(myPeerId, message, signature);
     const id = addSentMessage(myPeerId, destination, message);
 
-    await api.sendMessage(selection, encodedMessage, destination, id, updateMessage)
+    await sendMessage(settings.httpEndpoint, headers)(selection, encodedMessage, destination, id, updateMessage)
       .catch((err: any) => console.error('ERROR Failed to send message', err));
   };
 

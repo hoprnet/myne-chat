@@ -9,7 +9,6 @@ import ConversationsPanel from "../src/components/conversations-panel";
 import Chat from "../src/components/chat";
 import useWebsocket from "../src/state/websocket";
 import useUser from "../src/state/user";
-import { API } from "../src/lib/api";
 
 
 const HomePage: NextPage = () => {
@@ -28,7 +27,7 @@ const HomePage: NextPage = () => {
   const { socketRef } = websocket;
   const { status } = websocket?.state;
   // fetch user data
-  const user = useUser(API)(settings);
+  const user = useUser(settings);
   const { getReqHeaders } = user;
   const { myPeerId } = user?.state;
 

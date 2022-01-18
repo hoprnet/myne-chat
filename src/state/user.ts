@@ -6,14 +6,14 @@ import type { Settings } from ".";
 import { useEffect } from "react";
 import { useImmer } from "use-immer";
 import { isSSR } from "../utils";
-import { API as IAPI } from "../lib/api";
+import { accountAddress } from "../lib/api";
 
 export type UserState = {
   myPeerId?: string;
   error?: string;
 }
 
-const useUser = (API: typeof IAPI) => (settings: Settings) => {
+const useUser = (settings: Settings) => {
   const [state, setState] = useImmer<UserState>({});
 
   // construct headers to be used in authenticated requests
@@ -36,9 +36,8 @@ const useUser = (API: typeof IAPI) => (settings: Settings) => {
     if (isSSR) return;
     console.info("Fetching user data..");
     const headers = getReqHeaders()
-    const api = API(settings.httpEndpoint, headers)
-    api.accountAddress(headers, setState);
-  }, [settings.httpEndpoint, settings.securityToken]);
+    accountAddress(settings.httpEndpoint, headers)(setState);
+  }, [settings?.httpEndpoint, settings?.securityToken]);
 
   return {
     state,
