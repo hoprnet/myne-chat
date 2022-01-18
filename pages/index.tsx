@@ -7,12 +7,14 @@ import { LinkPrevious } from "grommet-icons";
 import useAppState from "../src/state";
 import ConversationsPanel from "../src/components/conversations-panel";
 import Chat from "../src/components/chat";
+import useWebsocket from "../src/state/websocket";
+import useUser from "../src/state/user";
+import { API } from "../src/lib/api";
 
 
 const HomePage: NextPage = () => {
   const {
-    state: { selection, conversations, myPeerId, settings, status, verified },
-    socketRef,
+    state: { selection, conversations, settings, verified },
     setSelection,
     setVerified,
     updateSettings,
@@ -21,6 +23,14 @@ const HomePage: NextPage = () => {
     handleReceivedMessage,
     loadDevHelperConversation,
   } = useAppState();
+  // initialize websocket connection & state tracking
+  const websocket = useWebsocket(settings);
+  const { socketRef } = websocket;
+  const { status } = websocket?.state;
+  // fetch user data
+  const user = useUser(API)(settings);
+  const { getReqHeaders } = user;
+  const { myPeerId } = user?.state;
 
   // get selected conversation
   const conversation = selection ? conversations.get(selection) : undefined;
@@ -99,7 +109,7 @@ const HomePage: NextPage = () => {
           verified={verified}
           selection={selection}
           messages={conversation ? Array.from(conversation.values()) : []}
-          sendMessage={handleSendMessage}
+          sendMessage={handleSendMessage(myPeerId, socketRef, getReqHeaders(true))}
         />
       </Box>
     </Box>

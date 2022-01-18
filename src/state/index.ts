@@ -7,6 +7,7 @@ import useWebsocket from "./websocket";
 import useUser from "./user";
 import { decodeMessage, encodeMessage, genId, getUrlParams, isSSR, verifySignatureFromPeerId } from "../utils";
 import { API } from "../lib/api";
+import { MutableRefObject } from "react";
 
 const MYNE_CHAT_GIT_HASH = process.env.NEXT_PUBLIC_MYNE_CHAT_GIT_HASH
 const MYNE_CHAT_VERSION = require('../../package.json').version
@@ -57,10 +58,6 @@ const useAppState = () => {
       16Uiu2HAm83TSuRSCN8mKaZbCekkx3zfqgniPSxHdeUSeyEkdwvTs
     */
   });
-  // initialize websocket connection & state tracking
-  const websocket = useWebsocket(state.settings);
-  // fetch user data
-  const user = useUser(API)(state.settings);
 
   const updateSettings = (settings: Partial<Settings>) => {
     setState((draft) => {
@@ -171,13 +168,9 @@ const useAppState = () => {
     callback();
   };
 
-  const handleSendMessage = async (destination: string, message: string) => {
+  const handleSendMessage = (myPeerId: string | undefined, socketRef: MutableRefObject<WebSocket | undefined>, headers: Headers) => async (destination: string, message: string) => {
     const { selection, settings, verified } = state;
-    const { myPeerId } = user?.state;
-    const { socketRef } = websocket;
     if (!myPeerId || !selection || !socketRef.current) return;
-
-    const headers = user.getReqHeaders(true)
     const api = API(settings.httpEndpoint, headers)
     const signature = verified && await api.signRequest(message)
       .catch((err: any) => console.error('ERROR Failed to obtain signature', err));
@@ -227,10 +220,7 @@ const useAppState = () => {
   return {
     state: {
       ...state,
-      ...websocket.state,
-      ...user.state,
     },
-    socketRef: websocket.socketRef,
     updateSettings,
     setSelection,
     setVerified,
