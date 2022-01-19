@@ -150,3 +150,11 @@ test("verifyAuthenticatedMessage:true", async () => {
   ))
   expect(await verifyAuthenticatedMessage(originalMessage, signedMessage, signer)).toEqual(true)
 })
+
+test("verifyAuthenticateMessage:true (from snapshot)", async() => {
+  const originalMessage = 'HOPR Signed Message: This should be working.'
+  const signer = '16Uiu2HAmN4enEu9822TMgG52goik85yEs4MqDdErtsGr8fy86VDQ'
+  const signedMessage = '0x3045022100d9a8c2100ffa55aa5856889055bdf0e10f9831e2e695b3ad986c7692c5b9b35202201f00817c430bd72a2f64b92787f0a0947783d79fd9184d8031c998831c11c90d'
+
+  expect(await verifyAuthenticatedMessage(originalMessage, signedMessage, signer)).toEqual(true)
+})
