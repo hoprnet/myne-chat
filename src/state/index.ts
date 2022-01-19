@@ -199,7 +199,8 @@ const useAppState = () => {
         const { tag, from, message, signature } = decodeMessage(data.msg);
 
         const verifiedStatus : VerifiedStatus = signature ? 
-          (await verifySignatureFromPeerId(from, message, signature) ? 
+          // Messages are pre-pended with the padding to avoid generic signatures.
+          (await verifySignatureFromPeerId(from, `HOPR Signed Message: ${message}`, signature) ? 
             "VERIFIED" :
             "FAILED_VERIFICATION"
           ) :
