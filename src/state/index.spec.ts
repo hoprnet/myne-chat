@@ -68,5 +68,8 @@ describe('App State', () => {
     });
     expect(mockedSignRequest).toHaveBeenCalledWith(result.current.state.settings.httpEndpoint, headers);
     expect(mockedActualSignRequest).toHaveBeenCalledWith(originalMessage);
+    const actualMessageAfterEncoding = Utils.encodeMessage(myPeerId, originalMessage, signedMessage);
+    expect(mockedSendMessage).toHaveBeenCalledWith(result.current.state.settings.httpEndpoint, headers);
+    expect(mockedActualSendMessage).toHaveBeenCalledWith(recipientPeerId, actualMessageAfterEncoding, recipientPeerId, id, expect.any(Function));
   })
 })
