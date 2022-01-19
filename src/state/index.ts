@@ -89,9 +89,9 @@ const useAppState = () => {
     myPeerId: string,
     destination: string,
     content: string,
+    id: string,
     verifiedStatus?: VerifiedStatus
   ) => {
-    const id = genId();
     setState((draft) => {
       const messages = draft.conversations.get(destination) || new Map<string, Message>();
 
@@ -110,8 +110,6 @@ const useAppState = () => {
 
       return draft;
     });
-
-    return id;
   };
 
   const addReceivedMessage = (from: string, content: string, verifiedStatus?: VerifiedStatus) => {
@@ -177,8 +175,8 @@ const useAppState = () => {
     const signature = verified && await signRequest(settings.httpEndpoint, headers)(message)
       .catch((err: any) => console.error('ERROR Failed to obtain signature', err));
     const encodedMessage = encodeMessage(myPeerId, message, signature);
-    const id = addSentMessage(myPeerId, destination, message);
-
+    const id = genId();
+    addSentMessage(myPeerId, destination, message, id);
     await sendMessage(settings.httpEndpoint, headers)(selection, encodedMessage, destination, id, updateMessage)
       .catch((err: any) => console.error('ERROR Failed to send message', err));
   };
