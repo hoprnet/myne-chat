@@ -3,9 +3,9 @@
   Contains the app's global state.
 */
 import { useImmer } from "use-immer";
-import useWebsocket from "./websocket";
-import useUser from "./user";
-import { genId, getUrlParams, isSSR } from "../utils";
+import { decodeMessage, encodeMessage, genId, getUrlParams, isSSR, verifySignatureFromPeerId } from "../utils";
+import { MutableRefObject } from "react";
+import { sendMessage, signRequest } from "../lib/api";
 
 const MYNE_CHAT_GIT_HASH = process.env.NEXT_PUBLIC_MYNE_CHAT_GIT_HASH
 const MYNE_CHAT_VERSION = require('../../package.json').version
@@ -14,6 +14,8 @@ const MYNE_CHAT_ENVIRONMENT = process.env.NEXT_PUBLIC_MYNE_CHAT_ENVIRONMENT
 export type { ConnectionStatus } from "./websocket";
 
 export type VerifiedStatus = "UNVERIFIED" | "VERIFIED" | "FAILED_VERIFICATION"
+
+export type UpdateMessageHandlerInterface = (counterparty: string, messageId: string, status: Message["status"], error?: string | undefined) => void
 
 export type Message = {
   id: string;
@@ -54,10 +56,6 @@ const useAppState = () => {
       16Uiu2HAm83TSuRSCN8mKaZbCekkx3zfqgniPSxHdeUSeyEkdwvTs
     */
   });
-  // initialize websocket connection & state tracking
-  const websocket = useWebsocket(state.settings);
-  // fetch user data
-  const user = useUser(state.settings);
 
   const updateSettings = (settings: Partial<Settings>) => {
     setState((draft) => {
@@ -163,21 +161,70 @@ const useAppState = () => {
     });
   };
 
+  const handleAddNewConversation = (callback: () => void) => (counterparty: string) => {
+    addNewConversation(counterparty);
+    callback();
+  };
+
+  const handleSendMessage = (myPeerId: string | undefined, socketRef: MutableRefObject<WebSocket | undefined>, headers: Headers) => async (destination: string, message: string) => {
+    const { selection, settings, verified } = state;
+    if (!myPeerId || !selection || !socketRef.current) return;
+    const signature = verified && await signRequest(settings.httpEndpoint, headers)(message)
+      .catch((err: any) => console.error('ERROR Failed to obtain signature', err));
+    const encodedMessage = encodeMessage(myPeerId, message, signature);
+    const id = addSentMessage(myPeerId, destination, message);
+
+    await sendMessage(settings.httpEndpoint, headers)(selection, encodedMessage, destination, id, updateMessage)
+      .catch((err: any) => console.error('ERROR Failed to send message', err));
+  };
+
+  const handleReceivedMessage = async (ev: MessageEvent<string>) => {
+    try {
+      // we are only interested in messages, not all the other events coming in on the socket
+      const data = JSON.parse(ev.data);
+      if (data.type == "message") {
+        const { tag, from, message, signature } = decodeMessage(data.msg);
+
+        const verifiedStatus : VerifiedStatus = signature ? 
+          (await verifySignatureFromPeerId(from, message, signature) ? 
+            "VERIFIED" :
+            "FAILED_VERIFICATION"
+          ) :
+          "UNVERIFIED";
+
+        // we are only interested in myne messages
+        if (tag == "myne") {
+          addReceivedMessage(from, message, verifiedStatus);
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const loadDevHelperConversation = () => {
+    console.log("⚙️  Developer Mode enabled.", process.env.NODE_ENV)
+    const dev = '⚙️  Dev'
+    addNewConversation(dev)
+    // setTimeout ensures the event loop takes these state updates in order.
+    setTimeout(() => addReceivedMessage(dev, 'Welcome to the developer mode.'), 0)
+    setTimeout(() => addReceivedMessage(dev, 'This conversation is only available during development.'), 0)
+    setTimeout(() => addReceivedMessage(dev, 'This is how a verified message looks like.', 'VERIFIED'), 0)
+    setTimeout(() => addReceivedMessage(dev, 'This is how an unverified message looks like.', 'UNVERIFIED'), 0)
+    setTimeout(() => addReceivedMessage(dev, 'This is how a failed verification message looks like.', 'FAILED_VERIFICATION'), 0)
+  }
+
   return {
     state: {
       ...state,
-      ...websocket.state,
-      ...user.state,
     },
-    getReqHeaders: user.getReqHeaders,
-    socketRef: websocket.socketRef,
     updateSettings,
     setSelection,
     setVerified,
-    addSentMessage,
-    addReceivedMessage,
-    updateMessage,
-    addNewConversation,
+    handleAddNewConversation,
+    handleSendMessage,
+    handleReceivedMessage,
+    loadDevHelperConversation,
     hash: MYNE_CHAT_GIT_HASH,
     version: MYNE_CHAT_VERSION,
     environment: MYNE_CHAT_ENVIRONMENT

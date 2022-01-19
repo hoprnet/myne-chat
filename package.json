@@ -11,7 +11,8 @@
     "format": "prettier --write --ignore-path .gitignore .",
     "mocks": "node ./mocks/index.js",
     "test": "jest --watch",
-    "test:ci": "jest --ci"
+    "test:ci": "jest --ci",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@ethersproject/bytes": "^5.5.0",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@hoprnet/hopr-utils": "1.84.0-next.24",
     "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react-hooks": "^7.0.2",
     "@types/js-cookie": "^3.0.1",
     "@types/lodash": "^4.14.177",
     "@types/node": "16.11.11",
