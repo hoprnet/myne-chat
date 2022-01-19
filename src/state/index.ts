@@ -34,6 +34,11 @@ export type Settings = {
   securityToken?: string;
 };
 
+export const DEFAULT_SETTINGS: Settings = {
+  httpEndpoint: "http://localhost:3001",
+  wsEndpoint: "ws://localhost:3000"
+}
+
 export type State = {
   settings: Settings;
   conversations: Map<string, Map<string, Message>>;
@@ -45,8 +50,8 @@ const useAppState = () => {
   const urlParams = !isSSR ? getUrlParams(location) : {};
   const [state, setState] = useImmer<State>({
     settings: {
-      httpEndpoint: urlParams.httpEndpoint || "http://localhost:3001",
-      wsEndpoint: urlParams.wsEndpoint || "ws://localhost:3000",
+      httpEndpoint: urlParams.httpEndpoint || DEFAULT_SETTINGS.httpEndpoint,
+      wsEndpoint: urlParams.wsEndpoint || DEFAULT_SETTINGS.wsEndpoint,
       securityToken: urlParams.securityToken,
     },
     verified: false,
