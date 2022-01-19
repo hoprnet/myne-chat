@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react-hooks'
 import { privKeyToPeerId, u8aToHex } from '@hoprnet/hopr-utils'
-import useAppState, { DEFAULT_SETTINGS, UpdateMessageHandlerInterface } from '.'
+import useAppState, { DEFAULT_SETTINGS, ReceiveMessageHandler, UpdateMessageHandlerInterface } from '.'
 import { MutableRefObject } from 'react'
 import { enableMapSet } from "immer";
 import * as API from '../lib/api'
@@ -28,7 +28,7 @@ describe('App State', () => {
     expect(result.current.state.verified).toBeFalsy();
   })
 
-  test("handleSendMessage", async () => {
+  test("handleSendMessage\\handleReceiveMessage", async () => {
     // We create a valid signed message to be used in our mocks.
     const signedMessage = u8aToHex(await mockPeerId.privKey.sign(
       new TextEncoder().encode(originalMessage)
@@ -48,7 +48,7 @@ describe('App State', () => {
 
     const { result } = renderHook(() => useAppState())
     // This should immediately exit as websocket is empty, thus not calling our mock.
-    await act(() => result.current.handleSendMessage(myPeerId, {} as MutableRefObject<WebSocket | undefined>, headers)(recipientPeerId, originalMessage));
+    await act(() => result.current.handleSendMessage(result.current.addSentMessage)(myPeerId, {} as MutableRefObject<WebSocket | undefined>, headers)(recipientPeerId, originalMessage));
     expect(mockedSignRequest).not.toHaveBeenCalled();
 
     // Let's update verified/selection so we can enter the verified method.
@@ -64,12 +64,21 @@ describe('App State', () => {
     // Let's test the actual method
     await act(async () => {
       enableMapSet(); // Required by useImmer as we use maps
-      await result.current.handleSendMessage(myPeerId, socketRef, headers)(recipientPeerId, originalMessage)
+      await result.current.handleSendMessage(result.current.addSentMessage)(myPeerId, socketRef, headers)(recipientPeerId, originalMessage)
     });
     expect(mockedSignRequest).toHaveBeenCalledWith(result.current.state.settings.httpEndpoint, headers);
     expect(mockedActualSignRequest).toHaveBeenCalledWith(originalMessage);
     const actualMessageAfterEncoding = Utils.encodeMessage(myPeerId, originalMessage, signedMessage);
     expect(mockedSendMessage).toHaveBeenCalledWith(result.current.state.settings.httpEndpoint, headers);
     expect(mockedActualSendMessage).toHaveBeenCalledWith(recipientPeerId, actualMessageAfterEncoding, recipientPeerId, id, expect.any(Function));
+
+    // Now let's do the entire loopback
+    const mockedReceivedMessageHandler = jest.fn() as ReceiveMessageHandler;
+    // @TODO: Format the message from the API v2, ideally from @hoprnet/utils
+    const mockedEventData = { data: `{ "msg": "${actualMessageAfterEncoding}", "type": "message"}` } as MessageEvent<string>;
+    // Testing the actual method
+    await act(async () => await result.current.handleReceivedMessage(mockedReceivedMessageHandler)(mockedEventData))
+    // Final check on based on the expected response
+    expect(mockedReceivedMessageHandler).toHaveBeenCalledWith(myPeerId, originalMessage, 'VERIFIED');
   })
 })

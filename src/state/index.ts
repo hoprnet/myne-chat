@@ -46,6 +46,16 @@ export type State = {
   verified: boolean;
 };
 
+export type AddSentMessageHandler = (
+  myPeerId: string,
+  destination: string,
+  content: string,
+  id: string,
+  verifiedStatus?: VerifiedStatus
+) => void;
+
+export type ReceiveMessageHandler = (from: string, content: string, verifiedStatus?: VerifiedStatus) => void
+
 const useAppState = () => {
   const urlParams = !isSSR ? getUrlParams(location) : {};
   const [state, setState] = useImmer<State>({
@@ -169,7 +179,7 @@ const useAppState = () => {
     callback();
   };
 
-  const handleSendMessage = (myPeerId: string | undefined, socketRef: MutableRefObject<WebSocket | undefined>, headers: Headers) => async (destination: string, message: string) => {
+  const handleSendMessage = (addSentMessage: AddSentMessageHandler) => (myPeerId: string | undefined, socketRef: MutableRefObject<WebSocket | undefined>, headers: Headers) => async (destination: string, message: string) => {
     const { selection, settings, verified } = state;
     if (!myPeerId || !selection || !socketRef.current) return;
     const signature = verified && await signRequest(settings.httpEndpoint, headers)(message)
@@ -181,7 +191,7 @@ const useAppState = () => {
       .catch((err: any) => console.error('ERROR Failed to send message', err));
   };
 
-  const handleReceivedMessage = async (ev: MessageEvent<string>) => {
+  const handleReceivedMessage = (addReceivedMessage: ReceiveMessageHandler) => async (ev: MessageEvent<string>) => {
     try {
       // we are only interested in messages, not all the other events coming in on the socket
       const data = JSON.parse(ev.data);
@@ -221,6 +231,8 @@ const useAppState = () => {
     state: {
       ...state,
     },
+    addSentMessage,
+    addReceivedMessage,
     updateSettings,
     setSelection,
     setVerified,
