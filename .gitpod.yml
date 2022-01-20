@@ -11,9 +11,10 @@ tasks:
   - name: Installing hoprnet which contains the required scripts
     init: |
       echo '🟡 📦 Setting up hoprnet repository'
-      git clone https://github.com/hoprnet/hoprnet.git
+      wget https://github.com/hoprnet/hoprnet/archive/refs/heads/master.zip
+      unzip master.zip
     commmand: |
-      cd hoprnet
+      cd hoprnet-master
       echo '🟡 📦 Installing hoprnet repository dependencies'
       yarn
       echo '🟡 📦 Building latest version of hoprnet monorepo'
