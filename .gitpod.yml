@@ -1,9 +1,9 @@
+
 tasks:
   - name: Installing dependencies and running app
     init: |
       yarn
-    command: |
-      yarn dev
+    command: yarn dev
   - name: Installing hoprnet which contains the required scripts
     init: |
       echo '🟡 Downloading hoprnet repository'
@@ -15,7 +15,6 @@ tasks:
       echo '🟡 Running HOPR nodes & topology'
       ./hoprnet/scripts/setup-local-cluster.sh -m "$(gp url 8080)" -i hoprnet/scripts/topologies/full_interconnected_cluster.sh
     openMode: split-right
-
 ports:
   - port: 8080
     visibility: public
