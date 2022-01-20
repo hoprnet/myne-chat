@@ -2,14 +2,22 @@
 tasks:
   - name: Installing dependencies and running app
     init: |
+      echo '🦄 📦 Installing all dependencies'
       yarn
-    command: yarn dev
+    command: |
+      echo '🦄 Running MyneChat application'
+      yarn dev
+    ## HOPR net repositories
   - name: Installing hoprnet which contains the required scripts
     init: |
-      echo '🟡 Downloading hoprnet repository'
+      echo '🟡 📦 Setting up hoprnet repository'
       git clone https://github.com/hoprnet/hoprnet.git
-      cd hoprnet && yarn && yarn build
     commmand: |
+      cd hoprnet
+      echo '🟡 📦 Installing hoprnet repository dependencies'
+      yarn
+      echo '🟡 📦 Building latest version of hoprnet monorepo'
+      yarn build
       echo '🟡 Waiting for MyneChat'
       gp await-port 8545
       echo '🟡 Running HOPR nodes & topology'
