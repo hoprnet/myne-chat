@@ -2,7 +2,7 @@ tasks:
   - name: Installing dependencies and running app
     init: |
       yarn
-    command:
+    command: |
       yarn dev
   - name: Installing hoprnet which contains the required scripts
     init: |
