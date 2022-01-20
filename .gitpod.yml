@@ -13,12 +13,4 @@ tasks:
       echo '🟡 📦 Setting up hoprnet repository'
       wget https://github.com/hoprnet/hoprnet/archive/refs/heads/master.zip
       unzip master.zip
-      cd hoprnet-master
-      echo '🟡 📦 Installing hoprnet repository dependencies'
-      yarn
-      echo '🟡 📦 Building latest version of hoprnet monorepo'
-      yarn build
-      echo '🟡 Waiting for MyneChat'
-      gp await-port 8545
-      echo '🟡 Running HOPR nodes and topology'
     openMode: split-right
