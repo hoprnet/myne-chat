@@ -13,7 +13,4 @@ tasks:
       echo '🟡 📦 Setting up hoprnet repository'
       wget https://github.com/hoprnet/hoprnet/archive/refs/heads/master.zip
       unzip master.zip
-    commmand: |
-      cd hoprnet-master
-      echo '🟡 📦 Installing hoprnet repository dependencies'
-      yarn
+    openMode: split-right
