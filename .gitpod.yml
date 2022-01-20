@@ -21,5 +21,5 @@ tasks:
       echo '🟡 Waiting for MyneChat'
       gp await-port 8080
       echo '🟡 Running HOPR nodes and topology'
-      ./hoprnet/scripts/setup-local-cluster.sh -m "$(gp url 8080)" -i hoprnet/scripts/topologies/full_interconnected_cluster.sh
+      ./hoprnet-master/scripts/setup-local-cluster.sh -m "$(gp url 8080)" -i hoprnet-master/scripts/topologies/full_interconnected_cluster.sh
     openMode: split-right
