@@ -37,4 +37,5 @@ yarn-error.log*
 *.tsbuildinfo
 
 # for gitpod
-hoprnet
+hoprnet-master
+master.zip
