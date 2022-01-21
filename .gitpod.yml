@@ -62,9 +62,13 @@ tasks:
 ports:
   - name: Mynechat
     port: 8080
+    visibility: public
   - name: HOPRd REST API
     port: 13301-13305
+    visibility: public
   - name: HOPR protocol
     port: 19091-19095
+    visibility: public
   - name: HOPRd Admin
     port: 19501-19505
+    visibility: public
