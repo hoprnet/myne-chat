@@ -143,7 +143,7 @@ test("verifyAuthenticatedMessage:false", async () => {
 })
 
 test("verifyAuthenticatedMessage:true", async () => {
-  const originalMessage = "This is a message to be signed"
+  const originalMessage = `${HOPR_PREFIX}This is a message to be signed`
   const privateKey = '0xcb1e5d91d46eb54a477a7eefec9c87a1575e3e5384d38f990f19c09aa8ddd332'
   const mockPeerId = privKeyToPeerId(privateKey)
   const signer = mockPeerId.toB58String();
