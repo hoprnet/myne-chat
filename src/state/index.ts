@@ -34,6 +34,11 @@ export type Settings = {
   securityToken?: string;
 };
 
+export const DEFAULT_SETTINGS: Settings = {
+  httpEndpoint: "http://localhost:3001",
+  wsEndpoint: "ws://localhost:3000"
+}
+
 export type State = {
   settings: Settings;
   conversations: Map<string, Map<string, Message>>;
@@ -41,12 +46,22 @@ export type State = {
   verified: boolean;
 };
 
+export type AddSentMessageHandler = (
+  myPeerId: string,
+  destination: string,
+  content: string,
+  id: string,
+  verifiedStatus?: VerifiedStatus
+) => void;
+
+export type ReceiveMessageHandler = (from: string, content: string, verifiedStatus?: VerifiedStatus) => void
+
 const useAppState = () => {
   const urlParams = !isSSR ? getUrlParams(location) : {};
   const [state, setState] = useImmer<State>({
     settings: {
-      httpEndpoint: urlParams.httpEndpoint || "http://localhost:3001",
-      wsEndpoint: urlParams.wsEndpoint || "ws://localhost:3000",
+      httpEndpoint: urlParams.httpEndpoint || DEFAULT_SETTINGS.httpEndpoint,
+      wsEndpoint: urlParams.wsEndpoint || DEFAULT_SETTINGS.wsEndpoint,
       securityToken: urlParams.securityToken,
     },
     verified: false,
@@ -84,9 +99,9 @@ const useAppState = () => {
     myPeerId: string,
     destination: string,
     content: string,
+    id: string,
     verifiedStatus?: VerifiedStatus
   ) => {
-    const id = genId();
     setState((draft) => {
       const messages = draft.conversations.get(destination) || new Map<string, Message>();
 
@@ -105,8 +120,6 @@ const useAppState = () => {
 
       return draft;
     });
-
-    return id;
   };
 
   const addReceivedMessage = (from: string, content: string, verifiedStatus?: VerifiedStatus) => {
@@ -166,19 +179,19 @@ const useAppState = () => {
     callback();
   };
 
-  const handleSendMessage = (myPeerId: string | undefined, socketRef: MutableRefObject<WebSocket | undefined>, headers: Headers) => async (destination: string, message: string) => {
+  const handleSendMessage = (addSentMessage: AddSentMessageHandler) => (myPeerId: string | undefined, socketRef: MutableRefObject<WebSocket | undefined>, headers: Headers) => async (destination: string, message: string) => {
     const { selection, settings, verified } = state;
     if (!myPeerId || !selection || !socketRef.current) return;
     const signature = verified && await signRequest(settings.httpEndpoint, headers)(message)
       .catch((err: any) => console.error('ERROR Failed to obtain signature', err));
     const encodedMessage = encodeMessage(myPeerId, message, signature);
-    const id = addSentMessage(myPeerId, destination, message);
-
+    const id = genId();
+    addSentMessage(myPeerId, destination, message, id);
     await sendMessage(settings.httpEndpoint, headers)(selection, encodedMessage, destination, id, updateMessage)
       .catch((err: any) => console.error('ERROR Failed to send message', err));
   };
 
-  const handleReceivedMessage = async (ev: MessageEvent<string>) => {
+  const handleReceivedMessage = (addReceivedMessage: ReceiveMessageHandler) => async (ev: MessageEvent<string>) => {
     try {
       // we are only interested in messages, not all the other events coming in on the socket
       const data = JSON.parse(ev.data);
@@ -186,7 +199,8 @@ const useAppState = () => {
         const { tag, from, message, signature } = decodeMessage(data.msg);
 
         const verifiedStatus : VerifiedStatus = signature ? 
-          (await verifySignatureFromPeerId(from, message, signature) ? 
+          // Messages are pre-pended with the padding to avoid generic signatures.
+          (await verifySignatureFromPeerId(from, `HOPR Signed Message: ${message}`, signature) ? 
             "VERIFIED" :
             "FAILED_VERIFICATION"
           ) :
@@ -218,6 +232,8 @@ const useAppState = () => {
     state: {
       ...state,
     },
+    addSentMessage,
+    addReceivedMessage,
     updateSettings,
     setSelection,
     setVerified,

@@ -14,6 +14,8 @@ import useUser from "../src/state/user";
 const HomePage: NextPage = () => {
   const {
     state: { selection, conversations, settings, verified },
+    addReceivedMessage,
+    addSentMessage,
     setSelection,
     setVerified,
     updateSettings,
@@ -47,11 +49,11 @@ const HomePage: NextPage = () => {
   // attach event listener for new messages
   useEffect(() => {
     if (!myPeerId || !socketRef.current) return;
-    socketRef.current.addEventListener("message", handleReceivedMessage);
+    socketRef.current.addEventListener("message", handleReceivedMessage(addReceivedMessage));
 
     return () => {
       if (!socketRef.current) return;
-      socketRef.current.removeEventListener("message", handleReceivedMessage);
+      socketRef.current.removeEventListener("message", handleReceivedMessage(addReceivedMessage));
     };
   }, [myPeerId, socketRef.current]);
 
@@ -108,7 +110,7 @@ const HomePage: NextPage = () => {
           verified={verified}
           selection={selection}
           messages={conversation ? Array.from(conversation.values()) : []}
-          sendMessage={handleSendMessage(myPeerId, socketRef, getReqHeaders(true))}
+          sendMessage={handleSendMessage(addSentMessage)(myPeerId, socketRef, getReqHeaders(true))}
         />
       </Box>
     </Box>
