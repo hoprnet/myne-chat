@@ -6,7 +6,7 @@ MyneChat is an application powered by [HOPR](https://github.com/hoprnet/hoprnet)
 
 The easiest way to launch MyneChat and setup a cluster of HOPR nodes to start testing it is via [Gitpod.io](https://gitpod.io). It will automatically fetch and install all the required dependencies and spin up the needed services for you to start tweaking MyneChat.
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/hoprnet/myne-chat)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://gitpod.io/#https://github.com/hoprnet/myne-chat/tree/docs/getting-started-guide-4)
 
 ### Locally
 
