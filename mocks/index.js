@@ -6,10 +6,13 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { WebSocketServer } = require("ws");
+const { privKeyToPeerId, u8aToHex } = require('@hoprnet/hopr-utils');
 
 const HTTP_PORT = 3001;
 const WS_PORT = 3000;
-const NODE_PEERID = "16Uiu2HAm1oEHkaUGk1TjGVGZqA7V1AaRKUEcxzaEqpTbpYVqPsMq";
+const privateKey = '0xcb1e5d91d46eb54a477a7eefec9c87a1575e3e5384d38f990f19c09aa8ddd332'
+const mockPeerId = privKeyToPeerId(privateKey)
+const NODE_PEERID = mockPeerId.toB58String();
 
 // HTTP Server
 const httpService = express({
@@ -27,6 +30,15 @@ httpService
     res.send({
       hoprAddress: NODE_PEERID,
     });
+  })
+  .post("/api/v2/message/sign", async (req, res) => {
+    console.log("->", req.method, req.url, req.body);
+    const { message } = req.body;
+    res.send({
+      signature: u8aToHex(await mockPeerId.privKey.sign(
+        new TextEncoder().encode("HOPR Signed Message: "+message)
+      ))
+    })
   })
   .post("/api/v2/messages", (req, res) => {
     console.log("->", req.method, req.url, req.body);
