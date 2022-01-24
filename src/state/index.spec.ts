@@ -31,7 +31,7 @@ describe('App State', () => {
   test("handleSendMessage\\handleReceiveMessage", async () => {
     // We create a valid signed message to be used in our mocks.
     const signedMessage = u8aToHex(await mockPeerId.privKey.sign(
-      new TextEncoder().encode(originalMessage)
+      new TextEncoder().encode("HOPR Signed Message: "+originalMessage)
     ))
     const id = Utils.genId();
     const headers = {} as Headers;
