@@ -23,7 +23,7 @@ const ChatBubble: FunctionComponent<{ message: Message }> = ({ message }) => {
               <StatusInfo style={{ marginRight: '5px' }} size="small" color="status-disabled" />
             </Tip>
           ) : message.verifiedStatus == 'FAILED_VERIFICATION' ? (
-            <Tip content="The message was not signed. Could be sent by anyone.">
+            <Tip content="Authenticity of the sender cannot be verified because the authenticity tag is missing. Could be sent by anyone.">
               <StatusCritical style={{ marginRight: '5px' }} size="small" color="fatal-error" />
             </Tip>
           ) : null}
