@@ -39,3 +39,6 @@ yarn-error.log*
 # for gitpod
 hoprnet-master
 master.zip
+
+# chromatic
+build-storybook.log
