@@ -10,7 +10,9 @@ const Chat: FunctionComponent<{
   sendMessage: (destination: string, message: string) => void;
   messages: Message[];
   selection?: string;
-}> = ({ selection, messages, sendMessage }) => {
+  setVerified: (verified: boolean) => void;
+  verified: boolean
+}> = ({ selection, messages, sendMessage, setVerified, verified }) => {
   return (
     <Box fill justify="between" background="dark-4" round shadow>
       {selection ? (
@@ -49,7 +51,12 @@ const Chat: FunctionComponent<{
             min: "min-content",
           }}
         >
-          <ChatInput sendMessage={sendMessage} selection={selection} />
+          <ChatInput
+            sendMessage={sendMessage}
+            selection={selection}
+            setVerified={setVerified}
+            verified={verified}
+          />
         </Box>
       </Box>
     </Box>

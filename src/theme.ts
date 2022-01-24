@@ -14,7 +14,7 @@ const custom = {
     "myne-turquoise": "#7af5e7",
     "myne-darkgreen": "#2b5651",
     "myne-darkorange": "#E04E0B",
-
+    fatalError: "#f57a88",
     // specific to components
     windowBG: "#282828",
     sidebar: "#3d3d3d",
@@ -49,6 +49,7 @@ const theme = makeTheme({
       "status-disabled": custom.colors["myne-darkgreen"],
       "status-success": custom.colors["myne-turquoise"],
       "status-error": custom.colors["myne-darkgreen"],
+      "fatal-error": custom.colors.fatalError
     },
 
     // this setting affects various areas, see https://v2.grommet.io/box at `global.edgeSize`
