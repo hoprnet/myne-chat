@@ -1,0 +1,34 @@
+import { Meta, Canvas, Source } from '@storybook/addon-docs';
+import Code from './assets/code-brackets.svg';
+import Colors from './assets/colors.svg';
+import Comments from './assets/comments.svg';
+import Direction from './assets/direction.svg';
+import Flow from './assets/flow.svg';
+import Plugin from './assets/plugin.svg';
+import Repo from './assets/repo.svg';
+import StackAlt from './assets/stackalt.svg';
+
+import { Grommet, Main } from "grommet";
+import theme from "../../src/theme";
+import Analytics from '../../src/components/analytics.tsx';
+import IconButton from '../../src/components/icon-button.tsx';
+
+
+<Meta title="1. MyneChat/Guides/1. Quickstart" />
+
+# Quickstart
+
+The easiest way to launch MyneChat and setup a cluster of HOPR nodes to start
+testing it is via [Gitpod.io](https://gitpod.io). It will automatically fetch
+and install all the required dependencies and spin up the needed services for
+you to start tweaking MyneChat.
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/hoprnet/myne-chat/tree/docs/getting-started-guide-4)
+
+After you have done that, you will see a terminal with the addresses of all 
+the existing nodes. Click and open any of them to see MyneChat in your
+browser. Click on the “Analytics” icon to obtain your "PeerId", and share
+it with another user from the terminal. Click on the “Add” icon to start
+a conversation with the first user; by typing in the input field and
+pressing “enter”, you have effectively sent a private message across your
+local HOPR network.

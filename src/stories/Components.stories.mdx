@@ -1,0 +1,99 @@
+import { Meta, Canvas, Source } from '@storybook/addon-docs';
+import Code from './assets/code-brackets.svg';
+import Colors from './assets/colors.svg';
+import Comments from './assets/comments.svg';
+import Direction from './assets/direction.svg';
+import Flow from './assets/flow.svg';
+import Plugin from './assets/plugin.svg';
+import Repo from './assets/repo.svg';
+import StackAlt from './assets/stackalt.svg';
+
+import { Grommet, Main } from "grommet";
+import theme from "../../src/theme";
+import Analytics from '../../src/components/analytics.tsx';
+import IconButton from '../../src/components/icon-button.tsx';
+
+
+<Meta title="1. MyneChat/Architecture/1. Components" />
+
+<style>{`
+.tip {
+  display: inline-block;
+  border-radius: 1em;
+  font-size: 11px;
+  line-height: 12px;
+  font-weight: 700;
+  background: #E7FDD8;
+  color: #66BF3C;
+  padding: 4px 12px;
+  margin-right: 10px;
+  vertical-align: top;
+}
+
+.tip-wrapper {
+  font-size: 13px;
+  line-height: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.tip-wrapper code {
+  font-size: 12px;
+  display: inline-block;
+}
+  `}</style>
+
+# Application structure & theme
+
+MyneChat has been built using different composable components that rely on a global
+theme provider via `Grommet`. As a result, all components inherit a set of default
+CSS-styles that are tweaked via our theme. Below you can see an actual
+component being rendered and how the `Grommet` wrapper works.
+
+<Canvas>
+<Grommet theme={theme}>
+  <Analytics myPeerId="16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs" />
+</Grommet>
+</Canvas>
+
+In reality, you won’t need to do this yourself. The application loads this globally
+via `next.js`’s application component located unders `pages/_app.tsx`. The actual application
+lives under `pages/index.tsx`, where you will likely do most of the changes.
+
+<div className="tip-wrapper">
+  <span className="tip">Tip</span>If you want to change the global design of the site,
+  go to <code>src/theme.ts</code> and tweak them as needed.
+</div>
+
+Most components inherit native components from `Grommet`, so modification or tweaking them
+would require changing the theme file directly. However, in some cases where custom or more
+isolated components are needed, we can make usage of `styled` from [Styled Components](https://styled-components.com/)
+to define a particular component. For instance, here's the code of a modified component:
+
+<Source
+  language='tsx'
+  code={`
+const StyledButton = styled(Button)\`
+  cursor: ${(props) => !props.disabled && 'pointer'};
+\`
+  `}
+/>
+
+In this particular case, we loaded `Button` via `import { Button } from "grommet"` and then
+changed the css `cursor` property of that particular component based on whether the `disabled`
+property was created or not. This would look more or less like this for the `IconButton` component:
+
+<Canvas style={{ background: theme.global.colors["dark-3"] }}>
+<Grommet theme={theme}>
+  <IconButton>
+    🟢 (Enabled)
+  </IconButton>
+  <IconButton disabled>
+    🔴 (Diabled)
+  </IconButton>
+</Grommet>
+</Canvas>
+
+This last component was rendered with a darker background, which was inherited via `theme.global.colors`.
+You can always import the `theme` and use it within your components to make sure they keep the same
+brand color across your application.
