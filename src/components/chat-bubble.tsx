@@ -15,7 +15,7 @@ const ChatBubble: FunctionComponent<{ message: Message }> = ({ message }) => {
       <Box background={backgroundColor} pad="small" round shadow>
         <Text color={textColor} size="medium" wordBreak="break-word">
           {message.verifiedStatus == 'VERIFIED' ? (
-            <Tip content="The message was signed by the sender.">
+            <Tip content="Authenticity of the sender successfully verified.">
               <StatusGood style={{ marginRight: '5px' }} size="small" color="status-success" />
             </Tip>
           ) : message.verifiedStatus == 'UNVERIFIED' ? (
