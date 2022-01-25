@@ -18,10 +18,10 @@ jobs:
       run: npx playwright install --with-deps
 
     - name: Run mocks server
-        run: yarn mocks &
+      run: yarn mocks &
 
     - name: Run dev app
-        run: yarn dev &
+      run: yarn dev &
 
     - name: Run Playwright tests
       run: yarn playwright test
