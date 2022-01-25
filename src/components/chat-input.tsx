@@ -43,6 +43,8 @@ const ChatInput: FunctionComponent<{
       >
         <TextArea
           fill
+          name="Chat input"
+          aria-label="Chat input"
           resize={false}
           size="medium"
           color="dark-1"
@@ -59,6 +61,8 @@ const ChatInput: FunctionComponent<{
         }}
       >
         <Button
+          name="Send message"
+          aria-label="Send message"
           label="send"
           shadow
           disabled={disableSend}

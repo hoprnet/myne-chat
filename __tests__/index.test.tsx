@@ -7,7 +7,9 @@ import userEvent from '@testing-library/user-event'
 import HomePage from '../pages/index'
 import * as nextRouter from 'next/router';
 import "isomorphic-fetch";
+import { enableMapSet } from 'immer'
 
+const mockedPeerId = '16Uiu2HAmN4enEu9822TMgG52goik85yEs4MqDdErtsGr8fy86VDQ'
 
 const server = setupServer(
   rest.get('http://localhost:3001/api/v2/account/address', (req, res, ctx) => {
@@ -50,5 +52,12 @@ describe('HomePage', () => {
     userEvent.click(addPeerId);
     const addPeerInput = await screen.findByRole('textbox', { name: /Peer Id/i })
     expect(addPeerInput).toBeInTheDocument()
+
+    // When we add a Peer we modify the state which requires useImmer to start
+    enableMapSet(); // Required by useImmer as we use maps
+    userEvent.type(addPeerInput, mockedPeerId)
+    userEvent.click(screen.getByRole('button', {name: /Add New Conversation/i}))
+    const peerIdElement = await screen.findByText(mockedPeerId)
+    expect(peerIdElement).toBeInTheDocument()
   })
 })
