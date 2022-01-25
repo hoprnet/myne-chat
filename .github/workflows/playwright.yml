@@ -13,10 +13,19 @@ jobs:
         node-version: '16.x'
     - name: Install dependencies
       run: yarn
+
     - name: Install Playwright
       run: npx playwright install --with-deps
+
+    - name: Run mocks server
+        run: yarn mocks &
+
+    - name: Run dev app
+        run: yarn dev &
+
     - name: Run Playwright tests
       run: yarn playwright test
+
     - uses: actions/upload-artifact@v2
       if: always()
       with:
