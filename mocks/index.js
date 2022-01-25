@@ -62,7 +62,7 @@ httpService
   .post("/api/v2/messages", (req, res) => {
     console.log("->", req.method, req.url, req.body);
     const { recipient, body } = req.body;
-    res.end();
+    res.status(204).end();
 
     if (!ws) {
       console.log("HTTP server warn: no WS connection to client");

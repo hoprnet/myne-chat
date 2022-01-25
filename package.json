@@ -29,9 +29,11 @@
   },
   "devDependencies": {
     "@hoprnet/hopr-utils": "1.84.0-next.24",
+    "@testing-library/dom": "^8.11.2",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/react-hooks": "^7.0.2",
+    "@testing-library/user-event": "^13.5.0",
     "@types/js-cookie": "^3.0.1",
     "@types/lodash": "^4.14.177",
     "@types/node": "16.11.11",

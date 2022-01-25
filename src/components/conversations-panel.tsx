@@ -79,6 +79,7 @@ const ConversationsPanel: FunctionComponent<{
           </Box>
           <Box>
             <IconButton
+              aria-label="Add Peer Id"
               pad="small"
               alignSelf="end"
               round

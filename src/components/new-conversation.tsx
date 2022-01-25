@@ -53,6 +53,7 @@ const NewConversation: FunctionComponent<{
         </Text>
         <Box direction="row" gap="small">
           <TextInput
+            aria-label="Peer Id"
             value={peerId}
             onChange={(e) => setPeerId(e.target.value)}
             maxLength={PEER_ID_LENGTH}
