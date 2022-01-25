@@ -12,6 +12,7 @@
     "mocks": "node ./mocks/index.js",
     "test": "jest --watch",
     "test:ci": "jest --ci",
+    "test:e2e": "playwright test",
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@hoprnet/hopr-utils": "1.84.0-next.24",
+    "@playwright/test": "^1.18.0",
     "@testing-library/dom": "^8.11.2",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",

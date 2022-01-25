@@ -53,12 +53,14 @@ const NewConversation: FunctionComponent<{
         </Text>
         <Box direction="row" gap="small">
           <TextInput
+            name="Peer Id"
             aria-label="Peer Id"
             value={peerId}
             onChange={(e) => setPeerId(e.target.value)}
             maxLength={PEER_ID_LENGTH}
           />
           <Button
+            aria-label="Add New Conversation"
             label="send"
             onClick={() => addNewConversation(peerId)}
             disabled={!validPeerId || hasRejection}
