@@ -15,15 +15,15 @@ const ChatBubble: FunctionComponent<{ message: Message }> = ({ message }) => {
       <Box background={backgroundColor} pad="small" round shadow>
         <Text color={textColor} size="medium" wordBreak="break-word">
           {message.verifiedStatus == 'VERIFIED' ? (
-            <Tip content="The message was signed by the sender.">
+            <Tip content="Authenticity of the sender successfully verified.">
               <StatusGood style={{ marginRight: '5px' }} size="small" color="status-success" />
             </Tip>
           ) : message.verifiedStatus == 'UNVERIFIED' ? (
-            <Tip content="The message was not signed. Could be sent by anyone.">
+            <Tip content="Authenticity of the sender cannot be verified. Could be sent by anyone.">
               <StatusInfo style={{ marginRight: '5px' }} size="small" color="status-disabled" />
             </Tip>
           ) : message.verifiedStatus == 'FAILED_VERIFICATION' ? (
-            <Tip content="The message was not signed. Could be sent by anyone.">
+            <Tip content="Authenticity of the sender cannot be verified because the authenticity tag is missing. Could be sent by anyone.">
               <StatusCritical style={{ marginRight: '5px' }} size="small" color="fatal-error" />
             </Tip>
           ) : null}
