@@ -36,8 +36,8 @@ const HomePage: NextPage = () => {
   // get selected conversation
   const conversation = selection ? conversations.get(selection) : undefined;
 
-  const { query } = useRouter();
-  const { development } = query;
+  const query = useRouter()?.query;
+  const development = query?.development;
 
   // currently focused element (used in mobile mode)
   const [focus, setFocus] = useState<"conversations-panel" | "chat">(
@@ -109,6 +109,7 @@ const HomePage: NextPage = () => {
           setVerified={setVerified}
           verified={verified}
           selection={selection}
+          httpEndpoint={settings.httpEndpoint}
           messages={conversation ? Array.from(conversation.values()) : []}
           sendMessage={handleSendMessage(addSentMessage)(myPeerId, socketRef, getReqHeaders(true))}
         />
