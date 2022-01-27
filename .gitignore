@@ -42,3 +42,8 @@ master.zip
 
 # chromatic
 build-storybook.log
+
+# playwright
+test-results/
+playwright-report/
+

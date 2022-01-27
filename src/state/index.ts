@@ -56,6 +56,8 @@ export type AddSentMessageHandler = (
 
 export type ReceiveMessageHandler = (from: string, content: string, verifiedStatus?: VerifiedStatus) => void
 
+export const dev = '⚙️  Dev'
+
 const useAppState = () => {
   const urlParams = !isSSR ? getUrlParams(location) : {};
   const [state, setState] = useImmer<State>({
@@ -218,7 +220,6 @@ const useAppState = () => {
 
   const loadDevHelperConversation = () => {
     console.log("⚙️  Developer Mode enabled.", process.env.NODE_ENV)
-    const dev = '⚙️  Dev'
     addNewConversation(dev)
     // setTimeout ensures the event loop takes these state updates in order.
     setTimeout(() => addReceivedMessage(dev, 'Welcome to the developer mode.'), 0)
