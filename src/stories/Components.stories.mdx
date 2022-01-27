@@ -43,7 +43,11 @@ import IconButton from '../../src/components/icon-button.tsx';
 }
   `}</style>
 
-# Application structure & theme
+# Components
+
+<br/>
+
+## Structure & theming
 
 MyneChat has been built using different composable components that rely on a global
 theme provider via `Grommet`. As a result, all components inherit a set of default
@@ -97,3 +101,39 @@ property was created or not. This would look more or less like this for the `Ico
 This last component was rendered with a darker background, which was inherited via `theme.global.colors`.
 You can always import the `theme` and use it within your components to make sure they keep the same
 brand color across your application.
+
+## Important components
+
+Here's a list of the most relevant components within MyneChat
+
+### Connectivity
+- `analytics` - Showcases the PeerId of the component when connected
+- `new-conversation` - Adds a new conversation given a PeerId
+- `settings` - Updates the HOPRd URL and its API token
+
+### Conversations
+- `conversations-panel` - Sidebar holding all the existing conversations
+
+### Chat
+- `chat-bubble` - The minimal component that displays a message
+- `chat-input` - Wrapper for both inputing and sending the actual message
+- `chat-view` - The display of all messages sent and received
+- `chat` - The component that wires all other `chat-*` components
+
+### other
+- `icon-button` - As described, base component for styling buttons with icons
+- `logo` - MyneChat logo, which changes opacity depending on connectivity status
+
+## Reusing components
+
+Most of these components are relevant only for chat-like applications. If you are
+building your own chat, the `chat` component is a good starting point for seeing how
+the sending and displaying of messages work.
+
+The `conversations-panel` is a selector of conversations, but also contains all the
+connectivity components which are highly useful to avoid coding again these steps. In
+particular, it's useful to showcase the connected HOPR's node PeerId, which is needed to
+interact with other HOPR nodes.
+
+In case you are looking to build a HOPR app that is not a chat, your best bet is to reuse
+the [state hooks](/) instead.
