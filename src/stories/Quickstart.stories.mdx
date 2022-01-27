@@ -1,29 +1,29 @@
-import { Meta, Canvas, Source } from '@storybook/addon-docs';
-import Code from './assets/code-brackets.svg';
-import Colors from './assets/colors.svg';
-import Comments from './assets/comments.svg';
-import Direction from './assets/direction.svg';
-import Flow from './assets/flow.svg';
-import Plugin from './assets/plugin.svg';
-import Repo from './assets/repo.svg';
-import StackAlt from './assets/stackalt.svg';
-
+import { Meta, Canvas } from '@storybook/addon-docs';
 import { Grommet, Main } from "grommet";
+
 import theme from "../../src/theme";
-import Analytics from '../../src/components/analytics.tsx';
-import IconButton from '../../src/components/icon-button.tsx';
+import { MocksServer } from '../../src/components/mocks-server.tsx';
+import HomePage from '../../pages/index';
 
 
 <Meta title="1. MyneChat/Guides/1. Quickstart" />
 
 # Quickstart
 
+<br/>
+
+## Setting up HOPR cluster
+
+<br/>
+
+### Cloud setup (easiest)
+
 The easiest way to launch MyneChat and setup a cluster of HOPR nodes to start
 testing it is via [Gitpod.io](https://gitpod.io). It will automatically fetch
 and install all the required dependencies and spin up the needed services for
 you to start tweaking MyneChat.
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/hoprnet/myne-chat/tree/docs/getting-started-guide-4)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/hoprnet/myne-chat)
 
 After you have done that, you will see a terminal with the addresses of all 
 the existing nodes. Click and open any of them to see MyneChat in your
@@ -32,3 +32,48 @@ it with another user from the terminal. Click on the “Add” icon to start
 a conversation with the first user; by typing in the input field and
 pressing “enter”, you have effectively sent a private message across your
 local HOPR network.
+
+### Local setup (via mocks)
+
+The alternative to launch MyneChat is by running our local `mocks` server,
+by running `yarn mocks` after `yarn` locally, and go to our "internal" public
+preview URL (https://int-dev-app.myne.chat/?development=enabled) in development mode.
+If done correctly, you should be able to see the following component showcasing
+a "green"-like enabled icon.
+
+<Canvas>
+    <MocksServer httpEndpoint={"http://localhost:3001"} disabled/>
+</Canvas>
+
+## Using MyneChat
+
+After your cluster is ready, you now only need to start MyneChat. Within a React application,
+this means loading the `<HomePage>` component. Then, you can update the application's endpoint
+by clicking the gear-like icon, and update the endpoints as needed.
+
+(If you are using the mocks server, you don't need to do anything else. For the cloud setup,
+you need to use the REST API endpoint as the `HTTP Endpoint` and Admin URL as the `WS Endpoint`,
+making sure to change the URL from `https` to `wss`. Also do not forget the API Token, which
+currently defaults to `^^LOCAL-testing-123^^`).
+
+e.g.
+```
+1️⃣  Alex
+    MyneChat: https://8080-hoprnet-mynechat-q0d9mzehwlb.ws-us29.gitpod.io/?httpEndpoint=https://13301-hoprnet-mynechat-q0d9mzehwlb.ws-us29.gitpod.io&wsEndpoint=wss://19501-hoprnet-mynechat-q0d9mzehwlb.ws-us29.gitpod.io&securityToken=^^LOCAL-testing-123^^
+    Rest API:       https://13301-hoprnet-mynechat-q0d9mzehwlb.ws-us29.gitpod.io/api/v2/_swagger
+    Admin UI:       https://19501-hoprnet-mynechat-q0d9mzehwlb.ws-us29.gitpod.io/
+```
+
+would be
+
+```
+HTTP Endpoint: https://13301-hoprnet-mynechat-q0d9mzehwlb.ws-us29.gitpod.io
+WS Endpoint: wss://19501-hoprnet-mynechat-q0d9mzehwlb.ws-us29.gitpod.io
+Security Token: ^^LOCAL-testing-123^^
+```
+
+<Canvas>
+    <HomePage />
+</Canvas>
+
+Feel free to send a message to another user in your local cluster!
