@@ -26,6 +26,7 @@ export type Message = {
   status: "UNKNOWN" | "SUCCESS" | "FAILURE";
   error?: string;
   verifiedStatus?: VerifiedStatus;
+  hasHTML?: boolean;
 };
 
 export type Settings = {
@@ -57,6 +58,7 @@ export type AddSentMessageHandler = (
 export type ReceiveMessageHandler = (from: string, content: string, verifiedStatus?: VerifiedStatus) => void
 
 export const dev = '⚙️  Dev'
+export const welcome = '🕵🏽‍♀️  Welcome'
 
 const useAppState = () => {
   const urlParams = !isSSR ? getUrlParams(location) : {};
@@ -124,7 +126,7 @@ const useAppState = () => {
     });
   };
 
-  const addReceivedMessage = (from: string, content: string, verifiedStatus?: VerifiedStatus) => {
+  const addReceivedMessage = (from: string, content: string, verifiedStatus?: VerifiedStatus, hasHTML = false) => {
     setState((draft) => {
       const messages = draft.conversations.get(from) || new Map<string, Message>();
       const id = genId();
@@ -138,7 +140,8 @@ const useAppState = () => {
           status: "SUCCESS",
           createdBy: from,
           createdAt: +new Date(),
-          verifiedStatus
+          verifiedStatus,
+          hasHTML
         })
       );
 
@@ -218,6 +221,16 @@ const useAppState = () => {
     }
   };
 
+  const loadWelcomeConversation = () => {
+    console.log("⚙️  Welcome Messages.", process.env.NODE_ENV)
+    addNewConversation(welcome)
+    // setTimeout ensures the event loop takes these state updates in order.
+    setTimeout(() => addReceivedMessage(welcome, 'Welcome to Myne! Finally chat privately.'), 0)
+    setTimeout(() => addReceivedMessage(welcome, 'To start, please connect to a HOPR node (if you don‘t know how see our <a href="https://github.com/hoprnet/myne-chat#tutorial" style="color: white;" target="_blank">Tutorial</a>)', undefined, true), 0)
+    setTimeout(() => addReceivedMessage(welcome, 'After you are connected, click in the left sidebar on "Add conversation" and paste the HOPR address of another user. Easy!'), 0)
+    setTimeout(() => addReceivedMessage(welcome, 'If you got further questions, visit our <a href="https://docs.hoprnet.org/" style="color: white;" target="_blank">Documentation</a>.', undefined, true), 0)
+  }
+
   const loadDevHelperConversation = () => {
     console.log("⚙️  Developer Mode enabled.", process.env.NODE_ENV)
     addNewConversation(dev)
@@ -242,6 +255,7 @@ const useAppState = () => {
     handleSendMessage,
     handleReceivedMessage,
     loadDevHelperConversation,
+    loadWelcomeConversation,
     hash: MYNE_CHAT_GIT_HASH,
     version: MYNE_CHAT_VERSION,
     environment: MYNE_CHAT_ENVIRONMENT
