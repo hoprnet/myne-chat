@@ -1,4 +1,21 @@
-MyneChat is an application powered by [HOPR](https://github.com/hoprnet/hoprnet).
+<!-- INTRODUCTION -->
+<p align="center">
+  <a href="https://hoprnet.org" target="_blank" rel="noopener noreferrer">
+    <img width="100" src="https://github.com/hoprnet/hopr-assets/blob/master/v1/logo/hopr_logo_padded.png?raw=true" alt="HOPR Logo">
+  </a>
+  
+  <!-- Title Placeholder -->
+  <h3 align="center">HOPR MyneChat</h3>
+  <p align="center">
+    <code>A project by the HOPR Association</code>
+  </p>
+  <p align="center">
+MyneChat is a fully private, data and metadata secure chat. Powered by the HOPR network, with MyneChat no-one can find out your business or who you’re communicating with.
+  </p>
+  <p align="center">
+    <img src="https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod" alt="Gitpod">
+  </p>
+</p>
 
 ## Getting started
 
@@ -69,8 +86,17 @@ WS API=ws://localhost:3000
 
 #### Connecting Myne Chat to a real HOPRd API
 
-You need to start a local `hoprd` node (at least v1.85.0).
-See [hopr documentantion](https://docs.hoprnet.org/en/latest/src/install-hoprd/index.html) or checkout the [tutorial](#tutorial) for more info.
+To connect a MyneChat instance to a HOPR node, you need to be aware of the following:
+
+- Your HOPR node version needs to be at least version `v1.85.0` to work properly with MyneChat.
+- An error will occur when trying to secure from a non-SSL version (e.g. localhost) to a SSL-protected node (e.g. gitpod).
+- Your WS (WebSocket) endpoint is the same as the `Admin URL` (`--adminHost` in `hoprd` and `Admin URL` in the setup script).
+- A successful connection will highlight the MyneChat logo, turning it white.
+- You can verify your connection to your HTTP endpoint by checking the “PeerId” clicking on the "Bar Chart" icon.
+
+For more information on how to run a local node, see [hopr documentation](https://docs.hoprnet.org/en/latest/src/install-hoprd/index.html). To fully test MyneChat using HOPR nodes, you need to set up a local HOPR node cluster (needed to fully use MyneChat locally, see the [local cluster setup instructions](https://github.com/hoprnet/hoprnet/blob/master/SETUP_LOCAL_CLUSTER.md)).
+
+To test MyneChat against production HOPR nodes, checkout the [tutorial](#tutorial). Be aware that for this to work, your HOPR node will need to have `wxHOPR` tokens from the Gnosis Chain network and have a few channels open. Additionally, you will need to know the `PeerId` of the HOPR node you want to talk to.
 
 ## Tutorial
 
@@ -80,7 +106,7 @@ This tutorial shows how to set up MyneChat and a `hoprd` node locally.
 1. You need to start a local `hoprd` node (at least v1.85.0). Multiple ways to do this are described in the [hoprd documentation](https://docs.hoprnet.org/en/latest/src/install-hoprd/index.html). For simplicity, use Docker and spin up a node locally using the `budapest` release:
 
 ```
-docker run --pull always -p 3000:3000 -p 3001:3001 gcr.io/hoprassociation/hoprd:budapest --apiToken ^MYtoken4testing^ --password hodlerATWORK --rest --admin --init
+docker run --pull always -p 3000:3000 -p 3001:3001 gcr.io/hoprassociation/hoprd:athens --apiToken ^MYtoken4testing^ --password hodlerATWORK --rest --admin --init
 ```
 
 To be able to use the node you must fund it with native (xDAI) and HOPR tokens.
