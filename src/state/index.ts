@@ -59,6 +59,7 @@ export type ReceiveMessageHandler = (from: string, content: string, verifiedStat
 
 export const dev = '⚙️  Dev'
 export const welcome = '🕵🏽‍♀️  Welcome'
+export const bots = [dev, welcome]
 
 const useAppState = () => {
   const urlParams = !isSSR ? getUrlParams(location) : {};
@@ -186,6 +187,7 @@ const useAppState = () => {
 
   const handleSendMessage = (addSentMessage: AddSentMessageHandler) => (myPeerId: string | undefined, socketRef: MutableRefObject<WebSocket | undefined>, headers: Headers) => async (destination: string, message: string) => {
     const { selection, settings, verified } = state;
+    if (bots.includes(destination)) return addSentMessage('', destination, message, genId());
     if (!myPeerId || !selection || !socketRef.current) return;
     const signature = verified && await signRequest(settings.httpEndpoint, headers)(message)
       .catch((err: any) => console.error('ERROR Failed to obtain signature', err));
