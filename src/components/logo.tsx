@@ -35,6 +35,7 @@ const Logo: FunctionComponent<{
         target="_blank"
         label="Privacy powered by HOPR"
         alignSelf="end"
+        style={{ textDecoration: "none", fontSize: 10, textAlign: "right" }}
       />
     </Box>
   );
