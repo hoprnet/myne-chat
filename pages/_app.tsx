@@ -18,6 +18,12 @@ const GlobalStyle = createGlobalStyle`
     font-style: normal;
     font-display: swap;
   }
+  @font-face {
+    font-family: "Roboto";
+    src: url('fonts/Roboto/Roboto-MediumItalic.woff') format('woff'),
+    font-weight: 400;
+    font-style: italic;
+}
 
   /* custom scrollbar */
   /* our style can be fully supported by webkit only */
