@@ -8,7 +8,7 @@ const ChatBubble: FunctionComponent<{ message: Message }> = ({ message }) => {
   const textColor = message.isIncoming ? "accent-1" : "dark-1";
 
   return (
-    <Box>
+    <Box style={{maxWidth: '70%'}}>
       <Text textAlign="end" size="small" color="brand">
         {new Date(message.createdAt).toLocaleString()}
       </Text>
