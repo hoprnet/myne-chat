@@ -1,12 +1,19 @@
 import type { FunctionComponent, KeyboardEvent } from "react";
 import { useState, useContext } from "react";
-import { Box, Button, TextArea, ResponsiveContext, CheckBox, Tip } from "grommet";
+import {
+  Box,
+  Button,
+  TextArea,
+  ResponsiveContext,
+  CheckBox,
+  Tip,
+} from "grommet";
 
 const ChatInput: FunctionComponent<{
   sendMessage: (destination: string, message: string) => void;
   selection?: string;
   setVerified: (verified: boolean) => void;
-  verified: boolean
+  verified: boolean;
 }> = ({ sendMessage, selection, setVerified, verified }) => {
   const screenSize = useContext(ResponsiveContext);
   const [content, setMessage] = useState<string>("");
@@ -68,13 +75,22 @@ const ChatInput: FunctionComponent<{
           disabled={disableSend}
           onClick={handleSendMessage}
         />
-        <Tip content="Your messages will be signed with your node's key.">
-          <CheckBox
-            pad={{ top: "10px"}}
-            checked={verified}
-            label="Verify?"
-            onChange={(event) => setVerified(event.target.checked)}
-          />
+        <Tip
+          content="Your messages will be signed with your node's key."
+          dropProps={{
+            align: {
+              right: "left",
+            },
+          }}
+        >
+          <Box margin="xxsmall">
+            <CheckBox
+              pad={{ top: "10px" }}
+              checked={verified}
+              label="Verify?"
+              onChange={(event) => setVerified(event.target.checked)}
+            />
+          </Box>
         </Tip>
       </Box>
     </Box>
