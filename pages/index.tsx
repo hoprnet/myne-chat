@@ -23,6 +23,7 @@ const HomePage: NextPage = () => {
     handleSendMessage,
     handleReceivedMessage,
     loadDevHelperConversation,
+    loadWelcomeConversation
   } = useAppState();
   // initialize websocket connection & state tracking
   const websocket = useWebsocket(settings);
@@ -59,6 +60,7 @@ const HomePage: NextPage = () => {
 
   // Adding Dev helper conversation to showcase components.
   useEffect(() => {
+    loadWelcomeConversation();
     (development == 'enabled' || process.env.NODE_ENV != 'production') && loadDevHelperConversation();
   }, [development])
 
