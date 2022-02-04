@@ -1,27 +1,44 @@
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import { useState, useContext, useEffect } from "react";
 import { Box, Button, ResponsiveContext } from "grommet";
 import { LinkPrevious } from "grommet-icons";
+
 import useAppState from "../src/state";
-import { encodeMessage, decodeMessage } from "../src/utils";
 import ConversationsPanel from "../src/components/conversations-panel";
 import Chat from "../src/components/chat";
+import useWebsocket from "../src/state/websocket";
+import useUser from "../src/state/user";
+
 
 const HomePage: NextPage = () => {
   const {
-    state: { selection, conversations, myPeerId, settings, status },
-    getReqHeaders,
-    socketRef,
-    setSelection,
-    addNewConversation,
-    addSentMessage,
+    state: { selection, conversations, settings, verified },
     addReceivedMessage,
-    updateMessage,
+    addSentMessage,
+    setSelection,
+    setVerified,
     updateSettings,
+    handleAddNewConversation,
+    handleSendMessage,
+    handleReceivedMessage,
+    loadDevHelperConversation,
+    loadWelcomeConversation
   } = useAppState();
+  // initialize websocket connection & state tracking
+  const websocket = useWebsocket(settings);
+  const { socketRef } = websocket;
+  const { status } = websocket?.state;
+  // fetch user data
+  const user = useUser(settings);
+  const { getReqHeaders } = user;
+  const { myPeerId } = user?.state;
 
   // get selected conversation
   const conversation = selection ? conversations.get(selection) : undefined;
+
+  const query = useRouter()?.query;
+  const development = query?.development;
 
   // currently focused element (used in mobile mode)
   const [focus, setFocus] = useState<"conversations-panel" | "chat">(
@@ -29,66 +46,23 @@ const HomePage: NextPage = () => {
   );
   const screenSize = useContext(ResponsiveContext);
   const isMobile = screenSize === "small";
-
-  const handleReceivedMessage = (ev: MessageEvent<string>) => {
-    try {
-      // we are only interested in messages, not all the other events coming in on the socket
-      const data = JSON.parse(ev.data);
-      if (data.type == "message") {
-        const { tag, from, message } = decodeMessage(data.msg);
-        // we are only interested in myne messages
-        if (tag == "myne") {
-          addReceivedMessage(from, message);
-        }
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleSetSelection = (counterparty: string) => {
-    setSelection(counterparty);
-    setFocus("chat");
-  };
-
-  const handleSendMessage = (destination: string, message: string) => {
-    if (!myPeerId || !selection || !socketRef.current) return;
-
-    const encodedMessage = encodeMessage(myPeerId, message);
-    const id = addSentMessage(myPeerId, destination, message);
-
-    fetch(`${settings.httpEndpoint}/api/v2/messages`, {
-      method: "POST",
-      headers: getReqHeaders(true),
-      body: JSON.stringify({
-        recipient: selection,
-        body: encodedMessage,
-      }),
-    })
-      .then(() => {
-        updateMessage(destination, id, "SUCCESS");
-      })
-      .catch((err) => {
-        console.error("ERROR sending message", err);
-        updateMessage(destination, id, "FAILURE", String(err));
-      });
-  };
-
-  const handleAddNewConversation = (counterparty: string) => {
-    addNewConversation(counterparty);
-    setFocus("chat");
-  };
-
+  
   // attach event listener for new messages
   useEffect(() => {
     if (!myPeerId || !socketRef.current) return;
-    socketRef.current.addEventListener("message", handleReceivedMessage);
+    socketRef.current.addEventListener("message", handleReceivedMessage(addReceivedMessage));
 
     return () => {
       if (!socketRef.current) return;
-      socketRef.current.removeEventListener("message", handleReceivedMessage);
+      socketRef.current.removeEventListener("message", handleReceivedMessage(addReceivedMessage));
     };
   }, [myPeerId, socketRef.current]);
+
+  // Adding Dev helper conversation to showcase components.
+  useEffect(() => {
+    loadWelcomeConversation();
+    (development == 'enabled' || process.env.NODE_ENV != 'production') && loadDevHelperConversation();
+  }, [development])
 
   return (
     <Box fill direction="row" justify="between" pad="small">
@@ -108,8 +82,11 @@ const HomePage: NextPage = () => {
           settings={settings}
           updateSettings={updateSettings}
           selection={selection}
-          setSelection={handleSetSelection}
-          addNewConversation={handleAddNewConversation}
+          setSelection={(counterparty: string) => {
+            setSelection(counterparty);
+            setFocus("chat");
+          }}
+          addNewConversation={handleAddNewConversation(() => setFocus("chat"))}
           counterparties={Array.from(conversations.keys())}
         />
       </Box>
@@ -131,9 +108,12 @@ const HomePage: NextPage = () => {
           />
         ) : null}
         <Chat
+          setVerified={setVerified}
+          verified={verified}
           selection={selection}
+          httpEndpoint={settings.httpEndpoint}
           messages={conversation ? Array.from(conversation.values()) : []}
-          sendMessage={handleSendMessage}
+          sendMessage={handleSendMessage(addSentMessage)(myPeerId, socketRef, getReqHeaders(true))}
         />
       </Box>
     </Box>

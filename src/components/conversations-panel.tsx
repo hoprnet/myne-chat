@@ -8,6 +8,7 @@ import Settings from "./settings";
 import Analytics from "./analytics";
 import NewConversation from "./new-conversation";
 import Logo from "./logo";
+import useAppState from "../state";
 
 const ConversationsPanel: FunctionComponent<{
   status: ConnectionStatus;
@@ -34,6 +35,7 @@ const ConversationsPanel: FunctionComponent<{
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [showAnalytics, setShowAnalytics] = useState<boolean>(false);
   const [showAddNewConv, setShowAddNewConv] = useState<boolean>(false);
+  const {version, hash, environment} = useAppState();
 
   return (
     <>
@@ -69,6 +71,7 @@ const ConversationsPanel: FunctionComponent<{
               pad="small"
               alignSelf="end"
               round
+              disabled={status === 'DISCONNECTED'}
               onClick={() => setShowAnalytics(true)}
             >
               <BarChart color="light-1" />
@@ -76,9 +79,11 @@ const ConversationsPanel: FunctionComponent<{
           </Box>
           <Box>
             <IconButton
+              aria-label="Add Peer Id"
               pad="small"
               alignSelf="end"
               round
+              disabled={status === 'DISCONNECTED'}
               onClick={() => setShowAddNewConv(true)}
             >
               <Add color="light-1" />
@@ -126,6 +131,8 @@ const ConversationsPanel: FunctionComponent<{
         {/* footer */}
         <Box pad="small" height={{ min: "min-content" }}>
           <Logo status={status} />
+          <Text style={{ margin: "5px 0 0" }} size="xs">Version: {version}</Text>
+          { environment != 'production' && <Text style={{ margin: "5px 0 0" }} size="xs">Hash: {hash}</Text> }
         </Box>
       </Box>
       {showSettings ? (
@@ -157,6 +164,7 @@ const ConversationsPanel: FunctionComponent<{
           background="none"
         >
           <NewConversation
+            myPeerId={myPeerId}
             counterparties={counterparties}
             addNewConversation={(p) => {
               addNewConversation(p);

@@ -3,9 +3,12 @@ import styled from "styled-components";
 import { Box, Button } from "grommet";
 import { normalizeColor } from "grommet/utils";
 
+const StyledButton = styled(Button)`
+  cursor: ${(props) => !props.disabled && 'pointer'};
+`
+
 const StyledBox = styled(Box)`
   display: inline-flex;
-  cursor: pointer;
   max-height: min-content;
   max-width: min-content;
 
@@ -30,7 +33,7 @@ const StyledBox = styled(Box)`
 // TODO: add types
 const IconButton: FunctionComponent<any> = (props) => {
   return (
-    <Button {...props}>
+    <StyledButton {...props}>
       <StyledBox
         pad="small"
         alignSelf="end"
@@ -40,7 +43,7 @@ const IconButton: FunctionComponent<any> = (props) => {
       >
         {props.children}
       </StyledBox>
-    </Button>
+    </StyledButton>
   );
 };
 

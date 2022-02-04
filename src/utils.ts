@@ -1,4 +1,6 @@
 import type { Settings } from "./state";
+import { arrayify } from '@ethersproject/bytes'
+import PeerId from "peer-id";
 
 /**
  * True if instance is running on server
@@ -30,11 +32,67 @@ export const isValidPeerId = (v: string): boolean => {
  * messages from other apps.
  * @param from
  * @param message
+ * @param signature string (optional) - Signature of message from recipient
  * @returns encoded message
  */
-export const encodeMessage = (from: string, message: string): string => {
-  return `myne:${from}:${message}`;
+export const encodeMessage = (from: string, message: string, signature?: string): string => {
+  return `myne:${encodeSignedRecipient(from, signature)}:${message}`;
 };
+
+/**
+ * Prepends message as a signature request to be sent to our HOPR's node for signing.
+ * @param message string
+ * @returns string
+ */
+export const encodeSignMessageRequest = (message: string, recipient: string) => {
+  return `myne:sign:${recipient}:${message}`;
+}
+
+/**
+ * Encodes recipient with signature for later parsing
+ * @param from string
+ * @param signature strig
+ * @returns encodedSignedRecipient string
+ */
+export const encodeSignedRecipient = (from: string, signature?: string): string => {
+  return `${from}${signature ? `-${signature}` : ''}`
+}
+
+
+export type SignedRecipient = {
+  from: string,
+  signature?: string
+}
+
+/**
+ * Decodes recipient to obtain signature if any
+ * @param maybeSignedRecipient string
+ * @returns SignedRecipient
+ */
+ export const decodeSignedRecipient = (maybeSignedRecipient: string): SignedRecipient => {
+  const [from, signature] = maybeSignedRecipient.includes('-') ? maybeSignedRecipient.split('-') : [maybeSignedRecipient]
+  return { from, signature }
+}
+
+/**
+ * Copied from @hoprnet/hopr-utils until web support is provided
+ * https://github.com/hoprnet/hoprnet/blob/059250384a04463fa1d1068dde38697ce683c817/packages/utils/src/libp2p/verifySignatureFromPeerId.ts#L15-L18
+ */
+ export async function verifySignatureFromPeerId(peerId: string, message: string, signature: string): Promise<boolean> {
+  const pId = PeerId.createFromB58String(peerId)
+  return await pId.pubKey.verify(new TextEncoder().encode(message), arrayify(signature))
+}
+
+/**
+ * Verifies signed message given a specific Base58 string
+ * @param originalMessage string
+ * @param signedMessage string
+ * @param signer string
+ * @returns boolean
+ */
+export const verifyAuthenticatedMessage = async (originalMessage: string, signedMessage: string, signer: string) => {
+  return await verifySignatureFromPeerId(signer, originalMessage, signedMessage);
+}
 
 /**
  * Decodes incoming message.
@@ -43,9 +101,11 @@ export const encodeMessage = (from: string, message: string): string => {
  */
 export const decodeMessage = (
   fullMessage: string
-): { tag: string; from: string; message: string } => {
-  const [tag, from, ...messages] = fullMessage.split(":");
+): { tag: string; from: string; message: string, signature: string | undefined } => {
+  const [tag, maybeSignedRecipient, ...messages] = fullMessage.split(":");
   const message = messages.join(":");
+
+  const {from, signature} = decodeSignedRecipient(maybeSignedRecipient);
 
   if (!from || !isValidPeerId(from)) {
     throw Error(
@@ -57,6 +117,7 @@ export const decodeMessage = (
     tag,
     from,
     message,
+    signature
   };
 };
 

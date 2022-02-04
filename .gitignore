@@ -35,3 +35,9 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# for gitpod
+hoprnet-master
+master.zip
+test-results/
+playwright-report/
