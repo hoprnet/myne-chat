@@ -22,7 +22,12 @@ jest.mock("next/router", () => ({
   useRouter: jest.fn(),
 }));
 
-beforeEach(() => mockServer = new WS('ws://localhost:3000'));
+beforeEach(() => {
+  // needed to mock latestElement.scrollIntoView(); from `chat-view.tsx`
+  // See https://github.com/jsdom/jsdom/issues/1695
+  Element.prototype.scrollIntoView = jest.fn();
+  mockServer = new WS('ws://localhost:3000')
+});
 beforeAll(() => server.listen())
 afterEach(() => {
   jest.resetAllMocks();
@@ -33,6 +38,7 @@ afterAll(() => server.close())
 
 describe('HomePage', () => {
   it('renders the website, connects to mock servers', async () => {
+    enableMapSet(); // Required by useImmer as we use maps
     const spiedErrorConsole = jest.spyOn(console, 'error');
     const spiedFetch = jest.spyOn(window, 'fetch')
     const getApiResult = (): Promise<any> => spiedFetch.mock.results[0].value;
@@ -54,7 +60,6 @@ describe('HomePage', () => {
     expect(addPeerInput).toBeInTheDocument()
 
     // When we add a Peer we modify the state which requires useImmer to start
-    enableMapSet(); // Required by useImmer as we use maps
     userEvent.type(addPeerInput, mockedPeerId)
     userEvent.click(screen.getByRole('button', {name: /Add New Conversation/i}))
     const peerIdElement = await screen.findByText(mockedPeerId)

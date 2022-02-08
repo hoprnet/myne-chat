@@ -27,7 +27,8 @@ const ChatBubble: FunctionComponent<{ message: Message }> = ({ message }) => {
               <StatusCritical style={{ marginRight: '5px' }} size="small" color="fatal-error" />
             </Tip>
           ) : null}
-          {message.content}{" "}
+          {message.hasHTML ? <span dangerouslySetInnerHTML={{__html: message.content}} /> : message.content}
+          {" "}
           {message.status === "FAILURE" ? (
             <Tip content={message.error}>
               <StatusWarning color="status-error" />
