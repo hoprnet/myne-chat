@@ -1,0 +1,41 @@
+import { Meta, Canvas } from '@storybook/addon-docs';
+import { Grommet, Main } from "grommet";
+import { MocksDemo } from '../../src/components/mocks-demo.tsx';
+
+<Meta title="1. MyneChat/Guides/2. Message Handlers" />
+
+# Message Handlers 
+
+Although we can send messages to our nodes via their REST API, to listen to the messages
+sent to them, we need to use a messaage handler. From a technical perspective, this means
+attaching an `EventHandler` to our WebSocket server using a client with the right URL and
+API token (assuming your HOPR server uses one).
+
+For MyneChat, we use the web `WebSocket` implementation and provide this handler to a global
+scope using the `useWebSocket` React Hook.
+
+## Demo (mocks only)
+
+The following shows how to create a handler via using our mocks server, which showcases how we can
+connect to a HOPRd client. First, our mocks server will send messages to it our WebSocket
+mock server, which we have subscribed to via a component WebSocket handler which we have
+in our application. Every HOPR application needs to connect to the WebSocket server the
+HOPRd instance spins up.
+
+The following component creates an handler which connects to the WebSocket endpoint from our mocks.
+Update it to the URL of your WebSocket endpoint (only update if your mocks server is running in a
+different port or URL). Then, try to send a message clicking the "Random Msg" button.
+
+<Canvas>
+    <MocksDemo />
+</Canvas>
+
+If you saw a message like `The default transformer is ...`, it means that our component WebSocket
+handler was able to receive the message sent to the WebSocket server. In this case we sent the
+message ourselves, but for normal HOPR applications, this is sent via another HOPR node when a
+successful relay happens.
+
+The transformer is an example on how one could create a variation of a chat. Although this is not
+supported here directly in the demo (the `Function` is created on load and can’t be updated since
+we are using `eval` to showcase it), you can see the code in the `mocks-demo` and `mocks-handler`
+components to give you an idea how this could be done.

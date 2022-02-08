@@ -1,0 +1,215 @@
+import { Meta } from '@storybook/addon-docs';
+import Code from './assets/code-brackets.svg';
+import Colors from './assets/colors.svg';
+import Comments from './assets/comments.svg';
+import Direction from './assets/direction.svg';
+import Flow from './assets/flow.svg';
+import Plugin from './assets/plugin.svg';
+import Repo from './assets/repo.svg';
+import StackAlt from './assets/stackalt.svg';
+
+<Meta title="1. MyneChat/1. Introduction" />
+
+<style>{`
+  .subheading {
+    --mediumdark: '#999999';
+    font-weight: 900;
+    font-size: 13px;
+    color: #999;
+    letter-spacing: 6px;
+    line-height: 24px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    margin-top: 40px;
+  }
+
+  .link-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    row-gap: 10px;
+  }
+
+  @media (min-width: 620px) {
+    .link-list {
+      row-gap: 20px;
+      column-gap: 20px;
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media all and (-ms-high-contrast:none) {
+  .link-list {
+      display: -ms-grid;
+      -ms-grid-columns: 1fr 1fr;
+      -ms-grid-rows: 1fr 1fr;
+    }
+  }
+
+  .link-item {
+    display: block;
+    padding: 20px 30px 20px 15px;
+    border: 1px solid #00000010;
+    border-radius: 5px;
+    transition: background 150ms ease-out, border 150ms ease-out, transform 150ms ease-out;
+    color: #333333;
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .link-item:hover {
+    border-color: #1EA7FD50;
+    transform: translate3d(0, -3px, 0);
+    box-shadow: rgba(0, 0, 0, 0.08) 0 3px 10px 0;
+  }
+
+  .link-item:active {
+    border-color: #1EA7FD;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .link-item strong {
+    font-weight: 700;
+    display: block;
+    margin-bottom: 2px;
+  }
+  
+  .link-item img {
+    height: 40px;
+    width: 40px;
+    margin-right: 15px;
+    flex: none;
+  }
+
+  .link-item span {
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .tip {
+    display: inline-block;
+    border-radius: 1em;
+    background: #E7FDD8;
+    color: #66BF3C;
+    padding: 2px 8px;
+    vertical-align: top;
+  }
+`}</style>
+
+# MyneChat
+
+MyneChat is a web application developed by [HOPR Association](https://hoprnet.org/),
+powered by a [HOPR](https://github.com/hoprnet/hoprnet) node. The following guide
+showcases MyneChat application and its most important components. The application was
+developed using [Next.js](https://nextjs.org/), [Grommet](https://v2.grommet.io/) and
+[Immer.js](https://github.com/immerjs/use-immer), to iterate quickly on a barebone UI
+framework while still having a robust state and web framework easy to deploy in
+[Vercel](https://vercel.com).
+
+## Tech stack
+
+* **Next.js** (Web Framework) - A React-based web framework on top of node.js. Although
+Next.js supports server-side rendering and express-like API-style route-based logic,
+MyneChat is an entirely statically generated site and can be deployed in a static server.
+
+* **Immer.js** (State Management) - Immer ensures state updates are immutable and done
+against produce-like functions which freeze our state. It helps us as well to reduce
+boilerplate against other alternatives which need to inherit previous state changes.
+
+* **Grommet** (UI Toolkit) - Grommet is a CSS and UI toolkit used to create the base
+components of the application and enhance as needed, while still relying in basic mixins
+and default classes to avoid creating all the CSS from scratch.
+
+Follow the respective instructions below to have further understanding of the project,
+and how you can tweak it to develop a HOPR-powered chat for yourself. All code is open
+source under an MIT License, and can be found [here](https://github.com/hoprnet/myne-chat).
+
+## Overview
+
+The MyneChat application is organized by having a single entrypoint which is the `HomePage`
+component, located in the entrypoint of Next.js, `pages/index.tsx` and as a result, loaded
+by Next.js under the `${url}/index` or `${url}` alone.
+
+Upon load, the application kickstarts the React Hook `useAppState` which exposes handlers
+against all the components to modify the global state. In unison, the `useUser` and
+`useWebsocket` are started, the first one loading all required user information, the
+second one by handling the websocket connection to the HOPR node used for the application.
+These last two hooks are retriggered everything the `settings` data, which reflects the
+entry points for HOPR node, are updated.
+
+After loading all the components via cascade rendering, the application becomes way simpler:
+components execute the global state handlers, and update both their UI and local state based
+on the modification to the global state triggered by these executions. Sending a message and
+basic data interactions are simple API calls against the by now connected server. Without a
+HOPR node connection, however, there's not much to do and the application stalls until it
+tries to reconnect to the default settings `http://localhost:3000` and `ws://localhost:3001`.
+
+<div className="subheading">Architecture</div>
+
+<div className="link-list">
+  <a
+    className="link-item"
+    href="?path=/story/1-mynechat-architecture-1-components--page"
+  >
+    <img src={Plugin} alt="plugin" />
+    <span>
+      <strong>UI Components</strong>
+      Walkthrough the most relevant components.
+    </span>
+  </a>
+  <a
+    className="link-item"
+    style={{ opacity: 0.4, cursor: "not-allowed", pointerEvents: "all !important" }}
+  >
+    <img src={StackAlt} alt="Build" />
+    <span>
+      <strong>State management <span className="tip">Soon</span></strong>
+      MyneChat's handling of UI updates across its lifecycle.
+    </span>
+  </a>
+  <a
+    className="link-item"
+    style={{ opacity: 0.4, cursor: "not-allowed", pointerEvents: "all !important" }}
+  >
+    <img src={Colors} alt="colors" />
+    <span>
+      <strong>Styling <span className="tip">Soon</span></strong>
+      How to update and change MyneChat's default theme.
+    </span>
+  </a>
+  <a
+    className="link-item"
+    style={{ opacity: 0.4, cursor: "not-allowed", pointerEvents: "all !important" }}
+  >
+    <img src={Flow} alt="flow" />
+    <span>
+      <strong>Connecting to node <span className="tip">Soon</span></strong>
+      Everything about MyneChat and HOPR nodes.
+    </span>
+  </a>
+</div>
+
+<div className="subheading">Guides</div>
+
+<div className="link-list">
+  <a
+    className="link-item"
+    href="?path=/story/1-mynechat-guides-1-quickstart--page"
+  >
+    <img src={Repo} alt="repo" />
+    <span>
+      <strong>5-minutes guide</strong>
+      Everything to quickly get started with MyneChat.
+    </span>
+  </a>
+  <a
+    className="link-item"
+    href="?path=/story/1-mynechat-guides-2-message-handlers--page"
+  >
+    <img src={Direction} alt="direction" />
+    <span>
+      <strong>Message Handler</strong>
+      Learn how to listen to messages sent to you node.
+    </span>
+  </a>
+</div>

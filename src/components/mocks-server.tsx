@@ -1,7 +1,7 @@
 import { Box, Text, Button } from "grommet"
 import { useEffect, useState } from "react"
 
-export const MocksServer: React.FC<{ httpEndpoint: string }> = ({ httpEndpoint }): JSX.Element => {
+export const MocksServer: React.FC<{ httpEndpoint: string, disabled?: boolean }> = ({ httpEndpoint, disabled }): JSX.Element => {
   const [isConnected, setConnected] = useState(false)
   useEffect(() => {
     (() =>
@@ -25,7 +25,7 @@ export const MocksServer: React.FC<{ httpEndpoint: string }> = ({ httpEndpoint }
       }}
     >
       <Text>Mocks Server { isConnected ? '🟢' : '🔴' }</Text>
-      { isConnected && <Button onClick={sendRandomMessage} style={{ marginLeft: "10px" }} label="Random Msg" />}
+      { isConnected && <Button disabled={disabled} onClick={sendRandomMessage} style={{ marginLeft: "10px" }} label="Random Msg" />}
     </Box>
   )
 }
