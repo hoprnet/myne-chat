@@ -1,7 +1,7 @@
-import type { FunctionComponent } from "react";
+import { FunctionComponent, useContext } from "react";
 import type { ConnectionStatus, Settings as TSettings } from "../state";
 import { useState } from "react";
-import { Box, List, Text, Layer } from "grommet";
+import { Box, List, Text, Layer, ResponsiveContext } from "grommet";
 import { Add, SettingsOption, BarChart } from "grommet-icons";
 import IconButton from "./icon-button";
 import Settings from "./settings";
@@ -36,6 +36,9 @@ const ConversationsPanel: FunctionComponent<{
   const [showAnalytics, setShowAnalytics] = useState<boolean>(false);
   const [showAddNewConv, setShowAddNewConv] = useState<boolean>(false);
   const {version, hash, environment} = useAppState();
+  
+  const screenSize = useContext(ResponsiveContext);
+  const isMobile = screenSize === "small";
 
   return (
     <>
@@ -57,6 +60,7 @@ const ConversationsPanel: FunctionComponent<{
           height={{
             min: "min-content",
           }}
+          wrap={true}
         >
           <Box direction="row">
             <IconButton
@@ -64,6 +68,7 @@ const ConversationsPanel: FunctionComponent<{
               alignSelf="end"
               round
               onClick={() => setShowSettings(true)}
+              margin="0"
             >
               <SettingsOption color="light-1" />
             </IconButton>
@@ -73,6 +78,7 @@ const ConversationsPanel: FunctionComponent<{
               round
               disabled={status === 'DISCONNECTED'}
               onClick={() => setShowAnalytics(true)}
+              margin="0"
             >
               <BarChart color="light-1" />
             </IconButton>
@@ -85,6 +91,7 @@ const ConversationsPanel: FunctionComponent<{
               round
               disabled={status === 'DISCONNECTED'}
               onClick={() => setShowAddNewConv(true)}
+              margin="0"
             >
               <Add color="light-1" />
             </IconButton>
