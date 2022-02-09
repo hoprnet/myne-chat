@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "commit": "cz",
-    "dev": " next dev -p 8080",
+    "dev": "MYNE_CHAT_GIT_HASH=$(git rev-parse --short HEAD) next dev -p 8080",
     "build": "MYNE_CHAT_GIT_HASH=$(git rev-parse --short HEAD) next build",
     "export": "next export",
     "start": "next start -p 8080",
