@@ -4,8 +4,8 @@ import { Box, Button } from "grommet";
 import { normalizeColor } from "grommet/utils";
 
 const StyledButton = styled(Button)`
-  cursor: ${(props) => !props.disabled && 'pointer'};
-`
+  cursor: ${(props) => !props.disabled && "pointer"};
+`;
 
 const StyledBox = styled(Box)`
   display: inline-flex;
@@ -32,6 +32,7 @@ const StyledBox = styled(Box)`
 
 // TODO: add types
 const IconButton: FunctionComponent<any> = (props) => {
+  
   return (
     <StyledButton {...props}>
       <StyledBox
@@ -39,7 +40,7 @@ const IconButton: FunctionComponent<any> = (props) => {
         alignSelf="end"
         round
         flex
-        margin={{ left: "small" }}
+        margin={props.margin === "0" ? "" : { left: "small" }}
       >
         {props.children}
       </StyledBox>

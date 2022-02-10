@@ -39,7 +39,7 @@ const theme = makeTheme({
       "dark-2": custom.colors.windowBG,
       "dark-3": custom.colors.sidebar,
       "dark-4": custom.colors.mainWindow,
-      "light-1": "white",
+      "light-1": custom.colors.chatbox,
       "light-2": custom.colors.chatbox,
       "accent-1": "white",
       "accent-2": custom.colors["myne-turquoise"],
@@ -63,7 +63,7 @@ const theme = makeTheme({
     },
 
     font: {
-      family: "GerstnerProgrammFSL",
+      family: "Roboto",
       size: "medium",
     },
 

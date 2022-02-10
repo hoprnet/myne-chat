@@ -12,16 +12,23 @@ const Chat: FunctionComponent<{
   messages: Message[];
   selection?: string;
   setVerified: (verified: boolean) => void;
-  verified: boolean
+  verified: boolean;
   httpEndpoint: string;
-}> = ({ selection, messages, sendMessage, setVerified, verified, httpEndpoint }) => {
+}> = ({
+  selection,
+  messages,
+  sendMessage,
+  setVerified,
+  verified,
+  httpEndpoint,
+}) => {
   return (
     <Box fill justify="between" background="dark-4" round shadow>
       {selection ? (
         <Box
           shadow
           round
-          pad="medium"
+          pad="15px"
           background="dark-3"
           justify="between"
           direction="row"
@@ -42,7 +49,7 @@ const Chat: FunctionComponent<{
               <Copy />
             </IconButton>
           </Box>
-          { selection == dev && (<MocksServer httpEndpoint={httpEndpoint} />) }
+          {selection == dev && <MocksServer httpEndpoint={httpEndpoint} />}
         </Box>
       ) : null}
       <Box fill gap="small" pad="small">
