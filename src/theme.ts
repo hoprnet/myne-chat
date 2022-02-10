@@ -63,7 +63,7 @@ const theme = makeTheme({
     },
 
     font: {
-      family: "GerstnerProgrammFSL",
+      family: "Roboto",
       size: "medium",
     },
 

@@ -10,14 +10,23 @@ import theme from "../src/theme";
 enableMapSet();
 
 const GlobalStyle = createGlobalStyle`
-  /* load custom font */
-  @font-face {
-    font-family: GerstnerProgrammFSL;
-    src: url("fonts/GerstnerProgrammFSL/GerstnerProgrammFSL-Regular.otf") format("opentype");
+ @font-face {
+    font-family: "Roboto";
+    src: url("fonts/Roboto/Roboto-Regular.otf") format("opentype");
     font-weight: normal;
     font-style: normal;
     font-display: swap;
   }
+  /* load custom font */
+  @font-face {
+    font-family: "Roboto";
+    src: url('fonts/Roboto/Roboto-MediumItalic.woff') format('woff'),
+    font-weight: 400;
+    font-style: italic;
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
 
   /* custom scrollbar */
   /* our style can be fully supported by webkit only */

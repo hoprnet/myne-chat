@@ -57,9 +57,9 @@ export type AddSentMessageHandler = (
 
 export type ReceiveMessageHandler = (from: string, content: string, verifiedStatus?: VerifiedStatus) => void
 
-export const dev = '⚙️  Dev'
-export const welcome = '🕵🏽‍♀️  Welcome'
-export const bots = [dev, welcome]
+export const dev = 'Dev';
+export const welcome = 'Welcome';
+export const bots = [dev, welcome];
 
 const useAppState = () => {
   const urlParams = !isSSR ? getUrlParams(location) : {};
@@ -205,9 +205,9 @@ const useAppState = () => {
       if (data.type == "message") {
         const { tag, from, message, signature } = decodeMessage(data.msg);
 
-        const verifiedStatus : VerifiedStatus = signature ? 
+        const verifiedStatus : VerifiedStatus = signature ?
           // Messages are pre-pended with the padding to avoid generic signatures.
-          (await verifySignatureFromPeerId(from, `HOPR Signed Message: ${message}`, signature) ? 
+          (await verifySignatureFromPeerId(from, `HOPR Signed Message: ${message}`, signature) ?
             "VERIFIED" :
             "FAILED_VERIFICATION"
           ) :
