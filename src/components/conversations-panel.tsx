@@ -59,13 +59,16 @@ const ConversationsPanel: FunctionComponent<{
     setReallyOnline(isMaybeOnline && status === 'CONNECTED');
   }, [isMaybeOnline])
 
-
   useEffect(() => {
     // NB: Status gets called multiple times when `apiToken` is wrong. If that's the case, we make sure
     // to reset the value of `isReallyOnline` by triggering `setMaybeOnline` to `false` whenever
     // we see `status` === 'DISCONNECTED`. We use `hasUpdatedSettings` to tell the <Settings> component
     // that we have updated the Settings at least once.
     if (isMaybeOnline && status === 'CONNECTED') {
+      setReallyOnline(true)
+    // NB: If settings are passed via query param or loaded via mocks, then the connection is successful
+    // This only happens if the settings have not been updated ie during first load.
+    } else if (!hasUpdatedSettings && status === 'CONNECTED') {
       setReallyOnline(true)
     } else {
       setMaybeOnline(false);
