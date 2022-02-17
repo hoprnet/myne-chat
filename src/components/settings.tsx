@@ -8,13 +8,17 @@ import IconButton from "./icon-button";
 const Settings: FunctionComponent<{
   settings: TSettings;
   updateSettings: (o: TSettings) => void;
-}> = ({ settings, updateSettings }) => {
+  isReallyOnline: boolean;
+  hasUpdatedSettings: boolean;
+  setMaybeOnline: (maybeOnline: boolean) => void;
+  setHasUpdatedSettings: (isUpdatedSettings: boolean) => void;
+}> = ({ settings, updateSettings, isReallyOnline, hasUpdatedSettings, setMaybeOnline, setHasUpdatedSettings }) => {
   const [draft, setDraft] = useState<TSettings>({
     httpEndpoint: settings.httpEndpoint,
     wsEndpoint: settings.wsEndpoint,
     securityToken: settings.securityToken,
   });
-  const [clusterNode, setClusterNode] = useState<number>(0)
+  const [clusterNode, setClusterNode] = useState<number>(0);
 
   const updateClusterNode = () => {
     const CLUSTER_NODE = 5;
@@ -36,6 +40,8 @@ const Settings: FunctionComponent<{
       wsEndpoint: draft.wsEndpoint,
       securityToken: draft.securityToken,
     });
+    setMaybeOnline(true);
+    setHasUpdatedSettings(true);
   };
 
   const setEndpoint = (httpEndpoint: string, wsEndpoint: string, securityToken: string) => {
@@ -102,6 +108,7 @@ const Settings: FunctionComponent<{
           </Box>
         </IconButton>
       </Box>
+      { (!isReallyOnline && hasUpdatedSettings) && <Text size="sm" color="fatal-error">Wrong settings, please verify.</Text> }
       <Box>
         HTTP endpoint:
         <TextInput
