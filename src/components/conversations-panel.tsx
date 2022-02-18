@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext } from "react";
+import { FunctionComponent, useCallback, useContext, useEffect } from "react";
 import type { ConnectionStatus, Settings as TSettings } from "../state";
 import { useState } from "react";
 import { Box, List, Text, Layer, ResponsiveContext } from "grommet";
@@ -9,6 +9,18 @@ import Analytics from "./analytics";
 import NewConversation from "./new-conversation";
 import Logo from "./logo";
 import useAppState from "../state";
+import styled from "styled-components";
+import theme from "../theme";
+
+const Notifications = styled(Box)`
+  width: 10px;
+  height: 10px;
+  background-color: ${props => props.color};
+  content: ' ';
+  border-radius: 50%;
+  position: absolute;
+  right: 5px;
+`;
 
 const ConversationsPanel: FunctionComponent<{
   status: ConnectionStatus;
@@ -35,10 +47,34 @@ const ConversationsPanel: FunctionComponent<{
   const [showSettings, setShowSettings] = useState<boolean>(false);
   const [showAnalytics, setShowAnalytics] = useState<boolean>(false);
   const [showAddNewConv, setShowAddNewConv] = useState<boolean>(false);
+  const [hasUpdatedSettings, setHasUpdatedSettings] = useState<boolean>(false);
+  const [isMaybeOnline, setMaybeOnline] = useState<boolean>(false);
+  const [isReallyOnline, setReallyOnline] = useState<boolean>(false);
   const {version, hash, environment} = useAppState();
   
   const screenSize = useContext(ResponsiveContext);
   const isMobile = screenSize === "small";
+
+  useEffect(() => {
+    setReallyOnline(isMaybeOnline && status === 'CONNECTED');
+  }, [isMaybeOnline])
+
+  useEffect(() => {
+    // NB: Status gets called multiple times when `apiToken` is wrong. If that's the case, we make sure
+    // to reset the value of `isReallyOnline` by triggering `setMaybeOnline` to `false` whenever
+    // we see `status` === 'DISCONNECTED`. We use `hasUpdatedSettings` to tell the <Settings> component
+    // that we have updated the Settings at least once.
+    if (isMaybeOnline && status === 'CONNECTED') {
+      setReallyOnline(true)
+    // NB: If settings are passed via query param or loaded via mocks, then the connection is successful
+    // This only happens if the settings have not been updated ie during first load.
+    } else if (!hasUpdatedSettings && status === 'CONNECTED') {
+      setReallyOnline(true)
+    } else {
+      setMaybeOnline(false);
+      setReallyOnline(false);
+    }
+  }, [status])
 
   return (
     <>
@@ -69,14 +105,16 @@ const ConversationsPanel: FunctionComponent<{
               round
               onClick={() => setShowSettings(true)}
               margin="0"
+              style={{ position: "relative" }}
             >
+              <Notifications color={!isReallyOnline ? theme.global.colors["fatal-error"] : theme.global.colors["status-success"]}/>
               <SettingsOption color="light-1" />
             </IconButton>
             <IconButton
               pad="small"
               alignSelf="end"
               round
-              disabled={status === 'DISCONNECTED'}
+              disabled={!isReallyOnline}
               onClick={() => setShowAnalytics(true)}
               margin="0"
             >
@@ -89,7 +127,7 @@ const ConversationsPanel: FunctionComponent<{
               pad="small"
               alignSelf="end"
               round
-              disabled={status === 'DISCONNECTED'}
+              disabled={!isReallyOnline}
               onClick={() => setShowAddNewConv(true)}
               margin="0"
             >
@@ -137,7 +175,7 @@ const ConversationsPanel: FunctionComponent<{
         </Box>
         {/* footer */}
         <Box pad="small" height={{ min: "min-content" }}>
-          <Logo status={status} />
+          <Logo isOnline={isReallyOnline} />
           <Text style={{ margin: "5px 0 0" }} size="xs">Version: {version}</Text>
           { environment != 'production' && <Text style={{ margin: "5px 0 0" }} size="xs">Hash: {hash}</Text> }
         </Box>
@@ -154,6 +192,10 @@ const ConversationsPanel: FunctionComponent<{
               setShowSettings(false);
               updateSettings(s);
             }}
+            setHasUpdatedSettings={setHasUpdatedSettings}
+            setMaybeOnline={setMaybeOnline}
+            isReallyOnline={isReallyOnline}
+            hasUpdatedSettings={hasUpdatedSettings}
           />
         </Layer>
       ) : showAnalytics ? (

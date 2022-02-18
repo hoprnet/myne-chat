@@ -1,12 +1,11 @@
 import type { FunctionComponent } from "react";
-import type { ConnectionStatus } from "../state";
 import Image from "next/image";
 import { Box, Anchor } from "grommet";
 
 const Logo: FunctionComponent<{
-  status?: ConnectionStatus;
-}> = ({ status }) => {
-  const faded = status === "DISCONNECTED";
+  isOnline?: boolean;
+}> = ({ isOnline }) => {
+  const faded = !isOnline;
 
   return (
     <Box
