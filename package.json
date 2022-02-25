@@ -9,7 +9,7 @@
     "start": "next start -p 8080",
     "lint": "next lint",
     "format": "prettier --write --ignore-path .gitignore .",
-    "mocks": "node ./mocks/index.js",
+    "mocks": "node ./mocks/mocks.js",
     "test": "jest --watch",
     "test:ci": "jest --ci",
     "test:coverage": "jest --coverage",
