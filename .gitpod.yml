@@ -11,9 +11,9 @@ tasks:
   - name: (HOPRd) Installing hoprnet which contains the required scripts
     command: |
       echo '🟡 📦 Setting up hoprnet repository'
-      wget https://github.com/hoprnet/hoprnet/archive/refs/heads/master.zip
-      unzip master.zip
-      cd hoprnet-master
+      curl -L https://github.com/hoprnet/hoprnet/archive/refs/heads/release/lisbon.zip > hoprnet.zip
+      unzip hoprnet.zip
+      cd hoprnet-release-lisbon
       echo '🟡 📦 Installing hoprnet repository dependencies'
       yarn
       echo '🟡 📦 Building latest version of hoprnet monorepo'
