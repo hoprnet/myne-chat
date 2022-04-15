@@ -230,7 +230,7 @@ const useAppState = () => {
     setTimeout(() => addReceivedMessage(welcome, 'Welcome to myne.chat!'), 0)
     setTimeout(() => addReceivedMessage(welcome, 'Did you know that myne.chat is the first dApp built on top of the HOPR protocol? 🟡👀'), 0)
     setTimeout(() => addReceivedMessage(welcome, 'But be aware! This is only the alpha version.'), 0)
-    setTimeout(() => addReceivedMessage(welcome, 'To start a conversation on myne.chat please use our <a href="https://docs.hoprnet.org/dapps/myne-chat" style="color: white;" target="_blank">Tutorial</a>.', true), 0)
+    setTimeout(() => addReceivedMessage(welcome, 'To start a conversation on myne.chat please use our <a href="https://docs.hoprnet.org/dapps/myne-chat" style="color: white;" target="_blank">Tutorial</a>.', undefined, true), 0)
     setTimeout(() => addReceivedMessage(welcome, 'Have fun chatting!'), 0)
   }
 
