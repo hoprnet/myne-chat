@@ -61,7 +61,7 @@ const HomePage: NextPage = () => {
   // Adding Dev helper conversation to showcase components.
   useEffect(() => {
     loadWelcomeConversation();
-    (development == 'enabled' || process.env.NODE_ENV != 'production') && loadDevHelperConversation();
+    //(development == 'enabled' || process.env.NODE_ENV != 'production') && loadDevHelperConversation();
   }, [development])
 
   return (
