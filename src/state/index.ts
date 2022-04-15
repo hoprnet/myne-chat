@@ -227,21 +227,22 @@ const useAppState = () => {
     console.log("⚙️  Welcome Messages.", process.env.NODE_ENV)
     addNewConversation(welcome)
     // setTimeout ensures the event loop takes these state updates in order.
-    setTimeout(() => addReceivedMessage(welcome, 'Welcome to Myne! Finally chat privately.'), 0)
-    setTimeout(() => addReceivedMessage(welcome, 'To start, please connect to a HOPR node (if you don‘t know how see our <a href="https://github.com/hoprnet/myne-chat#tutorial" style="color: white;" target="_blank">Tutorial</a>)', undefined, true), 0)
-    setTimeout(() => addReceivedMessage(welcome, 'After you are connected, click in the left sidebar on "Add conversation" and paste the HOPR address of another user. Easy!'), 0)
-    setTimeout(() => addReceivedMessage(welcome, 'If you got further questions, visit our <a href="https://docs.hoprnet.org/" style="color: white;" target="_blank">Documentation</a>.', undefined, true), 0)
+    setTimeout(() => addReceivedMessage(welcome, 'Welcome to myne.chat!'), 0)
+    setTimeout(() => addReceivedMessage(welcome, 'Did you know that myne.chat is the first dApp built on top of the HOPR protocol? 🟡👀'), 0)
+    setTimeout(() => addReceivedMessage(welcome, 'But be aware! This is only the alpha version.'), 0)
+    setTimeout(() => addReceivedMessage(welcome, 'To start a conversation on myne.chat please use our <a href="https://docs.hoprnet.org/dapps/myne-chat" style="color: white;" target="_blank">Tutorial</a>.'), 0)
+    setTimeout(() => addReceivedMessage(welcome, 'Have fun chatting!'), 0)
   }
 
   const loadDevHelperConversation = () => {
     console.log("⚙️  Developer Mode enabled.", process.env.NODE_ENV)
     addNewConversation(dev)
     // setTimeout ensures the event loop takes these state updates in order.
-    setTimeout(() => addReceivedMessage(dev, 'Welcome to myne.chat!'), 0)
-    setTimeout(() => addReceivedMessage(dev, 'Did you know that myne.chat is the first dApp built on top of the HOPR protocol? 🟡👀'), 0)
-    setTimeout(() => addReceivedMessage(dev, 'But be aware! This is only the alpha version.'), 0)
-    setTimeout(() => addReceivedMessage(dev, 'To start a conversation on myne.chat please use our <a href="https://docs.hoprnet.org/dapps/myne-chat" style="color: white;" target="_blank">Tutorial</a>.'), 0)
-    setTimeout(() => addReceivedMessage(dev, 'Have fun chatting!'), 0)
+    setTimeout(() => addReceivedMessage(dev, 'Welcome to the developer mode.'), 0)
+    setTimeout(() => addReceivedMessage(dev, 'This conversation is only available during development.'), 0)
+    setTimeout(() => addReceivedMessage(dev, 'This is how a verified message looks like.', 'VERIFIED'), 0)
+    setTimeout(() => addReceivedMessage(dev, 'This is how an unverified message looks like.', 'UNVERIFIED'), 0)
+    setTimeout(() => addReceivedMessage(dev, 'This is how a failed verification message looks like.', 'FAILED_VERIFICATION'), 0)
   }
 
   return {
