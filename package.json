@@ -1,6 +1,6 @@
 {
   "name": "myne-chat",
-  "version": "0.2.0-alpha",
+  "version": "0.2.0-alpha.0",
   "scripts": {
     "commit": "cz",
     "dev": "MYNE_CHAT_GIT_HASH=$(git rev-parse --short HEAD) next dev -p 8080",
