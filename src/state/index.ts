@@ -237,11 +237,11 @@ const useAppState = () => {
     console.log("⚙️  Developer Mode enabled.", process.env.NODE_ENV)
     addNewConversation(dev)
     // setTimeout ensures the event loop takes these state updates in order.
-    setTimeout(() => addReceivedMessage(dev, 'Welcome to the developer mode.'), 0)
-    setTimeout(() => addReceivedMessage(dev, 'This conversation is only available during development.'), 0)
-    setTimeout(() => addReceivedMessage(dev, 'This is how a verified message looks like.', 'VERIFIED'), 0)
-    setTimeout(() => addReceivedMessage(dev, 'This is how an unverified message looks like.', 'UNVERIFIED'), 0)
-    setTimeout(() => addReceivedMessage(dev, 'This is how a failed verification message looks like.', 'FAILED_VERIFICATION'), 0)
+    setTimeout(() => addReceivedMessage(dev, 'Welcome to myne.chat!'), 0)
+    setTimeout(() => addReceivedMessage(dev, 'Did you know that myne.chat is the first dApp built on top of the HOPR protocol? 🟡👀'), 0)
+    setTimeout(() => addReceivedMessage(dev, 'But be aware! This is only the alpha version.'), 0)
+    setTimeout(() => addReceivedMessage(dev, 'To start a conversation on myne.chat please use our <a href="https://docs.hoprnet.org/dapps/myne-chat" style="color: white;" target="_blank">Tutorial</a>.'), 0)
+    setTimeout(() => addReceivedMessage(dev, 'Have fun chatting!'), 0)
   }
 
   return {
