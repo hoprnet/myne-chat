@@ -128,7 +128,7 @@ export const decodeMessage = (
 export const getUrlParams = (loc: Location): Partial<Settings> => {
   const params = new URLSearchParams(loc.search);
   return {
-    apiEndpoint: params.get("apiEndpoint!") || undefined,
+    apiEndpoint: params.get("apiEndpoint") || undefined,
     securityToken: params.get("securityToken") || undefined,
   };
 };
