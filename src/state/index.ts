@@ -30,14 +30,12 @@ export type Message = {
 };
 
 export type Settings = {
-  httpEndpoint: string;
-  wsEndpoint: string;
+  apiEndpoint: string;
   securityToken?: string;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
-  httpEndpoint: "http://localhost:3001",
-  wsEndpoint: "ws://localhost:3000"
+  apiEndpoint: "http://localhost:8080/api/v2",
 }
 
 export type State = {
@@ -65,8 +63,7 @@ const useAppState = () => {
   const urlParams = !isSSR ? getUrlParams(location) : {};
   const [state, setState] = useImmer<State>({
     settings: {
-      httpEndpoint: urlParams.httpEndpoint || DEFAULT_SETTINGS.httpEndpoint,
-      wsEndpoint: urlParams.wsEndpoint || DEFAULT_SETTINGS.wsEndpoint,
+      apiEndpoint: urlParams.apiEndpoint || DEFAULT_SETTINGS.apiEndpoint,
       securityToken: urlParams.securityToken,
     },
     verified: false,
@@ -189,12 +186,12 @@ const useAppState = () => {
     const { selection, settings, verified } = state;
     if (bots.includes(destination)) return addSentMessage('', destination, message, genId());
     if (!myPeerId || !selection || !socketRef.current) return;
-    const signature = verified && await signRequest(settings.httpEndpoint, headers)(message)
+    const signature = verified && await signRequest(settings.apiEndpoint, headers)(message)
       .catch((err: any) => console.error('ERROR Failed to obtain signature', err));
     const encodedMessage = encodeMessage(myPeerId, message, signature);
     const id = genId();
     addSentMessage(myPeerId, destination, message, id);
-    await sendMessage(settings.httpEndpoint, headers)(selection, encodedMessage, destination, id, updateMessage)
+    await sendMessage(settings.apiEndpoint, headers)(selection, encodedMessage, destination, id, updateMessage)
       .catch((err: any) => console.error('ERROR Failed to send message', err));
   };
 

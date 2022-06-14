@@ -14,8 +14,7 @@ const Settings: FunctionComponent<{
   setHasUpdatedSettings: (isUpdatedSettings: boolean) => void;
 }> = ({ settings, updateSettings, isReallyOnline, hasUpdatedSettings, setMaybeOnline, setHasUpdatedSettings }) => {
   const [draft, setDraft] = useState<TSettings>({
-    httpEndpoint: settings.httpEndpoint,
-    wsEndpoint: settings.wsEndpoint,
+    apiEndpoint: settings.apiEndpoint,
     securityToken: settings.securityToken,
   });
   const [clusterNode, setClusterNode] = useState<number>(0);
@@ -36,18 +35,16 @@ const Settings: FunctionComponent<{
 
   const handleSave = () => {
     updateSettings({
-      httpEndpoint: draft.httpEndpoint,
-      wsEndpoint: draft.wsEndpoint,
+      apiEndpoint: draft.apiEndpoint,
       securityToken: draft.securityToken,
     });
     setMaybeOnline(true);
     setHasUpdatedSettings(true);
   };
 
-  const setEndpoint = (httpEndpoint: string, wsEndpoint: string, securityToken: string) => {
+  const setEndpoint = (apiEndpoint: string, securityToken: string) => {
     setDraft(() => ({
-      httpEndpoint,
-      wsEndpoint,
+      apiEndpoint,
       securityToken,
     }))
   }
@@ -56,14 +53,13 @@ const Settings: FunctionComponent<{
     const BASE_HTTP = 'http://localhost:1330'
     const BASE_WS = 'ws://localhost:1950'
     const DEFAULT_SECURITY_TOKEN = '^^LOCAL-testing-123^^'
-    setEndpoint(BASE_HTTP + index, BASE_WS + index, DEFAULT_SECURITY_TOKEN)
+    setEndpoint(BASE_HTTP + index, DEFAULT_SECURITY_TOKEN)
   }
 
   const setEndpointOfDefault = () => {
     const BASE_HTTP = 'http://localhost:3000'
-    const BASE_WS = 'ws://localhost:3001'
     const DEFAULT_SECURITY_TOKEN = ''
-    setEndpoint(BASE_HTTP, BASE_WS, DEFAULT_SECURITY_TOKEN)
+    setEndpoint(BASE_HTTP, DEFAULT_SECURITY_TOKEN)
   }
 
   useEffect(() => {
@@ -110,19 +106,11 @@ const Settings: FunctionComponent<{
       </Box>
       { (!isReallyOnline && hasUpdatedSettings) && <Text size="sm" color="fatal-error">Wrong settings, please verify.</Text> }
       <Box>
-        HTTP endpoint:
+        API endpoint:
         <TextInput
-          placeholder="http://localhost:8080"
-          value={draft.httpEndpoint}
-          onChange={HandleSetDraftSetting("httpEndpoint")}
-        />
-      </Box>
-      <Box>
-        WS endpoint:
-        <TextInput
-          placeholder="ws://localhost:8081"
-          value={draft.wsEndpoint}
-          onChange={HandleSetDraftSetting("wsEndpoint")}
+          placeholder="http://localhost:8080/api/v2"
+          value={draft.apiEndpoint}
+          onChange={HandleSetDraftSetting("apiEndpoint")}
         />
       </Box>
       <Box>

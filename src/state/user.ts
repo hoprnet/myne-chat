@@ -31,13 +31,13 @@ const useUser = (settings: Settings) => {
     return headers;
   };
 
-  // runs everytime "httpEndpoint" changes
+  // runs everytime "apiEndpoint" changes
   useEffect(() => {
     if (isSSR) return;
     console.info("Fetching user data..");
     const headers = getReqHeaders()
-    accountAddress(settings.httpEndpoint, headers)(setState);
-  }, [settings?.httpEndpoint, settings?.securityToken]);
+    accountAddress(settings.apiEndpoint, headers)(setState);
+  }, [settings?.apiEndpoint, settings?.securityToken]);
 
   return {
     state,

@@ -111,7 +111,7 @@ const HomePage: NextPage = () => {
           setVerified={setVerified}
           verified={verified}
           selection={selection}
-          httpEndpoint={settings.httpEndpoint}
+          apiEndpoint={settings.apiEndpoint}
           messages={conversation ? Array.from(conversation.values()) : []}
           sendMessage={handleSendMessage(addSentMessage)(myPeerId, socketRef, getReqHeaders(true))}
         />
