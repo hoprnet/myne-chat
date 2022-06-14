@@ -47,3 +47,6 @@ build-storybook.log
 test-results/
 playwright-report/
 
+*.~undo-tree~
+/hoprnet-release-lisbon/
+/.log/
