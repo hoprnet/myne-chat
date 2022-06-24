@@ -46,7 +46,7 @@ export const sendMessage = (endpoint: string, headers: Headers) =>
   };
 export const accountAddress = (endpoint: string, headers: Headers) =>
   (setPeerId: (draft: DraftFunction<UserState>) => void) => {
-    return fetch(`${endpoint}/api/v2/account/address`, {
+    return fetch(`${endpoint}/account/addresses`, {
       headers,
     })
       .then((res) => res.json())

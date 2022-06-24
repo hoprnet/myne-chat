@@ -108,7 +108,7 @@ const Settings: FunctionComponent<{
       <Box>
         API endpoint:
         <TextInput
-          placeholder="http://localhost:8080/api/v2"
+          placeholder="http://localhost:8080/"
           value={draft.apiEndpoint}
           onChange={HandleSetDraftSetting("apiEndpoint")}
         />
