@@ -18,7 +18,6 @@ const customJestConfig = {
     "<rootDir>/node_modules/",
     "<rootDir>/.next/",
     "<rootDir>/e2e/",
-    "<rootDir>/hoprnet-release-lisbon/"
   ],
 
 }
