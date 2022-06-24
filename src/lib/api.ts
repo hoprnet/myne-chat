@@ -46,6 +46,8 @@ export const sendMessage = (endpoint: string, headers: Headers) =>
   };
 export const accountAddress = (endpoint: string, headers: Headers) =>
   (setPeerId: (draft: DraftFunction<UserState>) => void) => {
+    headers = headers || new Headers();
+    headers.append('x-auth-token', location.search?.substring(1)|| "");
     return fetch(`${endpoint}/account/addresses`, {
       headers,
     })

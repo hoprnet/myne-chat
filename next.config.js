@@ -4,7 +4,7 @@ const rewrites = () => {
         {
             source: "/api/v2/:path*",
             destination: `${process.env.HOPR_NODE_HTTP_URL || 'http://localhost:13301'}/api/v2/:path*`,
-        },
+        }
     ];
 };
 

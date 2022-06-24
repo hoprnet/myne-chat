@@ -49,7 +49,7 @@ yarn # install libraries
 To run the development server:
 
 ```bash
-yarn dev # run development server
+HOPR_API_TOKEN="<HOPR API Token>" yarn dev # run development server. By default local HOPR cluster use ^^LOCAL-testing-123^^ API Token
 ```
 
 Open [http://localhost:8080](http://localhost:8080) with your browser to see the result.
@@ -60,7 +60,7 @@ To run MyneChat's production version:
 
 ```bash
 yarn build # build website
-yarn start # run a hosting server
+HOPR_API_TOKEN="<HOPR API Token>" yarn start # run a hosting server
 ```
 
 Open [http://localhost:8080](http://localhost:8080) with your browser to see the result.
@@ -77,11 +77,10 @@ To use most of its feature, MyneChat comes with a mock server which simulates a 
 yarn mocks
 ```
 
-Two endpoints become available which match the default HOPRd endpoints:
+Single http endpoint become available which match the default HOPRd endpoints:
 
 ```text
-HTTP API=http://localhost:3001
-WS API=ws://localhost:3000
+HTTP API=http://localhost:8080/api/v2/r
 ```
 
 #### Connecting Myne Chat to a real HOPRd API

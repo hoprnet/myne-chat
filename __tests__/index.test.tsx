@@ -12,7 +12,7 @@ import { enableMapSet } from 'immer'
 const mockedPeerId = '16Uiu2HAmN4enEu9822TMgG52goik85yEs4MqDdErtsGr8fy86VDQ'
 
 const server = setupServer(
-  rest.get('http://localhost:3001/api/v2/account/address', (req, res, ctx) => {
+  rest.get('http://localhost:3001/api/v2/account/addresses', (req, res, ctx) => {
     return res(ctx.json({hoprAddress: '16Uiu2HAm6phtqkmGb4dMVy1vsmGcZS1VejwF4YsEFqtJjQMjxvHs' }))
   }),
 )
