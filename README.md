@@ -80,7 +80,7 @@ yarn mocks
 Single http endpoint become available which match the default HOPRd endpoints:
 
 ```text
-HTTP API=http://localhost:8080/api/v2/r
+HTTP API=http://localhost:8080/api/v2/
 ```
 
 #### Connecting Myne Chat to a real HOPRd API
