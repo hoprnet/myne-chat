@@ -35,7 +35,7 @@ export type Settings = {
 };
 
 export const DEFAULT_SETTINGS: Settings = {
-  apiEndpoint: "http://localhost:8080/api/v2",
+    apiEndpoint: "http://localhost:3001",
 }
 
 export type State = {
