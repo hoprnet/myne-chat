@@ -1,6 +1,7 @@
 import { DraftFunction } from "use-immer";
 import { UpdateMessageHandlerInterface } from "../state";
 import { UserState } from "../state/user";
+import { getUrlParams } from "../utils";
 
 export const signRequest = (endpoint: string, headers: Headers) =>
   async (encodedSignMessageRequest: string) => {
@@ -46,10 +47,11 @@ export const sendMessage = (endpoint: string, headers: Headers) =>
   };
 export const accountAddress = (endpoint: string, headers: Headers) =>
     (setPeerId: (draft: DraftFunction<UserState>) => void) => {
-        headers = headers || {};
-        headers['x-auth-token'] = location.search?.substring(1) || "";
-        return fetch(`${endpoint}/account/addresses`, {
-            headers,
+        return fetch(`${endpoint}/api/v2/account/addresses`, {
+            headers:{
+                ...headers,
+                'x-auth-token': getUrlParams(location).apiToken
+            },
         })
             .then((res) => res.json())
             .then((data) => {
