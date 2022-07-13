@@ -24,8 +24,8 @@ const useUser = (settings: Settings) => {
       headers.set("Content-Type", "application/json");
       headers.set("Accept-Content", "application/json");
     }
-    if (settings.securityToken) {
-      headers.set("Authorization", "Basic " + btoa(settings.securityToken));
+    if (settings.apiToken) {
+      headers.set("Authorization", "Basic " + btoa(settings.apiToken));
     }
 
     return headers;
@@ -37,7 +37,7 @@ const useUser = (settings: Settings) => {
     console.info("Fetching user data..");
     const headers = getReqHeaders()
     accountAddress(settings.apiEndpoint, headers)(setState);
-  }, [settings?.apiEndpoint, settings?.securityToken]);
+  }, [settings?.apiEndpoint, settings?.apiToken]);
 
   return {
     state,

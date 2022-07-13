@@ -45,26 +45,26 @@ export const sendMessage = (endpoint: string, headers: Headers) =>
       });
   };
 export const accountAddress = (endpoint: string, headers: Headers) =>
-  (setPeerId: (draft: DraftFunction<UserState>) => void) => {
-    headers = headers || new Headers();
-    headers.append('x-auth-token', location.search?.substring(1)|| "");
-    return fetch(`${endpoint}/account/addresses`, {
-      headers,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.info("Fetched PeerId", data.hoprAddress);
-        setPeerId((draft) => {
-          draft.myPeerId = data.hoprAddress;
-          return draft;
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        setPeerId((draft) => {
-          draft.myPeerId = undefined;
-          draft.error = err;
-          return draft;
-        });
-      });
-  };
+    (setPeerId: (draft: DraftFunction<UserState>) => void) => {
+        headers = headers || {};
+        headers['x-auth-token'] = location.search?.substring(1) || "";
+        return fetch(`${endpoint}/account/addresses`, {
+            headers,
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                console.info("Fetched PeerId", data.hoprAddress);
+                setPeerId((draft) => {
+                    draft.myPeerId = data.hoprAddress;
+                    return draft;
+                });
+            })
+            .catch((err) => {
+                console.error(err);
+                setPeerId((draft) => {
+                    draft.myPeerId = undefined;
+                    draft.error = err;
+                    return draft;
+                });
+            });
+    };

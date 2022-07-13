@@ -31,7 +31,7 @@ export type Message = {
 
 export type Settings = {
   apiEndpoint: string;
-  securityToken?: string;
+  apiToken?: string;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -64,7 +64,7 @@ const useAppState = () => {
   const [state, setState] = useImmer<State>({
     settings: {
       apiEndpoint: urlParams.apiEndpoint || DEFAULT_SETTINGS.apiEndpoint,
-      securityToken: urlParams.securityToken,
+      apiToken: urlParams.apiToken,
     },
     verified: false,
     conversations: new Map([]),

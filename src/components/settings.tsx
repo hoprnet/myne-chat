@@ -15,7 +15,7 @@ const Settings: FunctionComponent<{
 }> = ({ settings, updateSettings, isReallyOnline, hasUpdatedSettings, setMaybeOnline, setHasUpdatedSettings }) => {
   const [draft, setDraft] = useState<TSettings>({
     apiEndpoint: settings.apiEndpoint,
-    securityToken: settings.securityToken,
+    apiToken: settings.apiToken,
   });
   const [clusterNode, setClusterNode] = useState<number>(0);
 
@@ -36,16 +36,16 @@ const Settings: FunctionComponent<{
   const handleSave = () => {
     updateSettings({
       apiEndpoint: draft.apiEndpoint,
-      securityToken: draft.securityToken,
+      apiToken: draft.apiToken,
     });
     setMaybeOnline(true);
     setHasUpdatedSettings(true);
   };
 
-  const setEndpoint = (apiEndpoint: string, securityToken: string) => {
+  const setEndpoint = (apiEndpoint: string, apiToken: string) => {
     setDraft(() => ({
       apiEndpoint,
-      securityToken,
+      apiToken,
     }))
   }
 
@@ -116,8 +116,8 @@ const Settings: FunctionComponent<{
       <Box>
         Security Token:
         <TextInput
-          value={draft.securityToken || ""}
-          onChange={HandleSetDraftSetting("securityToken")}
+          value={draft.apiToken || ""}
+          onChange={HandleSetDraftSetting("apiToken")}
         />
       </Box>
       <Button label="save" onClick={handleSave} />
