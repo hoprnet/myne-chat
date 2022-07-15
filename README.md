@@ -102,10 +102,10 @@ To test MyneChat against production HOPR nodes, checkout the [tutorial](#tutoria
 In order to run MyneChat, a user has to setup MyneChat locally.
 This tutorial shows how to set up MyneChat and a `hoprd` node locally.
 
-1. You need to start a local `hoprd` node (at least v1.85.0). Multiple ways to do this are described in the [hoprd documentation](https://docs.hoprnet.org/en/latest/src/install-hoprd/index.html). For simplicity, use Docker and spin up a node locally using the `budapest` release:
+1. You need to start a local `hoprd` node (at least v1.85.0). Multiple ways to do this are described in the [hoprd documentation](https://docs.hoprnet.org/en/latest/src/install-hoprd/index.html). For simplicity, use Docker and spin up a node locally using the `lisbon` release:
 
 ```
-docker run --pull always -p 3000:3000 -p 3001:3001 gcr.io/hoprassociation/hoprd:athens --apiToken ^MYtoken4testing^ --password hodlerATWORK --rest --admin --init
+docker run --pull always -p 3000:3000 -p 3001:3001 gcr.io/hoprassociation/hoprd:lisbon --apiToken ^MYtoken4testing^ --password hodlerATWORK --rest --admin --init
 ```
 
 To be able to use the node you must fund it with native (xDAI) and HOPR tokens.
