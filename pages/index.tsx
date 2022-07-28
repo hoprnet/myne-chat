@@ -9,7 +9,7 @@ import ConversationsPanel from "../src/components/conversations-panel";
 import Chat from "../src/components/chat";
 import useWebsocket from "../src/state/websocket";
 import useUser from "../src/state/user";
-import { useBalanceListener, useCoinsListener } from "../src/state/coins";
+import { useBalanceListener } from "../src/state/coins";
 
 const HomePage: NextPage = () => {
   const {
@@ -25,7 +25,6 @@ const HomePage: NextPage = () => {
     loadDevHelperConversation,
     loadWelcomeConversation,
   } = useAppState();
-  const coinsListener = useCoinsListener(settings);
   const { hoprBalance } = useBalanceListener(settings);
   // initialize websocket connection & state tracking
   const websocket = useWebsocket(settings);

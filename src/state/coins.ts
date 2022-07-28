@@ -9,7 +9,11 @@ type TicketStatisticsResponse = {
   redeemed: number;
 };
 
-export function useCoinsListener({ httpEndpoint, securityToken }: Settings) {
+export function useCoinsListener({
+  httpEndpoint,
+  securityToken,
+  rainCoins,
+}: Settings & { rainCoins: () => any }) {
   useEffect(() => {
     let stats: TicketStatisticsResponse = {
       pending: 0,
@@ -32,7 +36,7 @@ export function useCoinsListener({ httpEndpoint, securityToken }: Settings) {
           !skipCoinTrigger &&
           sumTickets(fetchedStats.data) > sumTickets(stats)
         ) {
-          alert("COINS!!!");
+          rainCoins();
         }
         stats = fetchedStats.data;
       } catch (error) {

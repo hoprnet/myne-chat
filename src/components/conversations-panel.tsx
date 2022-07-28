@@ -21,6 +21,7 @@ import styled from "styled-components";
 import theme from "../theme";
 import Image from "next/image";
 import Measure, { BoundingRect } from "react-measure";
+import { useCoinsListener } from "../state/coins";
 
 const Notifications = styled(Box)`
   width: 10px;
@@ -123,10 +124,18 @@ const ConversationsPanel: FunctionComponent<{
 
   const rainCoins = ({
     coinsAmount,
-    durationMs,
+    speed = 3,
+    acceleration = 15,
+    coinSize = 40,
+    coinSizeDelta = 10,
+    coinSideMove = 200,
   }: {
     coinsAmount: number;
-    durationMs: number;
+    speed?: number;
+    acceleration?: number;
+    coinSize?: number;
+    coinSizeDelta?: number;
+    coinSideMove?: number;
   }) => {
     const refImg = coinImg.current;
     const canvas = coinCanvas.current;
@@ -134,7 +143,14 @@ const ConversationsPanel: FunctionComponent<{
     if (!canvas || !refImg) return;
 
     // Prepare initial state of the coins (generate seed)
-    type CoinData = { x: number; y: number; size: number; sideMove: number };
+    type CoinData = {
+      x: number;
+      y: number;
+      size: number;
+      sideMove: number;
+      fallFlatSpeed: number;
+      fallAcceleration: number;
+    };
     const coins: CoinData[] = [];
     const slotWidth = canvas.width / coinsAmount;
 
@@ -143,8 +159,11 @@ const ConversationsPanel: FunctionComponent<{
         x: slotWidth * i + (Math.random() - 0.5) * slotWidth,
         y: 500 * Math.random() - 500,
         sideMove:
-          (40 - Math.random() * 10) * (Math.random() - 0.5 > 0 ? 1 : -1),
-        size: 40 - Math.random() * 10,
+          (coinSideMove - Math.random() * 10) *
+          (Math.random() - 0.5 > 0 ? 1 : -1),
+        size: coinSize - Math.random() * coinSizeDelta,
+        fallFlatSpeed: speed,
+        fallAcceleration: acceleration,
       });
     }
 
@@ -158,28 +177,40 @@ const ConversationsPanel: FunctionComponent<{
     let rainStartTime: number;
     let lastElapsed: number = 0;
 
+    // main animation loop
     const drawloop = (timestamp: number) => {
       if (!rainStartTime) {
         rainStartTime = timestamp;
       }
       const elapsed = timestamp - rainStartTime;
+      console.log(elapsed);
 
       ctx?.clearRect(0, 0, canvas.width, canvas.height);
 
-      coins.forEach(({ x, y, size, sideMove }, index) => {
-        ctx?.drawImage(coin, x, y, size, size);
-        coins[index].y +=
-          (3 + Math.abs(y / canvas.height) * 15) *
-          ((elapsed - lastElapsed) / 14);
-        coins[index].x += sideMove / canvas.height;
-      });
+      coins.forEach(
+        ({ x, y, size, sideMove, fallFlatSpeed, fallAcceleration }, index) => {
+          ctx?.drawImage(coin, x, y, size, size);
+          coins[index].y +=
+            (fallFlatSpeed + Math.abs(y / canvas.height) * fallAcceleration) *
+            // frame independence multiplier locked to 60fps (prevents animation to play faster or slower depending on screen refreshrate)
+            ((elapsed - lastElapsed) / 14);
+          coins[index].x += sideMove / canvas.height;
+        }
+      );
 
-      if (elapsed < durationMs) {
+      // stop the animation loop when all coins have fallen
+      // can be costly at tousands of coins but should be fine for our usecase
+      if (coins.some(({ y, size }) => y < canvas.height + size)) {
         lastElapsed = elapsed;
         requestAnimationFrame(drawloop);
       }
     };
   };
+
+  useCoinsListener({
+    ...settings,
+    rainCoins: () => rainCoins({ coinsAmount: 10 }),
+  });
 
   return (
     <>
@@ -192,11 +223,6 @@ const ConversationsPanel: FunctionComponent<{
         round
         shadow
       >
-        <button
-          onClick={() => rainCoins({ coinsAmount: 10, durationMs: 2500 })}
-        >
-          RAIN
-        </button>
         {/* header */}
         <Box
           pad="small"
