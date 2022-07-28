@@ -141,7 +141,7 @@ const ConversationsPanel: FunctionComponent<{
     for (let i = 0; i < coinsAmount; i++) {
       coins.push({
         x: slotWidth * i + (Math.random() - 0.5) * slotWidth,
-        y: 40 * Math.random() - 100,
+        y: 500 * Math.random() - 500,
         sideMove:
           (40 - Math.random() * 10) * (Math.random() - 0.5 > 0 ? 1 : -1),
         size: 40 - Math.random() * 10,
@@ -156,23 +156,26 @@ const ConversationsPanel: FunctionComponent<{
     };
 
     let rainStartTime: number;
+    let lastElapsed: number = 0;
 
     const drawloop = (timestamp: number) => {
       if (!rainStartTime) {
         rainStartTime = timestamp;
       }
       const elapsed = timestamp - rainStartTime;
-      console.log(elapsed);
 
       ctx?.clearRect(0, 0, canvas.width, canvas.height);
 
       coins.forEach(({ x, y, size, sideMove }, index) => {
         ctx?.drawImage(coin, x, y, size, size);
-        coins[index].y += 3 + (y / canvas.height) * 15;
+        coins[index].y +=
+          (3 + Math.abs(y / canvas.height) * 15) *
+          ((elapsed - lastElapsed) / 14);
         coins[index].x += sideMove / canvas.height;
       });
 
       if (elapsed < durationMs) {
+        lastElapsed = elapsed;
         requestAnimationFrame(drawloop);
       }
     };
@@ -190,7 +193,7 @@ const ConversationsPanel: FunctionComponent<{
         shadow
       >
         <button
-          onClick={() => rainCoins({ coinsAmount: 10, durationMs: 2000 })}
+          onClick={() => rainCoins({ coinsAmount: 10, durationMs: 2500 })}
         >
           RAIN
         </button>
