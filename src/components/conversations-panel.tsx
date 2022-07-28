@@ -121,77 +121,61 @@ const ConversationsPanel: FunctionComponent<{
     }
   }, [status]);
 
-  // TODO: GET A HOLD OF THIS BLOKE https://stackoverflow.com/questions/9791904/animating-images-in-html5-and-canvas
-  const huje = () => {
+  const rainCoins = ({
+    coinsAmount,
+    durationMs,
+  }: {
+    coinsAmount: number;
+    durationMs: number;
+  }) => {
     const refImg = coinImg.current;
     const canvas = coinCanvas.current;
 
-    console.log(canvas, refImg);
     if (!canvas || !refImg) return;
 
-    // const coin = document.createElement("img");
-    // coin.src = "https://hoprnet.org/assets/icons/hopr_icon.svg";
-    // coin.src = "http://i.imgur.com/5ZW2MT3.png";
-    const coin = refImg.cloneNode() as HTMLImageElement;
-    const ctx = coinCanvas.current.getContext("2d");
+    // Prepare initial state of the coins (generate seed)
+    type CoinData = { x: number; y: number; size: number; sideMove: number };
+    const coins: CoinData[] = [];
+    const slotWidth = canvas.width / coinsAmount;
 
-    console.log(coin, ctx);
+    for (let i = 0; i < coinsAmount; i++) {
+      coins.push({
+        x: slotWidth * i + (Math.random() - 0.5) * slotWidth,
+        y: 40 * Math.random() - 100,
+        sideMove:
+          (40 - Math.random() * 10) * (Math.random() - 0.5 > 0 ? 1 : -1),
+        size: 40 - Math.random() * 10,
+      });
+    }
+
+    const coin = refImg.cloneNode() as HTMLImageElement;
+    const ctx = canvas.getContext("2d");
+
     coin.onload = () => {
-      console.log("HUUUUGHH?");
-      ctx?.drawImage(coin, 0, 0, 40, 40);
+      requestAnimationFrame(drawloop);
     };
 
-    // 440 wide, 40 high, 10 states
-    // coin.onload = function () {
-    //   element.appendChild(canvas);
-    //   focused = true;
-    //   drawloop();
-    // };
-    // var coins = [];
+    let rainStartTime: number;
 
-    // function drawloop() {
-    //   if (focused) {
-    //     requestAnimationFrame(drawloop);
-    //   }
+    const drawloop = (timestamp: number) => {
+      if (!rainStartTime) {
+        rainStartTime = timestamp;
+      }
+      const elapsed = timestamp - rainStartTime;
+      console.log(elapsed);
 
-    //   ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx?.clearRect(0, 0, canvas.width, canvas.height);
 
-    //   if (Math.random() < 0.3) {
-    //     coins.push({
-    //       x: (Math.random() * canvas.width) | 0,
-    //       y: -50,
-    //       dy: 3,
-    //       s: 0.5 + Math.random(),
-    //       state: (Math.random() * 10) | 0,
-    //     });
-    //   }
-    //   var i = coins.length;
-    //   while (i--) {
-    //     var x = coins[i].x;
-    //     var y = coins[i].y;
-    //     var s = coins[i].s;
-    //     var state = coins[i].state;
-    //     coins[i].state = state > 9 ? 0 : state + 0.1;
-    //     coins[i].dy += 0.3;
-    //     coins[i].y += coins[i].dy;
+      coins.forEach(({ x, y, size, sideMove }, index) => {
+        ctx?.drawImage(coin, x, y, size, size);
+        coins[index].y += 3 + (y / canvas.height) * 15;
+        coins[index].x += sideMove / canvas.height;
+      });
 
-    //     ctx.drawImage(
-    //       coin,
-    //       44 * Math.floor(state),
-    //       0,
-    //       44,
-    //       40,
-    //       x,
-    //       y,
-    //       44 * s,
-    //       40 * s
-    //     );
-
-    //     if (y > canvas.height) {
-    //       coins.splice(i, 1);
-    //     }
-    //   }
-    // }
+      if (elapsed < durationMs) {
+        requestAnimationFrame(drawloop);
+      }
+    };
   };
 
   return (
@@ -205,7 +189,11 @@ const ConversationsPanel: FunctionComponent<{
         round
         shadow
       >
-        <button onClick={() => huje()}>HUJE</button>
+        <button
+          onClick={() => rainCoins({ coinsAmount: 10, durationMs: 2000 })}
+        >
+          RAIN
+        </button>
         {/* header */}
         <Box
           pad="small"
@@ -261,6 +249,8 @@ const ConversationsPanel: FunctionComponent<{
           </Box>
         </Box>
         {/* conversations */}
+        {/* NOTE: To propperly animate coins on canvas the dimentions of it have to be set as params
+                  So to make canvas responsive we measure its parent container and use those values to make canvas same size */}
         <Measure
           bounds
           onResize={(contentRect) => {
@@ -278,18 +268,6 @@ const ConversationsPanel: FunctionComponent<{
                 height={canvasDimentions.height}
                 width={canvasDimentions.width}
               ></CoinCanvas>
-              {/* <img src={"/HOPR_Token_Icon.svg"}></img> */}
-              {/* <div>
-              <Box width={{ min: "22px" }} height={{ min: "22px" }}>
-              <Image
-              src="/HOPR_Token_Icon.svg"
-              alt="Hopr Token Icon"
-                  layout="fixed"
-                  width="22px"
-                  height="22px"
-                  />
-                  </Box>
-                </div> */}
               <List
                 data={counterparties}
                 border={false}
