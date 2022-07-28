@@ -1,12 +1,4 @@
-import {
-  cloneElement,
-  createElement,
-  FunctionComponent,
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-} from "react";
+import { FunctionComponent, useContext, useEffect, useRef } from "react";
 import type { ConnectionStatus, Settings as TSettings } from "../state";
 import { useState } from "react";
 import { Box, List, Text, Layer, ResponsiveContext } from "grommet";
@@ -19,7 +11,6 @@ import Logo from "./logo";
 import useAppState from "../state";
 import styled from "styled-components";
 import theme from "../theme";
-import Image from "next/image";
 import Measure, { BoundingRect } from "react-measure";
 import { useCoinsListener } from "../state/coins";
 
@@ -32,20 +23,6 @@ const Notifications = styled(Box)`
   position: absolute;
   right: 5px;
 `;
-
-// const FallingCoin = styled("div")`
-//   animation: falling 1s ease-in infinite;
-
-//   @keyframes falling {
-//     from {
-//       transform: translateY(0px);
-//     }
-
-//     to {
-//       transform: translateY(500px);
-//     }
-//   }
-// `;
 
 const CoinCanvas = styled("canvas")`
   position: absolute;
@@ -183,7 +160,6 @@ const ConversationsPanel: FunctionComponent<{
         rainStartTime = timestamp;
       }
       const elapsed = timestamp - rainStartTime;
-      console.log(elapsed);
 
       ctx?.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -349,11 +325,12 @@ const ConversationsPanel: FunctionComponent<{
             gap="5px"
           >
             <Box width={{ min: "22px" }} height={{ min: "22px" }}>
+              {/* NOTE: for the sake of coin rain animation it has to be native html img tag and also png instead of svg.
+                        Canvas can only handle svg path tag so in this case png is optimal */}
               <img
                 ref={coinImg}
                 src="/HOPR_Token_Icon.png"
                 alt="Hopr Token Icon"
-                // layout="fixed"
                 width="22px"
                 height="22px"
               />

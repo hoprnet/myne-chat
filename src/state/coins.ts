@@ -76,7 +76,6 @@ export function useBalanceListener({ httpEndpoint, securityToken }: Settings) {
     };
 
     getHoprBalance();
-    // to make coins feel more organic interval will have 20% variance
     const interval = setInterval(() => getHoprBalance(), 10000);
 
     return () => clearInterval(interval);
