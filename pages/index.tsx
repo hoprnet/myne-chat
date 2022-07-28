@@ -9,7 +9,7 @@ import ConversationsPanel from "../src/components/conversations-panel";
 import Chat from "../src/components/chat";
 import useWebsocket from "../src/state/websocket";
 import useUser from "../src/state/user";
-
+import { useBalanceListener, useCoinsListener } from "../src/state/coins";
 
 const HomePage: NextPage = () => {
   const {
@@ -23,8 +23,10 @@ const HomePage: NextPage = () => {
     handleSendMessage,
     handleReceivedMessage,
     loadDevHelperConversation,
-    loadWelcomeConversation
+    loadWelcomeConversation,
   } = useAppState();
+  const coinsListener = useCoinsListener(settings);
+  const { hoprBalance } = useBalanceListener(settings);
   // initialize websocket connection & state tracking
   const websocket = useWebsocket(settings);
   const { socketRef } = websocket;
@@ -46,15 +48,21 @@ const HomePage: NextPage = () => {
   );
   const screenSize = useContext(ResponsiveContext);
   const isMobile = screenSize === "small";
-  
+
   // attach event listener for new messages
   useEffect(() => {
     if (!myPeerId || !socketRef.current) return;
-    socketRef.current.addEventListener("message", handleReceivedMessage(addReceivedMessage));
+    socketRef.current.addEventListener(
+      "message",
+      handleReceivedMessage(addReceivedMessage)
+    );
 
     return () => {
       if (!socketRef.current) return;
-      socketRef.current.removeEventListener("message", handleReceivedMessage(addReceivedMessage));
+      socketRef.current.removeEventListener(
+        "message",
+        handleReceivedMessage(addReceivedMessage)
+      );
     };
   }, [myPeerId, socketRef.current]);
 
@@ -62,7 +70,7 @@ const HomePage: NextPage = () => {
   useEffect(() => {
     loadWelcomeConversation();
     //(development == 'enabled' || process.env.NODE_ENV != 'production') && loadDevHelperConversation();
-  }, [development])
+  }, [development]);
 
   return (
     <Box fill direction="row" justify="between" pad="small">
@@ -88,6 +96,7 @@ const HomePage: NextPage = () => {
           }}
           addNewConversation={handleAddNewConversation(() => setFocus("chat"))}
           counterparties={Array.from(conversations.keys())}
+          hoprBalance={hoprBalance}
         />
       </Box>
       <Box
@@ -113,7 +122,11 @@ const HomePage: NextPage = () => {
           selection={selection}
           httpEndpoint={settings.httpEndpoint}
           messages={conversation ? Array.from(conversation.values()) : []}
-          sendMessage={handleSendMessage(addSentMessage)(myPeerId, socketRef, getReqHeaders(true))}
+          sendMessage={handleSendMessage(addSentMessage)(
+            myPeerId,
+            socketRef,
+            getReqHeaders(true)
+          )}
         />
       </Box>
     </Box>
