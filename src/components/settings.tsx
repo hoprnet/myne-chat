@@ -44,7 +44,7 @@ const Settings: FunctionComponent<{
   }
 
   const setEndpointOfDefault = () => {
-    const BASE_HTTP = 'http://localhost:3000'
+    const BASE_HTTP = 'http://localhost:3001'
     const DEFAULT_SECURITY_TOKEN = ''
     setEndpoint(BASE_HTTP, DEFAULT_SECURITY_TOKEN)
   }
@@ -77,7 +77,7 @@ const Settings: FunctionComponent<{
       <Box>
         API endpoint:
         <TextInput
-          placeholder="http://localhost:8080/"
+          placeholder="http://localhost:3001/"
           value={draft.apiEndpoint}
           onChange={HandleSetDraftSetting("apiEndpoint")}
         />
