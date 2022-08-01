@@ -17,12 +17,6 @@ const Settings: FunctionComponent<{
     apiEndpoint: settings.apiEndpoint,
     apiToken: settings.apiToken,
   });
-  const [clusterNode, setClusterNode] = useState<number>(0);
-
-  const updateClusterNode = () => {
-    const CLUSTER_NODE = 5;
-    clusterNode == CLUSTER_NODE ? setClusterNode(1) : setClusterNode(clusterNode + 1);
-  }
 
   const HandleSetDraftSetting = <K extends keyof TSettings>(k: K) => {
     return (ev: ChangeEvent<HTMLInputElement>) => {
@@ -49,13 +43,6 @@ const Settings: FunctionComponent<{
     }))
   }
 
-  const setEndpointOfCluster = (index: number) => {
-    const BASE_HTTP = 'http://localhost:1330'
-    const BASE_WS = 'ws://localhost:1950'
-    const DEFAULT_SECURITY_TOKEN = '^^LOCAL-testing-123^^'
-    setEndpoint(BASE_HTTP + index, DEFAULT_SECURITY_TOKEN)
-  }
-
   const setEndpointOfDefault = () => {
     const BASE_HTTP = 'http://localhost:3000'
     const DEFAULT_SECURITY_TOKEN = ''
@@ -63,8 +50,7 @@ const Settings: FunctionComponent<{
   }
 
   useEffect(() => {
-    clusterNode != 0 && setEndpointOfCluster(clusterNode);
-  }, [clusterNode])
+  })
 
   return (
     <Box shadow round pad="large" background="dark-4" gap="medium">
@@ -84,23 +70,6 @@ const Settings: FunctionComponent<{
           >
             <RadialSelected color="light-1" />
             <Text margin="xxsmall" size="xsmall">Default</Text>
-          </Box>
-        </IconButton>
-        <IconButton
-          pad="small"
-          alignSelf="center"
-          round
-          onClick={updateClusterNode}
-          margin="0"
-        >
-          <Box
-            flex={{
-              grow: 1,
-            }}
-            align="center"
-          >
-            <Nodes color="light-1" />
-            <Text margin="xxsmall" size="xsmall">Cluster</Text>
           </Box>
         </IconButton>
       </Box>
