@@ -31,13 +31,11 @@ export type Message = {
 
 export type Settings = {
   apiEndpoint: string;
-  wsEndpoint: string;
   apiToken?: string;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
     apiEndpoint: "http://localhost:3001",
-    wsEndpoint: "ws://localhost:3000"
 }
 
 export type State = {
@@ -66,7 +64,6 @@ const useAppState = () => {
   const [state, setState] = useImmer<State>({
     settings: {
       apiEndpoint: urlParams.apiEndpoint || DEFAULT_SETTINGS.apiEndpoint,
-      wsEndpoint: urlParams.wsEndpoint || DEFAULT_SETTINGS.wsEndpoint,
       apiToken: urlParams.apiToken,
     },
     verified: false,

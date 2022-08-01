@@ -15,7 +15,6 @@ const Settings: FunctionComponent<{
 }> = ({ settings, updateSettings, isReallyOnline, hasUpdatedSettings, setMaybeOnline, setHasUpdatedSettings }) => {
   const [draft, setDraft] = useState<TSettings>({
     apiEndpoint: settings.apiEndpoint,
-    wsEndpoint: settings.wsEndpoint,
     apiToken: settings.apiToken,
   });
   const [clusterNode, setClusterNode] = useState<number>(0);
@@ -37,17 +36,15 @@ const Settings: FunctionComponent<{
   const handleSave = () => {
     updateSettings({
       apiEndpoint: draft.apiEndpoint,
-      wsEndpoint: draft.wsEndpoint,
       apiToken: draft.apiToken,
     });
     setMaybeOnline(true);
     setHasUpdatedSettings(true);
   };
 
-  const setEndpoint = (apiEndpoint: string, wsEndpoint: string, apiToken: string) => {
+  const setEndpoint = (apiEndpoint: string, apiToken: string) => {
     setDraft(() => ({
       apiEndpoint,
-      wsEndpoint,
       apiToken,
     }))
   }
@@ -56,14 +53,13 @@ const Settings: FunctionComponent<{
     const BASE_HTTP = 'http://localhost:1330'
     const BASE_WS = 'ws://localhost:1950'
     const DEFAULT_SECURITY_TOKEN = '^^LOCAL-testing-123^^'
-    setEndpoint(BASE_HTTP + index, BASE_WS + index, DEFAULT_SECURITY_TOKEN)
+    setEndpoint(BASE_HTTP + index, DEFAULT_SECURITY_TOKEN)
   }
 
   const setEndpointOfDefault = () => {
     const BASE_HTTP = 'http://localhost:3000'
-    const BASE_WS = 'ws://localhost:3001'
     const DEFAULT_SECURITY_TOKEN = ''
-    setEndpoint(BASE_HTTP, BASE_WS, DEFAULT_SECURITY_TOKEN)
+    setEndpoint(BASE_HTTP, DEFAULT_SECURITY_TOKEN)
   }
 
   useEffect(() => {
@@ -112,17 +108,9 @@ const Settings: FunctionComponent<{
       <Box>
         API endpoint:
         <TextInput
-          placeholder="http://localhost:3000/"
+          placeholder="http://localhost:8080/"
           value={draft.apiEndpoint}
           onChange={HandleSetDraftSetting("apiEndpoint")}
-        />
-      </Box>
-      <Box>
-        WS endpoint:
-        <TextInput
-          placeholder="ws://localhost:3001/"
-          value={draft.wsEndpoint}
-          onChange={HandleSetDraftSetting("wsEndpoint")}
         />
       </Box>
       <Box>
