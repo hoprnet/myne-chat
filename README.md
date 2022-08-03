@@ -77,11 +77,10 @@ To use most of its feature, MyneChat comes with a mock server which simulates a 
 yarn mocks
 ```
 
-Two endpoints become available which match the default HOPRd endpoints:
+Single http endpoint become available which match the default HOPRd endpoint:
 
 ```text
-HTTP API=http://localhost:3001
-WS API=ws://localhost:3000
+API=http://localhost:3001
 ```
 
 #### Connecting Myne Chat to a real HOPRd API
@@ -103,10 +102,10 @@ To test MyneChat against production HOPR nodes, checkout the [tutorial](#tutoria
 In order to run MyneChat, a user has to setup MyneChat locally.
 This tutorial shows how to set up MyneChat and a `hoprd` node locally.
 
-1. You need to start a local `hoprd` node (at least v1.85.0). Multiple ways to do this are described in the [hoprd documentation](https://docs.hoprnet.org/en/latest/src/install-hoprd/index.html). For simplicity, use Docker and spin up a node locally using the `budapest` release:
+1. You need to start a local `hoprd` node (at least v1.85.0). Multiple ways to do this are described in the [hoprd documentation](https://docs.hoprnet.org/en/latest/src/install-hoprd/index.html). For simplicity, use Docker and spin up a node locally using the `lisbon` release:
 
 ```
-docker run --pull always -p 3000:3000 -p 3001:3001 gcr.io/hoprassociation/hoprd:athens --apiToken ^MYtoken4testing^ --password hodlerATWORK --rest --admin --init
+docker run --pull always -p 3000:3000 -p 3001:3001 gcr.io/hoprassociation/hoprd:lisbon --apiToken ^MYtoken4testing^ --password hodlerATWORK --api --admin --init
 ```
 
 To be able to use the node you must fund it with native (xDAI) and HOPR tokens.
@@ -122,8 +121,7 @@ As a result you may now navigate to http://localhost:8080/ and view the MyneChat
 
 3. Now the local `hoprd` node can be configured as the endpoint within your MyneChat UI. Click on the settings icon in the top left corner and enter the following details:
 
-   - HTTP Endpoint: http://localhost:3001
-   - WS Endpoint: ws://localhost:3000
+   - API Endpoint: http://localhost:3001
    - Security Token: ^MYtoken4testing^
 
 _Important: Your API token might vary, which means it might have unsupported parameters as query parameters (e.g, `%`, `+`). Because we are passing the API token as query string, your token might need to be `URIEncoded` for it to work. To be safe, please make sure it's properly [encoded](https://www.onlinewebtoolkit.com/url-encode-decode) before pasting the API token into the UI. This will be improved in future versions of MyneChat._
