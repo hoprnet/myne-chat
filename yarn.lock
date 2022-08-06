@@ -5185,7 +5185,7 @@ browserslist@^4.12.0, browserslist@^4.14.5, browserslist@^4.17.5, browserslist@^
 bs58@^4.0.0, bs58@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/bs58/-/bs58-4.0.1.tgz#be161e76c354f6f788ae4071f63f34e8c4f0a42a"
-  integrity sha1-vhYedsNU9veIrkBx9j806MTwpCo=
+  integrity sha512-Ok3Wdf5vOIlBrgCvTq96gBkJw+JUEzdBgyaza5HLtPm7yTHkjRy8+JzNyHF7BHa0bNWOQIp3m5YF0nnFcOIKLw==
   dependencies:
     base-x "^3.0.2"
 
@@ -7878,13 +7878,6 @@ get-node-dimensions@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/get-node-dimensions/-/get-node-dimensions-1.2.1.tgz#fb7b4bb57060fb4247dd51c9d690dfbec56b0823"
   integrity sha512-2MSPMu7S1iOTL+BOa6K1S62hB2zUAYNF/lV0gSVlOaacd087lc6nR1H1r0e3B1CerTo+RceOmi1iJW+vp21xcQ==
-
-get-orientation@1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/get-orientation/-/get-orientation-1.1.2.tgz#20507928951814f8a91ded0a0e67b29dfab98947"
-  integrity sha512-/pViTfifW+gBbh/RnlFYHINvELT9Znt+SYyDKAUL6uV6By019AK/s+i9XP4jSwq7lwP38Fd8HVeTxym3+hkwmQ==
-  dependencies:
-    stream-parser "^0.3.1"
 
 get-package-type@^0.1.0:
   version "0.1.0"
@@ -13344,7 +13337,7 @@ set-value@^2.0.0, set-value@^2.0.1:
 setimmediate@^1.0.4, setimmediate@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/setimmediate/-/setimmediate-1.0.5.tgz#290cbb232e306942d7d7ea9b83732ab7856f8285"
-  integrity sha1-KQy7Iy4waULX1+qbg3Mqt4VvgoU=
+  integrity sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==
 
 setprototypeof@1.2.0:
   version "1.2.0"
@@ -14903,9 +14896,9 @@ web-namespaces@^1.0.0:
   integrity sha512-wYxSGajtmoP4WxfejAPIr4l0fVh+jeMXZb08wNc0tMg6xsfZXj3cECqIK0G7ZAqUq0PP8WlMDtaOGVBTAWztNw==
 
 web3-utils@^1.7.4:
-  version "1.7.4"
-  resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.7.4.tgz#eb6fa3706b058602747228234453811bbee017f5"
-  integrity sha512-acBdm6Evd0TEZRnChM/MCvGsMwYKmSh7OaUfNf5OKG0CIeGWD/6gqLOWIwmwSnre/2WrA1nKGId5uW2e5EfluA==
+  version "1.7.5"
+  resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.7.5.tgz#081a952ac6e0322e25ac97b37358a43c7372ef6a"
+  integrity sha512-9AqNOziQky4wNQadEwEfHiBdOZqopIHzQQVzmvvv6fJwDSMhP+khqmAZC7YTiGjs0MboyZ8tWNivqSO1699XQw==
   dependencies:
     bn.js "^5.2.1"
     ethereum-bloom-filters "^1.0.6"
