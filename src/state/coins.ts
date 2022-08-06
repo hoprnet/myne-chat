@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Settings } from ".";
-import { fromWei } from "web3-utils";
+import { utils } from "ethers";
 
 type TicketStatisticsResponse = {
   pending: number;
@@ -69,7 +69,7 @@ export function useBalanceListener({ apiEndpoint, apiToken }: Settings) {
             apiToken ? `?apiToken=${apiToken}` : ""
           }`
         );
-        updateHoprBalance(fromWei(data.hopr));
+        updateHoprBalance(utils.parseEther(data.hopr).toString());
       } catch (error) {
         console.log(error);
       }
