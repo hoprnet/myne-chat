@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Settings } from ".";
 import { utils } from "ethers";
 
@@ -9,11 +8,11 @@ type TicketStatisticsResponse = {
   redeemed: number;
 };
 
-export function useCoinsListener({
-  apiEndpoint,
-  apiToken,
-  rainCoins,
-}: Settings & { rainCoins: () => any }) {
+export function useCoinsListener(
+  settings: Settings,
+  headers: Headers,
+  rainCoins: () => any
+) {
   useEffect(() => {
     let stats: TicketStatisticsResponse = {
       pending: 0,
@@ -26,19 +25,18 @@ export function useCoinsListener({
 
     const getTicketsStatistics = async (skipCoinTrigger?: boolean) => {
       try {
-        const fetchedStats = await axios.get<TicketStatisticsResponse>(
-          `${apiEndpoint}/api/v2/tickets/statistics${
-            apiToken ? `?apiToken=${apiToken}` : ""
-          }`
-        );
+        const fetchedStats: TicketStatisticsResponse = await fetch(
+          `${settings.apiEndpoint}/api/v2/tickets/statistics`,
+          {
+            method: "GET",
+            headers,
+          }
+        ).then((res) => res.json());
 
-        if (
-          !skipCoinTrigger &&
-          sumTickets(fetchedStats.data) > sumTickets(stats)
-        ) {
+        if (!skipCoinTrigger && sumTickets(fetchedStats) > sumTickets(stats)) {
           rainCoins();
         }
-        stats = fetchedStats.data;
+        stats = fetchedStats;
       } catch (error) {
         console.log(error);
       }
@@ -55,20 +53,22 @@ export function useCoinsListener({
     );
 
     return () => clearInterval(interval);
-  }, [apiEndpoint, apiToken]);
+  }, [settings.apiEndpoint, settings.apiToken]);
 }
 
-export function useBalanceListener({ apiEndpoint, apiToken }: Settings) {
+export function useBalanceListener(
+  { apiEndpoint, apiToken }: Settings,
+  headers: Headers
+) {
   const [hoprBalance, updateHoprBalance] = useState("0");
 
   useEffect(() => {
     const getHoprBalance = async () => {
       try {
-        const { data } = await axios.get<{ hopr: string }>(
-          `${apiEndpoint}/api/v2/account/balances${
-            apiToken ? `?apiToken=${apiToken}` : ""
-          }`
-        );
+        const data = await fetch(`${apiEndpoint}/api/v2/account/balances`, {
+          method: "GET",
+          headers,
+        }).then((res) => res.json());
         updateHoprBalance(utils.parseEther(data.hopr).toString());
       } catch (error) {
         console.log(error);

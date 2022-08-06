@@ -33,6 +33,7 @@ const ConversationsPanel: FunctionComponent<{
   status: ConnectionStatus;
   myPeerId?: string;
   // settings
+  headers: Headers;
   settings: TSettings;
   updateSettings: (o: TSettings) => void;
   // selection
@@ -45,6 +46,7 @@ const ConversationsPanel: FunctionComponent<{
 }> = ({
   status,
   myPeerId,
+  headers,
   settings,
   updateSettings,
   selection,
@@ -183,10 +185,7 @@ const ConversationsPanel: FunctionComponent<{
     };
   };
 
-  useCoinsListener({
-    ...settings,
-    rainCoins: () => rainCoins({ coinsAmount: 10 }),
-  });
+  useCoinsListener(settings, headers, () => rainCoins({ coinsAmount: 10 }));
 
   return (
     <>

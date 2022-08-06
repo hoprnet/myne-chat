@@ -25,7 +25,6 @@ const HomePage: NextPage = () => {
     loadDevHelperConversation,
     loadWelcomeConversation,
   } = useAppState();
-  const { hoprBalance } = useBalanceListener(settings);
   // initialize websocket connection & state tracking
   const websocket = useWebsocket(settings);
   const { socketRef } = websocket;
@@ -33,6 +32,7 @@ const HomePage: NextPage = () => {
   // fetch user data
   const user = useUser(settings);
   const { getReqHeaders } = user;
+  const { hoprBalance } = useBalanceListener(settings, getReqHeaders(false));
   const { myPeerId } = user?.state;
 
   // get selected conversation
@@ -86,6 +86,7 @@ const HomePage: NextPage = () => {
         <ConversationsPanel
           status={status}
           myPeerId={myPeerId}
+          headers={getReqHeaders(false)}
           settings={settings}
           updateSettings={updateSettings}
           selection={selection}
