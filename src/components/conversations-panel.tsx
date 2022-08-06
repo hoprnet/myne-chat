@@ -27,6 +27,7 @@ const Notifications = styled(Box)`
 const CoinCanvas = styled("canvas")`
   position: absolute;
   object-fit: contain;
+  pointer-events: none;
 `;
 
 const ConversationsPanel: FunctionComponent<{

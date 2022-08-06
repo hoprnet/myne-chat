@@ -11,7 +11,8 @@ import {
   isSSR,
   verifySignatureFromPeerId,
 } from "../utils";
-import { MutableRefObject, useEffect } from "react";
+import { MutableRefObject } from "react";
+import { utils } from "ethers";
 import { sendMessage, signRequest } from "../lib/api";
 
 const MYNE_CHAT_GIT_HASH = process.env.NEXT_PUBLIC_MYNE_CHAT_GIT_HASH;
@@ -243,28 +244,30 @@ const useAppState = () => {
     async (ev: MessageEvent<string>) => {
       try {
         // we are only interested in messages, not all the other events coming in on the socket
-        const data = JSON.parse(ev.data);
-        if (data.type == "message") {
-          const { tag, from, message, signature } = decodeMessage(data.msg);
+        const msg = utils.RLP.decode(
+          new Uint8Array(JSON.parse(`[${ev.data}]`))
+        );
+        const { tag, from, message, signature } = decodeMessage(
+          utils.toUtf8String(msg[0])
+        );
 
-          const verifiedStatus: VerifiedStatus = signature
-            ? // Messages are pre-pended with the padding to avoid generic signatures.
-              (await verifySignatureFromPeerId(
-                from,
-                `HOPR Signed Message: ${message}`,
-                signature
-              ))
-              ? "VERIFIED"
-              : "FAILED_VERIFICATION"
-            : "UNVERIFIED";
+        const verifiedStatus: VerifiedStatus = signature
+          ? // Messages are pre-pended with the padding to avoid generic signatures.
+            (await verifySignatureFromPeerId(
+              from,
+              `HOPR Signed Message: ${message}`,
+              signature
+            ))
+            ? "VERIFIED"
+            : "FAILED_VERIFICATION"
+          : "UNVERIFIED";
 
-          // we are only interested in myne messages
-          if (tag == "myne") {
-            addReceivedMessage(from, message, verifiedStatus);
-          }
+        // we are only interested in myne messages
+        if (tag == "myne") {
+          addReceivedMessage(from, message, verifiedStatus);
         }
       } catch (err) {
-        console.error(err);
+        console.info("Error decoding message", err);
       }
     };
 
