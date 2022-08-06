@@ -66,10 +66,10 @@ describe('App State', () => {
       enableMapSet(); // Required by useImmer as we use maps
       await result.current.handleSendMessage(result.current.addSentMessage)(myPeerId, socketRef, headers)(recipientPeerId, originalMessage)
     });
-    expect(mockedSignRequest).toHaveBeenCalledWith(result.current.state.settings.httpEndpoint, headers);
+    expect(mockedSignRequest).toHaveBeenCalledWith(result.current.state.settings.apiEndpoint, headers);
     expect(mockedActualSignRequest).toHaveBeenCalledWith(originalMessage);
     const actualMessageAfterEncoding = Utils.encodeMessage(myPeerId, originalMessage, signedMessage);
-    expect(mockedSendMessage).toHaveBeenCalledWith(result.current.state.settings.httpEndpoint, headers);
+    expect(mockedSendMessage).toHaveBeenCalledWith(result.current.state.settings.apiEndpoint, headers);
     expect(mockedActualSendMessage).toHaveBeenCalledWith(recipientPeerId, actualMessageAfterEncoding, recipientPeerId, id, expect.any(Function));
 
     // Now let's do the entire loopback

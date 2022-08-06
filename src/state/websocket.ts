@@ -61,11 +61,13 @@ const useWebsocket = (settings: Settings) => {
     }
 
     // need to set the token in the query parameters, to enable websocket authentication
-    const wsUrl = new URL(settings.wsEndpoint);
-    if (settings.securityToken) {
-      wsUrl.search = `?apiToken=${settings.securityToken}`;
+    const wsUrl = new URL(settings.apiEndpoint);
+    wsUrl.protocol = wsUrl.protocol === "https" ? "wss" : "ws";
+    if (settings.apiToken) {
+      wsUrl.search = `?apiToken=${settings.apiToken}`;
     }
     console.info("WS Connecting..");
+    const messagesURL = wsUrl.origin + "/api/v2/messages/websocket";
     socketRef.current = new WebSocket(wsUrl);
 
     // handle connection opening
@@ -83,7 +85,7 @@ const useWebsocket = (settings: Settings) => {
       socketRef.current.removeEventListener("close", handleCloseEvent);
       socketRef.current.removeEventListener("error", handleErrorEvent);
     };
-  }, [settings.wsEndpoint, settings.securityToken, reconnectTmsp]);
+  }, [settings.apiEndpoint, settings.apiToken, reconnectTmsp]);
 
   return {
     state,

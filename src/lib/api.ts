@@ -1,6 +1,7 @@
 import { DraftFunction } from "use-immer";
 import { UpdateMessageHandlerInterface } from "../state";
 import { UserState } from "../state/user";
+import { getUrlParams } from "../utils";
 
 export const signRequest = (endpoint: string, headers: Headers) =>
   async (encodedSignMessageRequest: string) => {
@@ -45,24 +46,27 @@ export const sendMessage = (endpoint: string, headers: Headers) =>
       });
   };
 export const accountAddress = (endpoint: string, headers: Headers) =>
-  (setPeerId: (draft: DraftFunction<UserState>) => void) => {
-    return fetch(`${endpoint}/api/v2/account/address`, {
-      headers,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.info("Fetched PeerId", data.hoprAddress);
-        setPeerId((draft) => {
-          draft.myPeerId = data.hoprAddress;
-          return draft;
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        setPeerId((draft) => {
-          draft.myPeerId = undefined;
-          draft.error = err;
-          return draft;
-        });
-      });
-  };
+    (setPeerId: (draft: DraftFunction<UserState>) => void) => {
+        return fetch(`${endpoint}/api/v2/account/addresses`, {
+            headers:{
+                ...headers,
+                'x-auth-token': getUrlParams(location).apiToken
+            },
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                console.info("Fetched PeerId", data.hoprAddress);
+                setPeerId((draft) => {
+                    draft.myPeerId = data.hoprAddress;
+                    return draft;
+                });
+            })
+            .catch((err) => {
+                console.error(err);
+                setPeerId((draft) => {
+                    draft.myPeerId = undefined;
+                    draft.error = err;
+                    return draft;
+                });
+            });
+    };

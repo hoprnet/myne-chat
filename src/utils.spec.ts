@@ -120,11 +120,11 @@ test("encoding/decoding message roundtrip", () => {
 
 test("getUrlParams", () => {
   const location = {
-    search: "?securityToken=hello",
+    search: "?apiToken=hello",
   };
 
   expect(getUrlParams(location as any)).toEqual({
-    securityToken: "hello",
+    apiToken: "hello",
   });
 });
 

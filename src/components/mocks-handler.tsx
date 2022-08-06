@@ -3,16 +3,14 @@ import useWebsocket from "../state/websocket";
 import { decodeMessage } from "../utils";
 
 export const MocksHandler: React.FC<{ 
-  httpEndpoint: string,
-  wsEndpoint: string,
+  apiEndpoint: string,
   transform?: (message: string) => string
 }> = ({
-  httpEndpoint,
-  wsEndpoint,
+  apiEndpoint,
   transform = (msg) => `You have received a message from ${msg}`
 }): JSX.Element => {
   const [message, setMessage] = useState("")
-  const websocket = useWebsocket({ httpEndpoint, wsEndpoint });
+  const websocket = useWebsocket({ apiEndpoint });
   const { socketRef } = websocket;
   const handleReceivedMessage = async (ev: MessageEvent<string>) => {
     try {
