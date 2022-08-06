@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Settings } from ".";
-import { fromWei } from "web3-utils";
+import { utils } from "ethers";
 
 type TicketStatisticsResponse = {
   pending: number;
@@ -10,8 +10,8 @@ type TicketStatisticsResponse = {
 };
 
 export function useCoinsListener({
-  httpEndpoint,
-  securityToken,
+  apiEndpoint,
+  apiToken,
   rainCoins,
 }: Settings & { rainCoins: () => any }) {
   useEffect(() => {
@@ -27,8 +27,8 @@ export function useCoinsListener({
     const getTicketsStatistics = async (skipCoinTrigger?: boolean) => {
       try {
         const fetchedStats = await axios.get<TicketStatisticsResponse>(
-          `${httpEndpoint}/api/v2/tickets/statistics${
-            securityToken ? `?apiToken=${securityToken}` : ""
+          `${apiEndpoint}/api/v2/tickets/statistics${
+            apiToken ? `?apiToken=${apiToken}` : ""
           }`
         );
 
@@ -55,21 +55,21 @@ export function useCoinsListener({
     );
 
     return () => clearInterval(interval);
-  }, [httpEndpoint, securityToken]);
+  }, [apiEndpoint, apiToken]);
 }
 
-export function useBalanceListener({ httpEndpoint, securityToken }: Settings) {
+export function useBalanceListener({ apiEndpoint, apiToken }: Settings) {
   const [hoprBalance, updateHoprBalance] = useState("0");
 
   useEffect(() => {
     const getHoprBalance = async () => {
       try {
         const { data } = await axios.get<{ hopr: string }>(
-          `${httpEndpoint}/api/v2/account/balances${
-            securityToken ? `?apiToken=${securityToken}` : ""
+          `${apiEndpoint}/api/v2/account/balances${
+            apiToken ? `?apiToken=${apiToken}` : ""
           }`
         );
-        updateHoprBalance(fromWei(data.hopr));
+        updateHoprBalance(utils.parseEther(data.hopr).toString());
       } catch (error) {
         console.log(error);
       }
@@ -79,7 +79,7 @@ export function useBalanceListener({ httpEndpoint, securityToken }: Settings) {
     const interval = setInterval(() => getHoprBalance(), 10000);
 
     return () => clearInterval(interval);
-  }, [httpEndpoint, securityToken]);
+  }, [apiEndpoint, apiToken]);
 
   return { hoprBalance };
 }

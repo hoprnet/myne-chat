@@ -47,8 +47,8 @@ export type Settings = {
 };
 
 export const DEFAULT_SETTINGS: Settings = {
-    apiEndpoint: "http://localhost:3001"
-}
+  apiEndpoint: "http://localhost:3001",
+};
 
 export type State = {
   settings: Settings;
@@ -221,7 +221,7 @@ const useAppState = () => {
       const signature =
         verified &&
         (await signRequest(
-          settings.httpEndpoint,
+          settings.apiEndpoint,
           headers
         )(message).catch((err: any) =>
           console.error("ERROR Failed to obtain signature", err)
@@ -229,7 +229,7 @@ const useAppState = () => {
       const encodedMessage = encodeMessage(myPeerId, message, signature);
       const id = genId();
       addSentMessage(myPeerId, destination, message, id);
-      await sendMessage(settings.httpEndpoint, headers)(
+      await sendMessage(settings.apiEndpoint, headers)(
         selection,
         encodedMessage,
         destination,
