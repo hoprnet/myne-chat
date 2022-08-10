@@ -48,3 +48,4 @@ test-results/
 playwright-report/
 
 /.log/
+/.direnv/
