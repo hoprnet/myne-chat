@@ -13,12 +13,12 @@ const CircleFill = styled.i`
   border-radius: 50%;
   display: inline-block;
 `;
-export const MocksServer: React.FC<{ httpEndpoint: string, disabled?: boolean }> = ({ httpEndpoint, disabled }): JSX.Element => {
+export const MocksServer: React.FC<{ apiEndpoint: string, disabled?: boolean }> = ({ apiEndpoint, disabled }): JSX.Element => {
   const [isConnected, setConnected] = useState(false);
   useEffect(() => {
     (() =>
-      httpEndpoint &&
-      fetch(`${httpEndpoint}/mocks/status`)
+      apiEndpoint &&
+      fetch(`${apiEndpoint}/mocks/status`)
         .then((res) => res.json())
         .then((data) => data?.status == "connected" && setConnected(true))
         .catch((err) => {
@@ -28,8 +28,8 @@ export const MocksServer: React.FC<{ httpEndpoint: string, disabled?: boolean }>
   });
 
   const sendRandomMessage = () =>
-    httpEndpoint &&
-    fetch(`${httpEndpoint}/mocks/sendRandomMessage`, { method: "POST" });
+    apiEndpoint &&
+    fetch(`${apiEndpoint}/mocks/sendRandomMessage`, { method: "POST" });
 
   return (
     <Box

@@ -7,14 +7,14 @@ const cors = require("cors");
 const { randomBytes } = require("crypto");
 const bodyParser = require("body-parser");
 const { WebSocketServer } = require("ws");
-const { privKeyToPeerId, u8aToHex } = require('@hoprnet/hopr-utils');
+const { privKeyToPeerId, u8aToHex } = require("@hoprnet/hopr-utils");
 
-const HTTP_PORT = 3001;
-const WS_PORT = 3000;
-const privateKey = '0xcb1e5d91d46eb54a477a7eefec9c87a1575e3e5384d38f990f19c09aa8ddd332'
-const mockMyPeerId = privKeyToPeerId(privateKey)
+const API_PORT = 3001;
+const privateKey =
+  "0xcb1e5d91d46eb54a477a7eefec9c87a1575e3e5384d38f990f19c09aa8ddd332";
+const mockMyPeerId = privKeyToPeerId(privateKey);
 const MY_NODE_PEER_ID = mockMyPeerId.toB58String();
-const mockThemPeerId = privKeyToPeerId(randomBytes(32))
+const mockThemPeerId = privKeyToPeerId(randomBytes(32));
 const THEM_NODE_PEER_ID = mockThemPeerId.toB58String();
 
 // HTTP Server
@@ -31,20 +31,21 @@ httpService
   .get("/mocks/status", async (req, res) => {
     console.log("->", req.method, req.url);
     res.send({
-      status: ws ? 'connected' : 'disconnected'
-    })
+      status: ws ? "connected" : "disconnected",
+    });
   })
   .post("/mocks/sendRandomMessage", async (req, res) => {
     console.log("->", req.method, req.url);
     res.end();
-    ws && ws.send(
-      JSON.stringify({
-        type: "message",
-        msg: `myne:${MY_NODE_PEER_ID}: Random Message`,
-      })
-    );
+    ws &&
+      ws.send(
+        JSON.stringify({
+          type: "message",
+          msg: `myne:${MY_NODE_PEER_ID}: Random Message`,
+        })
+      );
   })
-  .get("/api/v2/account/address", (req, res) => {
+  .get("/api/v2/account/addresses", (req, res) => {
     console.log("->", req.method, req.url);
     res.send({
       hoprAddress: MY_NODE_PEER_ID,
@@ -54,10 +55,12 @@ httpService
     console.log("->", req.method, req.url, req.body);
     const { message } = req.body;
     res.send({
-      signature: u8aToHex(await mockMyPeerId.privKey.sign(
-        new TextEncoder().encode("HOPR Signed Message: "+message)
-      ))
-    })
+      signature: u8aToHex(
+        await mockMyPeerId.privKey.sign(
+          new TextEncoder().encode("HOPR Signed Message: " + message)
+        )
+      ),
+    });
   })
   .post("/api/v2/messages", (req, res) => {
     console.log("->", req.method, req.url, req.body);
@@ -78,19 +81,33 @@ httpService
     );
   });
 
-http.createServer(httpService).listen(HTTP_PORT, "localhost", () => {
-  console.log(`HTTP server running at port ${HTTP_PORT}`);
+const server = http.createServer(httpService);
+const wss = new WebSocketServer({
+  noServer: true,
 });
-
 // WS Server
-const wss = new WebSocketServer({ host: "localhost", port: WS_PORT });
 let ws;
 
-wss.on("listening", () => {
-  console.log(`WS server running at port ${WS_PORT}`);
+server.on("upgrade", function upgrade(req, socket, head) {
+  // upgrade to WS protocol
+  wss.handleUpgrade(req, socket, head, function done(socket_) {
+    wss.emit("connection", socket_, req);
+  });
 });
 
 wss.on("connection", function connection(_ws) {
   console.log("connection to WS server");
   ws = _ws;
 });
+
+server.listen(API_PORT, "localhost", () => {
+  console.log(`HTTP server running at port ${API_PORT}`);
+});
+
+server
+  .listen(API_PORT, () => {
+    console.log(`API server on port ${API_PORT}`);
+  })
+  .on("error", (err) => {
+    console.log(`Failed to start API server: ${err}`);
+  });

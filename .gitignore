@@ -47,3 +47,5 @@ build-storybook.log
 test-results/
 playwright-report/
 
+/.log/
+/.direnv/

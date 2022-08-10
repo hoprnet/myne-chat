@@ -9,7 +9,7 @@ import ConversationsPanel from "../src/components/conversations-panel";
 import Chat from "../src/components/chat";
 import useWebsocket from "../src/state/websocket";
 import useUser from "../src/state/user";
-
+import { useBalanceListener } from "../src/state/coins";
 
 const HomePage: NextPage = () => {
   const {
@@ -23,7 +23,7 @@ const HomePage: NextPage = () => {
     handleSendMessage,
     handleReceivedMessage,
     loadDevHelperConversation,
-    loadWelcomeConversation
+    loadWelcomeConversation,
   } = useAppState();
   // initialize websocket connection & state tracking
   const websocket = useWebsocket(settings);
@@ -32,6 +32,7 @@ const HomePage: NextPage = () => {
   // fetch user data
   const user = useUser(settings);
   const { getReqHeaders } = user;
+  const { hoprBalance } = useBalanceListener(settings, getReqHeaders(false));
   const { myPeerId } = user?.state;
 
   // get selected conversation
@@ -46,23 +47,29 @@ const HomePage: NextPage = () => {
   );
   const screenSize = useContext(ResponsiveContext);
   const isMobile = screenSize === "small";
-  
+
   // attach event listener for new messages
   useEffect(() => {
     if (!myPeerId || !socketRef.current) return;
-    socketRef.current.addEventListener("message", handleReceivedMessage(addReceivedMessage));
+    socketRef.current.addEventListener(
+      "message",
+      handleReceivedMessage(addReceivedMessage)
+    );
 
     return () => {
       if (!socketRef.current) return;
-      socketRef.current.removeEventListener("message", handleReceivedMessage(addReceivedMessage));
+      socketRef.current.removeEventListener(
+        "message",
+        handleReceivedMessage(addReceivedMessage)
+      );
     };
   }, [myPeerId, socketRef.current]);
 
   // Adding Dev helper conversation to showcase components.
   useEffect(() => {
     loadWelcomeConversation();
-    (development == 'enabled' || process.env.NODE_ENV != 'production') && loadDevHelperConversation();
-  }, [development])
+    //(development == 'enabled' || process.env.NODE_ENV != 'production') && loadDevHelperConversation();
+  }, [development]);
 
   return (
     <Box fill direction="row" justify="between" pad="small">
@@ -79,6 +86,7 @@ const HomePage: NextPage = () => {
         <ConversationsPanel
           status={status}
           myPeerId={myPeerId}
+          headers={getReqHeaders(false)}
           settings={settings}
           updateSettings={updateSettings}
           selection={selection}
@@ -88,6 +96,7 @@ const HomePage: NextPage = () => {
           }}
           addNewConversation={handleAddNewConversation(() => setFocus("chat"))}
           counterparties={Array.from(conversations.keys())}
+          hoprBalance={hoprBalance}
         />
       </Box>
       <Box
@@ -111,9 +120,13 @@ const HomePage: NextPage = () => {
           setVerified={setVerified}
           verified={verified}
           selection={selection}
-          httpEndpoint={settings.httpEndpoint}
+          apiEndpoint={settings.apiEndpoint}
           messages={conversation ? Array.from(conversation.values()) : []}
-          sendMessage={handleSendMessage(addSentMessage)(myPeerId, socketRef, getReqHeaders(true))}
+          sendMessage={handleSendMessage(addSentMessage)(
+            myPeerId,
+            socketRef,
+            getReqHeaders(true)
+          )}
         />
       </Box>
     </Box>

@@ -13,14 +13,14 @@ const Chat: FunctionComponent<{
   selection?: string;
   setVerified: (verified: boolean) => void;
   verified: boolean;
-  httpEndpoint: string;
+  apiEndpoint: string;
 }> = ({
   selection,
   messages,
   sendMessage,
   setVerified,
   verified,
-  httpEndpoint,
+  apiEndpoint,
 }) => {
   return (
     <Box fill justify="between" background="dark-4" round shadow>
@@ -49,7 +49,7 @@ const Chat: FunctionComponent<{
               <Copy />
             </IconButton>
           </Box>
-          {selection == dev && <MocksServer httpEndpoint={httpEndpoint} />}
+          {selection == dev && <MocksServer apiEndpoint={apiEndpoint} />}
         </Box>
       ) : null}
       <Box fill gap="small" pad="small">
