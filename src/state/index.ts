@@ -296,7 +296,7 @@ const useAppState = () => {
       () =>
         addReceivedMessage(
           welcome,
-          'To start a conversation on myne.chat please use our <a href="https://docs.hoprnet.org/dapps/myne-chat" style="color: white;" target="_blank">Tutorial</a>.',
+          'To start a conversation on myne.chat please follow our <a href="https://docs.hoprnet.org/dapps/myne-chat-playground" style="color: white;" target="_blank">Tutorial</a>.',
           undefined,
           true
         ),
