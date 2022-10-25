@@ -59,7 +59,7 @@ const App = ({ Component, pageProps }: AppProps) => {
           name="description"
           content="Changing messaging privacy for good."
         />
-        <title>MYNE Chat</title>
+        <title>HOPR dApp | myne.chat</title>
       </Head>
       <GlobalStyle />
       <Main background="dark-2">
